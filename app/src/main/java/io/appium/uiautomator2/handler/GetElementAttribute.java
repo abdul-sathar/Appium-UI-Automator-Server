@@ -31,6 +31,6 @@ public class GetElementAttribute extends SafeRequestHandler {
             Logger.error("Unable to get Element Attribute", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
-        return new AppiumResponse(getSessionId(request), text);
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, text);
     }
 }

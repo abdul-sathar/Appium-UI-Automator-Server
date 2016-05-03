@@ -43,7 +43,7 @@ public class FindElement extends SafeRequestHandler {
         By by = new NativeAndroidBySelector().pickFrom(method, selector);
         UiObject2 element;
         try {
-            element = this.findElememnt(by);
+            element = this.findElement(by);
             if (element == null) {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element was not found.");
             } else {
@@ -62,11 +62,11 @@ public class FindElement extends SafeRequestHandler {
         ke.add(androidElement);
         JSONObject result = new JSONObject();
         result.put("ELEMENT", id);
-        return new AppiumResponse(getSessionId(request), result);
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, result);
     }
 
 
-    private UiObject2 findElememnt(By by) {
+    private UiObject2 findElement(By by) {
         if (by instanceof ById) {
             return getUiDevice().findObject(android.support.test.uiautomator.By.res(by.getElementLocator()));
         }/* else if (by instanceof ByTagName) {

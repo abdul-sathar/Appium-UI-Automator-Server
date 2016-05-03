@@ -25,7 +25,7 @@ public class NewSession extends SafeRequestHandler {
             Logger.error("Error creating session ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.SESSION_NOT_CREATED_EXCEPTION, e);
         }
-        return new AppiumResponse(sessionID, "Created Session");
+        return new AppiumResponse(sessionID, WDStatus.SUCCESS, "Created Session");
     }
 
 }

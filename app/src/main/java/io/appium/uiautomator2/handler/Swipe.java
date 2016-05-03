@@ -37,7 +37,7 @@ public class Swipe extends BaseRequestHandler {
             } else
                 actionMsg = "Swipe failed to performed";
         } catch (Exception e) {
-            Logger.error(actionMsg, e.getMessage());
+            Logger.error(actionMsg, e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, actionMsg);
         }
 

@@ -30,6 +30,8 @@ public class SendKeysToElement extends SafeRequestHandler {
         JSONObject payload = getPayload(request);
         String id = payload.getString("id");
         AndroidElement element = KnownElements.getElementFromCache(id);
+        boolean isActionPerformed;
+        String actionMsg = "";
 
         try {
             boolean replace = Boolean.parseBoolean(payload.getString("replace").toString());
@@ -59,9 +61,12 @@ public class SendKeysToElement extends SafeRequestHandler {
 
             if (pressEnter) {
                 final UiDevice d = Device.getUiDevice();
-                d.pressEnter();
+                isActionPerformed = d.pressEnter();
+                if (isActionPerformed)
+                    actionMsg = "Sent keys to the device";
+                else
+                    actionMsg = "Unable to send keys to the device";
             }
-            return new AppiumResponse(getSessionId(request), "Click element");
         } catch (final UiObjectNotFoundException e) {
             Logger.error("Unable to Send Keys", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
@@ -69,6 +74,7 @@ public class SendKeysToElement extends SafeRequestHandler {
             Logger.error("Unable to Send Keys", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);
     }
 }
 

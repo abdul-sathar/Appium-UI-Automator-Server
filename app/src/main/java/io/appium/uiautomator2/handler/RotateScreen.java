@@ -18,6 +18,7 @@ public class RotateScreen extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+
         try {
             Device.getUiDevice().setOrientationRight();
         } catch (RemoteException e) {

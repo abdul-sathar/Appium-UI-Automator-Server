@@ -24,6 +24,6 @@ public class PressBack extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
 
-        return new AppiumResponse(getSessionId(request), "Pressed Back");
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Pressed Back");
     }
 }

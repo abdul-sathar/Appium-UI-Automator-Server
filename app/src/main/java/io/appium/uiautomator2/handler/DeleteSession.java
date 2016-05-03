@@ -10,6 +10,8 @@ import io.appium.uiautomator2.util.Logger;
 
 public class DeleteSession extends SafeRequestHandler {
 
+    public static final int PORT = 8080;
+
     public DeleteSession(String mappedUri) {
         super(mappedUri);
     }
@@ -18,11 +20,11 @@ public class DeleteSession extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
         try {
             Logger.info("Delete session command");
-            ServerInstrumentation.getInstance(null, 8080).stopServer();
+            ServerInstrumentation.getInstance(null, PORT).stopServer();
         } catch (Exception e) {
             Logger.error("Unable to Delete Session ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
         }
-        return new AppiumResponse(getSessionId(request), "Session deleted");
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS,"Session deleted");
     }
 }
