@@ -17,8 +17,11 @@ import io.appium.uiautomator2.handler.FindElements;
 import io.appium.uiautomator2.handler.GetElementAttribute;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetText;
+import io.appium.uiautomator2.handler.LongPressKeyCode;
 import io.appium.uiautomator2.handler.NewSession;
+import io.appium.uiautomator2.handler.OpenNotification;
 import io.appium.uiautomator2.handler.PressBack;
+import io.appium.uiautomator2.handler.PressKeyCode;
 import io.appium.uiautomator2.handler.RotateScreen;
 import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Status;
@@ -36,11 +39,10 @@ public class AppiumServlet implements IHttpServlet {
     public static final String ELEMENT_ID_KEY = "id";
     public static final String COMMAND_NAME_KEY = "COMMAND_KEY";
     public static final String NAME_ID_KEY = "NAME_ID_KEY";
-    private ConcurrentMap<String, String[]> mapperUrlSectionsCache = new ConcurrentHashMap<>();
-
     protected static ConcurrentMap<String, BaseRequestHandler> getHandler = new ConcurrentHashMap<String, BaseRequestHandler>();
     protected static ConcurrentMap<String, BaseRequestHandler> postHandler = new ConcurrentHashMap<String, BaseRequestHandler>();
     protected static ConcurrentMap<String, BaseRequestHandler> deleteHandler = new ConcurrentHashMap<String, BaseRequestHandler>();
+    private ConcurrentMap<String, String[]> mapperUrlSectionsCache = new ConcurrentHashMap<>();
 
 
     public AppiumServlet() {
@@ -69,7 +71,9 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new SendKeysToElement("/wd/hub/session/:sessionId/element/:id/value"));
         register(postHandler, new Swipe("/wd/hub/session/:sessionId/touch/perform"));
         register(postHandler, new TouchLongClick("/wd/hub/session/:sessionId/touch/longclick"));
-
+        register(postHandler, new OpenNotification("/wd/hub/session/:sessionId/appium/device/open_notifications"));
+        register(postHandler, new PressKeyCode("/wd/hub/session/:sessionId/appium/device/press_keycode"));
+        register(postHandler, new LongPressKeyCode("/wd/hub/session/:sessionId/appium/device/long_press_keycode"));
     }
 
     private void registerGetHandler() {
@@ -84,8 +88,7 @@ public class AppiumServlet implements IHttpServlet {
         registerOn.put(handler.getMappedUri(), handler);
     }
 
-    protected BaseRequestHandler findMatcher(IHttpRequest request,
-                                             Map<String, BaseRequestHandler> handler) {
+    protected BaseRequestHandler findMatcher(IHttpRequest request, Map<String, BaseRequestHandler> handler) {
         String[] urlToMatchSections = getRequestUrlSections(request.uri());
         for (Map.Entry<String, ? extends BaseRequestHandler> entry : handler.entrySet()) {
             String[] mapperUrlSections = getMapperUrlSectionsCached(entry.getKey());
@@ -132,8 +135,7 @@ public class AppiumServlet implements IHttpServlet {
             return false;
         }
         for (int i = 0; i < mapperUrlSections.length; i++) {
-            if (!(mapperUrlSections[i].startsWith(":") || mapperUrlSections[i]
-                    .equals(urlToMatchSections[i]))) {
+            if (!(mapperUrlSections[i].startsWith(":") || mapperUrlSections[i].equals(urlToMatchSections[i]))) {
                 return false;
             }
         }
@@ -164,8 +166,7 @@ public class AppiumServlet implements IHttpServlet {
         handleResponse(request, response, result);
     }
 
-    protected void handleResponse(IHttpRequest request, IHttpResponse response,
-                                  AppiumResponse result) {
+    protected void handleResponse(IHttpRequest request, IHttpResponse response, AppiumResponse result) {
         if (result != null) {
             String resultString = result.render();
             response.setContentType("application/json");
@@ -204,8 +205,7 @@ public class AppiumServlet implements IHttpServlet {
         return getParameter(configuredUri, actualUri, param, true);
     }
 
-    protected String getParameter(String configuredUri, String actualUri, String param,
-                                  boolean sectionLengthValidation) {
+    protected String getParameter(String configuredUri, String actualUri, String param, boolean sectionLengthValidation) {
         String[] configuredSections = configuredUri.split("/");
         String[] currentSections = actualUri.split("/");
         if (sectionLengthValidation) {

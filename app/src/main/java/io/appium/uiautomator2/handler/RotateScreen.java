@@ -7,8 +7,8 @@ import org.json.JSONException;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Device;
+import io.appium.uiautomator2.utils.Logger;
 
 public class RotateScreen extends SafeRequestHandler {
 

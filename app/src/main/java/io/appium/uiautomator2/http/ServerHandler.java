@@ -5,7 +5,7 @@ import java.util.logging.Level;
 
 import io.appium.uiautomator2.http.impl.NettyHttpRequest;
 import io.appium.uiautomator2.http.impl.NettyHttpResponse;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

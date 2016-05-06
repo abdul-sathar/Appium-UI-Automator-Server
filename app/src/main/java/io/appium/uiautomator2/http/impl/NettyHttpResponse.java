@@ -11,12 +11,12 @@ import io.netty.util.CharsetUtil;
 public class NettyHttpResponse implements IHttpResponse {
 
     private final FullHttpResponse response;
-    private boolean closed;
-    private Charset charset = CharsetUtil.UTF_8;
     private final String CONTENT_TYPE = "Content-Type";
     private final String CONTENT_ENCODING = "Content-Encoding";
     private final String CONTENT_LENGTH = "Content-Length";
     private final String LOCATION = "location";
+    private boolean closed;
+    private Charset charset = CharsetUtil.UTF_8;
 
 
     public NettyHttpResponse(FullHttpResponse response) {

@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.Configurator;
 
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONException;
-import org.junit.Assert;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -17,8 +18,8 @@ import org.junit.runners.MethodSorters;
 
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.server.ServerInstrumentation;
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.Logger;
 
 import static io.appium.uiautomator2.unittest.test.TestUtil.click;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
@@ -28,136 +29,174 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJson
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+//TODO: need to remove explicit usage of waitForElement, once after configuring setWaitForSelectorTimeout() to driver instance
+//reference link: https://developer.android.com/intl/es/reference/android/support/test/uiautomator/Configurator.html#setWaitForSelectorTimeout%28long%29
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class HandlersTest {
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
     private static final int port = 8080;
     private static final String testAppPkg = "io.appium.android.apis";
     private static final int SECOND = 1000;
     private static ServerInstrumentation serverInstrumentation;
     private static Context ctx;
+    private static boolean shouldStopRestOfSuite = false;
+    private String response;
 
     /**
      * start io.appium.uiautomator2.server and launch the application main activity     *
-     *
-     * @throws InterruptedException
      */
     @BeforeClass
     public static void beforeStartServer() throws InterruptedException {
         if (serverInstrumentation == null) {
-            Assert.assertNotNull(Device.getUiDevice());
+            assertNotNull(getUiDevice());
             ctx = InstrumentationRegistry.getInstrumentation().getContext();
             serverInstrumentation = ServerInstrumentation.getInstance(ctx, port);
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server ");
-            Intent intent = new Intent()
-                    .setClassName(testAppPkg, testAppPkg + ".ApiDemos")
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + "" + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(intent);
             serverInstrumentation.startServer();
             Logger.info("[AppiumUiAutomator2Server]", " waiting for app to launch ");
             TestHelper.waitForNetty();
+            Configurator.getInstance().setWaitForSelectorTimeout(50000);
+            Configurator.getInstance().setWaitForIdleTimeout(50000);
             TestHelper.waitForAppToLaunch(testAppPkg, 15 * SECOND);
+            getUiDevice().waitForIdle();
+            Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
+        }
+
+    }
+
+    @AfterClass
+    public static void stopSever() throws InterruptedException {
+        if (serverInstrumentation != null) {
+            serverInstrumentation.stopServer();
         }
     }
 
     /**
-     * click on element
-     *
-     * @throws JSONException
+     * Test for click on element
      */
     @Test
     public void clickElementTest() throws JSONException {
         waitForElement(By.name("Accessibility"), 5 * SECOND);
         String element = findElement(By.name("Accessibility"));
         Logger.info("[AppiumUiAutomator2Server]", " click element:" + element);
-        Assert.assertNotNull(element);
+        String result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
         click(element);
+        getUiDevice().waitForIdle();
+        element = findElement(By.name("Accessibility"));
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
     }
 
     /**
-     * find element
+     * Test for findElement
      */
     @Test
-    public void findElementTest() {
-        waitForElement(By.name("Custom View"), 5 * SECOND);
-        String response = findElement(By.name("Custom View"));
+    public void findElementTest() throws JSONException {
+        waitForElement(By.name("API Demos"), 5 * SECOND);
+        response = findElement(By.name("API Demos"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.name: " + response);
-        Assert.assertNotNull(response);
+        String result = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
 
-        response = findElement(By.id("android:id/action_bar_title"));
+        response = findElement(By.xpath("//*[@resource-id='android:id/action_bar']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + response);
-        Assert.assertNotNull(response);
+        result = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
 
-        response = findElement(By.className("android.widget.TextView"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " +
-                response);
-        Assert.assertNotNull(response);
+        response = findElement(By.xpath("(//*[@class='android.widget.TextView'][1])[2]"));
+        Logger.info("[AppiumUiAutomator2Server]", "By.xpath:" + response);
+        result = getAttribute(response, "text");
+        assertEquals("Accessibility Node Provider", getStringValueInJsonObject(result, "value"));
+
+        response = findElement(By.xpath("//*[@resource-id='android:id/content']//*[@resource-id='android:id/text1'][4]"));
+        Logger.info("[AppiumUiAutomator2Server]", "By.xpath:" + response);
+        result = getAttribute(response, "text");
+        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+
+
     }
 
     /**
-     * findElements Test
+     * Test for findElements
      */
     @Test
-    public void findElementsTest() {
-        String response = findElements(By.className("android.widget.TextView"));
+    public void findElementsTest() throws JSONException, ClassNotFoundException {
+
+        response = findElements(By.className("android.widget.TextView"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + response);
-        Assert.assertNotNull(response);
+        String result = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
     }
 
-
     /**
-     * get Attribute Text
-     *
-     * @throws JSONException
+     * Test for get Attributes
      */
     @Test
     public void getAttributeTest() throws JSONException {
-        String element = findElement(By.className("android.widget.TextView"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
+        String element = findElement(By.name("Custom View"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.name: " + element);
+
         String result = getAttribute(element, "resourceId");
         Logger.info("[AppiumUiAutomator2Server]", " getAttribute: resourceId - " + result);
-        Logger.info("[AppiumUiAutomator2Server]", " getAttribute: contentDescription - " + getAttribute(element, "contentDescription"));
-        Logger.info("[AppiumUiAutomator2Server]", " getAttribute: text - " + getAttribute(element, "text"));
-        Logger.info("[AppiumUiAutomator2Server]", " getAttribute: className - " +
-                getAttribute(element,
-                        "className"));
-        Logger.info("[AppiumUiAutomator2Server]", " getAttribute: name - " + getAttribute(element, "name"));
+        assertEquals("android:id/text1", getStringValueInJsonObject(result, "value"));
+
+        result = getAttribute(element, "contentDescription");
+        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+
+        result = getAttribute(element, "text");
+        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+
+        result = getAttribute(element, "className");
+        assertEquals("android.widget.TextView", getStringValueInJsonObject(result, "value"));
     }
 
     /**
-     * get Element Text
-     *
-     * @throws JSONException
+     * Test for getElement Text
      */
     @Test
     public void getTextTest() throws JSONException {
-        String element = findElement(By.className("android.widget.TextView"));
+        String element = findElement(By.id("android:id/text1"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
-        Assert.assertEquals(getStringValueInJsonObject(elementTxt, "value"), "API Demos");
+        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Accessibility Node Provider");
     }
 
     /**
-     * send keys to element
-     *
-     * @throws JSONException
-     * @throws InterruptedException
+     * Test for send keys to element
      */
 
     @Test
     public void sendKeysTest() throws JSONException, InterruptedException {
+        getUiDevice().pressBack();
+        getUiDevice().waitForIdle();
+
         waitForElement(By.name("Views"), 10 * SECOND);
         click(findElement(By.name("Views")));
+
         waitForElement(By.name("Controls"), 10 * SECOND);
         click(findElement(By.name("Controls")));
+
         waitForElement(By.name("1. Light Theme"), 10 * SECOND);
         click(findElement(By.name("1. Light Theme")));
+
         waitForElement(By.id("io.appium.android.apis:id/edit"), 5 * SECOND);
         sendKeys(findElement(By.id("io.appium.android.apis:id/edit")), "Dummy Theme");
-        Assert.assertEquals("Dummy Theme", getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value"));
+        assertEquals("Dummy Theme", getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value"));
     }
+
+   public void openNotification(){
+       getUiDevice().waitForIdle();
+
+
+   }
 }

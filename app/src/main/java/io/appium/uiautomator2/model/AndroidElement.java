@@ -1,13 +1,15 @@
 package io.appium.uiautomator2.model;
 
+import android.graphics.Rect;
 import android.os.RemoteException;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
-import io.appium.uiautomator2.util.UnicodeEncoder;
+import io.appium.uiautomator2.utils.Device;
+import io.appium.uiautomator2.utils.Logger;
+import io.appium.uiautomator2.utils.UnicodeEncoder;
 
 public class AndroidElement {
     private final UiObject2 element;
@@ -16,6 +18,10 @@ public class AndroidElement {
     public AndroidElement(String id, UiObject2 element) {
         this.id = id;
         this.element = element;
+    }
+
+    public static void back() {
+        Device.getUiDevice().pressBack();
     }
 
     public void click() throws UiObjectNotFoundException {
@@ -34,8 +40,7 @@ public class AndroidElement {
         return element.getContentDescription();
     }
 
-    public String getStringAttribute(final String attr)
-            throws UiObjectNotFoundException {
+    public String getStringAttribute(final String attr) throws UiObjectNotFoundException {
         String res;
         if (attr.equalsIgnoreCase("name")) {
             res = element.getText();
@@ -51,14 +56,12 @@ public class AndroidElement {
         } else if (attr.equalsIgnoreCase("resourceId") || attr.equalsIgnoreCase("resource-id")) {
             res = element.getResourceName();
         } else {
-            throw new NoSuchElementAttributeException("The attribute with name '" + attr
-                    + "' was not found.");
+            throw new NoSuchElementAttributeException("The attribute with name '" + attr + "' was not found.");
         }
         return res;
     }
 
-    public void setText(final String text, boolean unicodeKeyboard)
-            throws UiObjectNotFoundException {
+    public void setText(final String text, boolean unicodeKeyboard) throws UiObjectNotFoundException {
         if (unicodeKeyboard && UnicodeEncoder.needsEncoding(text)) {
             Logger.debug("Sending Unicode text to element: " + text);
             String encodedText = UnicodeEncoder.encode(text);
@@ -78,11 +81,19 @@ public class AndroidElement {
         Device.getUiDevice().wakeUp();
     }
 
-    public static void back() {
-        Device.getUiDevice().pressBack();
-    }
-
     public String getId() {
         return this.id;
+    }
+
+    public Rect getBounds() throws UiObjectNotFoundException {
+        return element.getVisibleBounds();
+    }
+
+    public UiObject2 getChild(final BySelector sel) throws UiObjectNotFoundException {
+        return element.findObject(sel);
+    }
+
+    public UiObject2 getUiObject() {
+        return element;
     }
 }

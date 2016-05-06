@@ -7,8 +7,8 @@ import org.json.JSONException;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Device;
+import io.appium.uiautomator2.utils.Logger;
 
 public class Swipe extends BaseRequestHandler {
     public Swipe(String mappedUri) {
@@ -34,8 +34,7 @@ public class Swipe extends BaseRequestHandler {
             if (isActionPerformed) {
                 actionMsg = "Swiping from (" + startX + "," + startY + ") to (" + endX + "," + endY + ") with " + steps + " steps";
                 Logger.info("Swipe Performed ", actionMsg);
-            } else
-                actionMsg = "Swipe failed to performed";
+            } else actionMsg = "Swipe failed to performed";
         } catch (Exception e) {
             Logger.error(actionMsg, e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, actionMsg);

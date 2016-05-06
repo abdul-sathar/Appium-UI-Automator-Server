@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.appium.uiautomator2.util;
+package io.appium.uiautomator2.utils;
 
 import java.nio.charset.Charset;
 

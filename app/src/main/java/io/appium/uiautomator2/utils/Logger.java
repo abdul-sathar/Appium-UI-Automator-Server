@@ -1,4 +1,4 @@
-package io.appium.uiautomator2.util;
+package io.appium.uiautomator2.utils;
 
 public class Logger {
     public static final String TAG = "appium";

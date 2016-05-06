@@ -19,8 +19,7 @@ package io.appium.uiautomator2.server;
 //@formatter:off
 
 /**
- * An enumeration of status codes and messages to be relayed back to the Appium
- * server.
+ * An enumeration of status codes and messages to be relayed back to the Appium server.
  */
 public enum WDStatus {
     SUCCESS(0, "The command executed successfully."),

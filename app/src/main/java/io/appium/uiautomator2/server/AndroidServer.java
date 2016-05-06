@@ -1,7 +1,7 @@
 package io.appium.uiautomator2.server;
 
 import io.appium.uiautomator2.http.HttpServer;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 
 public class AndroidServer {

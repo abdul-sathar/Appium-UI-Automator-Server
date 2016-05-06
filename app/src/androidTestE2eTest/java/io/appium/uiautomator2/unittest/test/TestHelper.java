@@ -15,14 +15,15 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public abstract class TestHelper {
 
+    public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
     private static final OkHttpClient client = new OkHttpClient();
     private static final String baseUrl = "http://localhost:8080";
     private static final Instrumentation mInstrumentation = InstrumentationRegistry.getInstrumentation();
@@ -35,15 +36,10 @@ public abstract class TestHelper {
     }
 
     public static String get(final String path) {
-        Request request = new Request.Builder()
-                .url(baseUrl + path)
-                .build();
+        Request request = new Request.Builder().url(baseUrl + path).build();
 
         return execute(request);
     }
-
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
 
     public static final void waitForNetty() {
         long start = elapsedRealtime();
@@ -64,10 +60,7 @@ public abstract class TestHelper {
     }
 
     public static String post(final String path, String body) {
-        Request request = new Request.Builder()
-                .url(baseUrl + path)
-                .post(RequestBody.create(JSON, body))
-                .build();
+        Request request = new Request.Builder().url(baseUrl + path).post(RequestBody.create(JSON, body)).build();
         Logger.info("POST: " + body);
         return execute(request);
     }
@@ -90,8 +83,8 @@ public abstract class TestHelper {
         startIntent.setClassName(targetPackage, activityClass.getName());
         startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        // The following cast is correct because the activity we're creating is of the same type as
-        // the one passed in
+        // The following cast is correct because the activity we're creating is of the
+        // same type as the one passed in
         T mActivity = activityClass.cast(mInstrumentation.startActivitySync(startIntent));
 
         mInstrumentation.waitForIdleSync();
@@ -101,12 +94,14 @@ public abstract class TestHelper {
 
     public static void waitForAppToLaunch(String testAppPkg, int LAUNCH_TIMEOUT) throws InterruptedException {
         long start = elapsedRealtime();
+        boolean waitStatus;
         do {
             try {
-                Device.getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
-                // Device.getUiDevice().wait(Until.findObject(By.text("Accessibility").enabled(true).depth(0)), LAUNCH_TIMEOUT);
-                break;
-            } catch (NullPointerException e) {
+                getUiDevice().waitForIdle();
+
+                waitStatus = getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
+                if (waitStatus) break;
+            } catch (Exception e) {
                 Thread.sleep(500);
             }
         } while ((elapsedRealtime() - start < LAUNCH_TIMEOUT));

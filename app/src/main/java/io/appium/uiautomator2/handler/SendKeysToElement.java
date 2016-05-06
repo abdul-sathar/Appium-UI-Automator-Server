@@ -11,8 +11,8 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Device;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Device;
+import io.appium.uiautomator2.utils.Logger;
 
 /**
  * Send keys to a given element.
@@ -62,10 +62,11 @@ public class SendKeysToElement extends SafeRequestHandler {
             if (pressEnter) {
                 final UiDevice d = Device.getUiDevice();
                 isActionPerformed = d.pressEnter();
-                if (isActionPerformed)
+                if (isActionPerformed) {
                     actionMsg = "Sent keys to the device";
-                else
+                }else {
                     actionMsg = "Unable to send keys to the device";
+                }
             }
         } catch (final UiObjectNotFoundException e) {
             Logger.error("Unable to Send Keys", e);

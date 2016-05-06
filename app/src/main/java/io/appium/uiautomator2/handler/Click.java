@@ -10,7 +10,9 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
+
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class Click extends SafeRequestHandler {
 
@@ -26,6 +28,7 @@ public class Click extends SafeRequestHandler {
         AndroidElement element = KnownElements.getElementFromCache(id);
         try {
             element.click();
+            getUiDevice().waitForIdle();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Unable to Click on the element", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

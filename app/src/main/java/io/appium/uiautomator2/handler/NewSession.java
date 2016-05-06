@@ -7,7 +7,7 @@ import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AppiumUiAutomatorDriver;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 public class NewSession extends SafeRequestHandler {
 

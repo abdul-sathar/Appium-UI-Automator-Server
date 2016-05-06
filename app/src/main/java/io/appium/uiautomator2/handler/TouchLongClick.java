@@ -10,7 +10,7 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 public class TouchLongClick extends BaseRequestHandler {
     public TouchLongClick(String mappedUri) {

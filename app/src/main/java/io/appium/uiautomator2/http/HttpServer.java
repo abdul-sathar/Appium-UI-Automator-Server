@@ -12,8 +12,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class HttpServer {
     private final int port;
-    private Thread serverThread;
     private final List<IHttpServlet> handlers = new ArrayList<IHttpServlet>();
+    private Thread serverThread;
 
     public HttpServer(int port) {
         this.port = port;
@@ -35,9 +35,7 @@ public class HttpServer {
                 try {
                     ServerBootstrap bootstrap = new ServerBootstrap();
                     bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
-                    bootstrap.group(bossGroup, workerGroup)
-                            .channel(NioServerSocketChannel.class)
-                            .childHandler(new ServerInitializer(handlers));
+                    bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ServerInitializer(handlers));
 
                     Channel ch = bootstrap.bind(port).sync().channel();
                     ch.closeFuture().sync();

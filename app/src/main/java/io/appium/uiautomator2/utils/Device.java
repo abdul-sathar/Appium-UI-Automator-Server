@@ -1,4 +1,4 @@
-package io.appium.uiautomator2.util;
+package io.appium.uiautomator2.utils;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;

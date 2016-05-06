@@ -14,7 +14,7 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 public abstract class SafeRequestHandler extends BaseRequestHandler {
 
@@ -51,7 +51,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
     public abstract AppiumResponse safeHandle(IHttpRequest request) throws JSONException;
 
     @Override
-    public final AppiumResponse handle(IHttpRequest request) throws JSONException {
+    public final AppiumResponse handle(IHttpRequest request) {
         try {
             return safeHandle(request);
         } catch (ElementNotVisibleException e) {
@@ -71,8 +71,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
         } catch (NoSuchContextException e) {
             //TODO update error code when w3c spec gets updated
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_WINDOW,
-                    new UiAutomator2Exception("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_WINDOW, new UiAutomator2Exception("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
         } catch (NoClassDefFoundError e) {
             // This is a potentially interesting class path problem which should be returned to client.
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);

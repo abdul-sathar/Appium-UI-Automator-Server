@@ -3,7 +3,7 @@ package io.appium.uiautomator2.model.internal;
 
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.model.By;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 
 public class NativeAndroidBySelector {

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.PowerManager;
 
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 public class ServerInstrumentation {
     private static ServerInstrumentation instance;

@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.appium.uiautomator2.server.ServerInstrumentation;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 @RunWith(AndroidJUnit4.class)
 public class AppiumUiAutomator2Server {
@@ -24,8 +24,6 @@ public class AppiumUiAutomator2Server {
 
     /**
      * Starts the server on the device
-     *
-     * @throws InterruptedException
      */
     @Test
     public void startServer() throws InterruptedException {

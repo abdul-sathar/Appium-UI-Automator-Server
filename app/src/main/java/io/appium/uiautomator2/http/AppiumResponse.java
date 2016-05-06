@@ -5,7 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.util.Logger;
+import io.appium.uiautomator2.utils.Logger;
 
 public class AppiumResponse {
     private final int status;
@@ -22,6 +22,10 @@ public class AppiumResponse {
         this(sessionId, WDStatus.SUCCESS, value);
     }
 
+    public static AppiumResponse forCatchAllError(String sessionId, Throwable e) {
+        return new AppiumResponse(sessionId, WDStatus.UNKNOWN_ERROR, e);
+    }
+
     public String render() {
         JSONObject o = new JSONObject();
         try {
@@ -36,11 +40,6 @@ public class AppiumResponse {
             Logger.error("Unable to create JSON Object:", e);
         }
         return o.toString();
-    }
-
-
-    public static AppiumResponse forCatchAllError(String sessionId, Throwable e) {
-        return new AppiumResponse(sessionId, WDStatus.UNKNOWN_ERROR, e);
     }
 }
 
