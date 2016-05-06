@@ -1,7 +1,5 @@
 package io.appium.uiautomator2.handler;
 
-import org.json.JSONException;
-
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 
@@ -12,7 +10,7 @@ public class Status extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         return new AppiumResponse("SESSIONID", "Status Invoked");
     }
 }

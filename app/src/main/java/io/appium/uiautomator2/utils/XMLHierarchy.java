@@ -101,12 +101,13 @@ public abstract class XMLHierarchy {
     }
 
     public static InputSource getRawXMLHierarchy(AccessibilityNodeInfo root) {
-        try {
+        //TODO: need to handle corresponding exception only
+       // try {
             String xmlDump = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(root);
             return new InputSource(new StringReader(xmlDump));
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             throw new RuntimeException("Failed to Dump Window Hierarchy", e);
-        }
+        }*/
     }
 
     private static AccessibilityNodeInfo getRootAccessibilityNode() {
@@ -151,13 +152,14 @@ public abstract class XMLHierarchy {
         String androidClass;
         String instance;
 
-        try {
+        //TODO: need to add corresponding exception handling
+        //try {
             androidClass = attrElements.getNamedItem("class").getNodeValue();
             instance = attrElements.getNamedItem("instance").getNodeValue();
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             throw new PairCreationException("Could not create ClassInstancePair object:" +
                     " " + e.getMessage());
-        }
+        }*/
 
         return new ClassInstancePair(androidClass, instance);
     }

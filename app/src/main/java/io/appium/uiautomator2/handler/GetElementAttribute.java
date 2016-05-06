@@ -2,7 +2,6 @@ package io.appium.uiautomator2.handler;
 
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -19,7 +18,7 @@ public class GetElementAttribute extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("get attribute of element command");
         String id = getElementId(request);
         String attributeName = getNameAttribute(request);

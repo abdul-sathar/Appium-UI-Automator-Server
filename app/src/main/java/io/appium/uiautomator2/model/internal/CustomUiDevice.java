@@ -10,6 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,6 @@ import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
 public class CustomUiDevice {
-    private static final String LOG_TAG = UiDevice.class.getSimpleName();
 
     private static final String FIELD_M_INSTRUMENTATION = "mInstrumentation";
     private static final String FIELD_API_LEVEL_ACTUAL = "API_LEVEL_ACTUAL";
@@ -76,8 +76,15 @@ public class CustomUiDevice {
                 cons.setAccessible(true);
                 Object[] constructorParams = {device, selector, node};
                 return (UiObject2) cons.newInstance(constructorParams);
-            } catch (Exception e) {
-                //TODO: need to handle relevant exception, instead of parent Exception
+            }  catch (InvocationTargetException e) {
+                final String msg = String.format("error while creating  UiObject2 bject");
+                Logger.error(msg + " " + e.getMessage());
+                throw new RuntimeException(msg, e);
+            } catch (InstantiationException e) {
+                final String msg = String.format("error while creating  UiObject2 bject");
+                Logger.error(msg + " " + e.getMessage());
+                throw new RuntimeException(msg, e);
+            } catch (IllegalAccessException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
                 Logger.error(msg + " " + e.getMessage());
                 throw new RuntimeException(msg, e);
@@ -107,8 +114,15 @@ public class CustomUiDevice {
                 cons.setAccessible(true);
                 Object[] constructorParams = {device, selector, node};
                 ret.add((UiObject2) cons.newInstance(constructorParams));
-            } catch (Exception e) {
-                //TODO: need to handle relevant exception, instead of parent Exception
+            } catch (InvocationTargetException e) {
+                final String msg = String.format("error while creating  UiObject2 bject");
+                Logger.error(msg + " " + e.getMessage());
+                throw new RuntimeException(msg, e);
+            } catch (InstantiationException e) {
+                final String msg = String.format("error while creating  UiObject2 bject");
+                Logger.error(msg + " " + e.getMessage());
+                throw new RuntimeException(msg, e);
+            } catch (IllegalAccessException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
                 Logger.error(msg + " " + e.getMessage());
                 throw new RuntimeException(msg, e);
@@ -131,7 +145,7 @@ public class CustomUiDevice {
                 AccessibilityNodeInfo root = window.getRoot();
 
                 if (root == null) {
-                    Logger.debug(LOG_TAG, String.format("Skipping null root node for " + "window: %s", window.toString()));
+                    Logger.debug(  String.format("Skipping null root node for " + "window: %s", window.toString()));
                     continue;
                 }
                 ret.add(root);

@@ -21,17 +21,20 @@ public class Click extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
-        Logger.info("Click element command");
-        JSONObject payload = getPayload(request);
-        String id = payload.getString("id");
-        AndroidElement element = KnownElements.getElementFromCache(id);
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
+            Logger.info("Click element command");
+            JSONObject payload = getPayload(request);
+            String id = payload.getString("id");
+            AndroidElement element = KnownElements.getElementFromCache(id);
             element.click();
             getUiDevice().waitForIdle();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Unable to Click on the element", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), "Click element");
     }

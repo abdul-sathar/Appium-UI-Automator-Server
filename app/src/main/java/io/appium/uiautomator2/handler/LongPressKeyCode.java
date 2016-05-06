@@ -13,9 +13,9 @@ import io.appium.uiautomator2.core.UiAutomatorBridge;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.Logger;
 
 public class LongPressKeyCode extends SafeRequestHandler {
-
     public Integer keyCode;
     public Integer metaState;
 
@@ -24,7 +24,7 @@ public class LongPressKeyCode extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             InteractionController interactionController = UiAutomatorBridge.getInstance().getInteractionController();
 
@@ -58,9 +58,9 @@ public class LongPressKeyCode extends SafeRequestHandler {
                 interactionController.injectEventSync(upEvent);
             }
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "");
-        } catch (final Exception e) {
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, e.getMessage());
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
-
     }
 }

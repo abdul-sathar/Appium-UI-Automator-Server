@@ -5,8 +5,6 @@ public enum HttpStatusCode {
     OK(200, "OK"),
     CREATED(201, "Created"),
     ACCEPTED(202, "Accepted"),
-
-
     MULTIPLE_CHOICES(300, "Multiple Choices"),
     MOVED_PERMANENTLY(301, "Moved Permanently"),
     FOUND(302, "Found"),
@@ -14,7 +12,6 @@ public enum HttpStatusCode {
     NOT_MODIFIED(304, "Not Modified"),
     USE_PROXY(305, "Use Proxy (since HTTP/1.1)"),
     SWITCH_PROXY(306, "Switch Proxy"),
-
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "Unauthorized"),
     PAYMENT_REQUIRED(402, "Payment Required"),
@@ -24,7 +21,6 @@ public enum HttpStatusCode {
     NOT_ACCEPTABLE(406, "Not Acceptable"),
     PROXY_AUTHENTICATION_REQUIRED(407, "Proxy Authentication Required"),
     REQUEST_TIMEOUT(408, "Request Timeout"),
-
     INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
     NOT_IMPLEMENTED(501, "Not Implemented"),
     BAD_GATEWAY(502, "Bad Gateway"),

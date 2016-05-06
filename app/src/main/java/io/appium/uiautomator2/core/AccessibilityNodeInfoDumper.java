@@ -29,6 +29,7 @@ import java.io.StringWriter;
 import java.util.regex.Pattern;
 
 import io.appium.uiautomator2.utils.API;
+import io.appium.uiautomator2.utils.Logger;
 
 
 /**
@@ -39,7 +40,6 @@ import io.appium.uiautomator2.utils.API;
  * https://code.google.com/p/android/issues/detail?id=58733 }
  */
 public class AccessibilityNodeInfoDumper {
-    private static final String LOGTAG = AccessibilityNodeInfoDumper.class.getSimpleName();
     private static final String[] NAF_EXCLUDED_CLASSES = new String[]{android.widget.GridView.class.getName(), android.widget.GridLayout.class.getName(), android.widget.ListView.class.getName(), android.widget.TableLayout.class.getName()};
     // XML 1.0 Legal Characters (http://stackoverflow.com/a/4237934/347155)
     // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
@@ -85,10 +85,10 @@ public class AccessibilityNodeInfoDumper {
             writer.write(stringWriter.toString());
             writer.close();*/
         } catch (IOException e) {
-            Log.e(LOGTAG, "failed to dump window to file", e);
+            Logger.error("failed to dump window to file", e);
         }
         final long endTime = SystemClock.uptimeMillis();
-        Log.w(LOGTAG, "Fetch time: " + (endTime - startTime) + "ms");
+        Logger.info("Fetch time: " + (endTime - startTime) + "ms");
         return xmlDump.toString();
     }
 
@@ -127,10 +127,10 @@ public class AccessibilityNodeInfoDumper {
                     dumpNodeRec(child, serializer, i, width, height);
                     child.recycle();
                 } else {
-                    Log.i(LOGTAG, String.format("Skipping invisible child: %s", child.toString()));
+                    Logger.info(String.format("Skipping invisible child: %s", child.toString()));
                 }
             } else {
-                Log.i(LOGTAG, String.format("Null child %d/%d, parent: %s", i, count, node.toString()));
+                Logger.info(String.format("Null child %d/%d, parent: %s", i, count, node.toString()));
             }
         }
         serializer.endTag("", "node");
@@ -183,7 +183,7 @@ public class AccessibilityNodeInfoDumper {
         for (int x = 0; x < childCount; x++) {
             AccessibilityNodeInfo childNode = node.getChild(x);
             if (childNode == null) {
-                Log.i(LOGTAG, String.format("Null child %d/%d, parent: %s", x, childCount, node.toString()));
+                Logger.info(String.format("Null child %d/%d, parent: %s", x, childCount, node.toString()));
                 continue;
             }
             if (!safeCharSeqToString(childNode.getContentDescription()).isEmpty() || !safeCharSeqToString(childNode.getText()).isEmpty())

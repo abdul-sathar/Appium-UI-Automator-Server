@@ -1,8 +1,6 @@
 package io.appium.uiautomator2.handler;
 
 
-import org.json.JSONException;
-
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -18,7 +16,7 @@ public class OpenNotification extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Open Notification");
         // method was only introduced in API Level 18
         if (!API_18) {

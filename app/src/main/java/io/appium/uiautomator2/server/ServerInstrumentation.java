@@ -41,8 +41,6 @@ public class ServerInstrumentation {
                 wakeLock = null;
             }
             stopServerThread();
-        } catch (Exception e) {
-            Logger.error("Error shutting down: ", e);
         } finally {
             instance = null;
         }
@@ -110,23 +108,18 @@ public class ServerInstrumentation {
         }
 
         private void startServer() {
+            // Get a wake lock to stop the cpu going to sleep
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "UiAutomator2");
             try {
-                // Get a wake lock to stop the cpu going to sleep
-                PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "UiAutomator2");
-                try {
-                    wakeLock.acquire();
-                } catch (SecurityException e) {
-                    Logger.error("Security Exception", e);
-                }
-
-                server.start();
-
-                Logger.info("Started UiAutomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server on port " + server.getPort());
-            } catch (Exception e) {
-                Logger.error("Error starting httpd.", e);
-                throw new RuntimeException("Httpd failed to start!", e);
+                wakeLock.acquire();
+            } catch (SecurityException e) {
+                Logger.error("Security Exception", e);
             }
+
+            server.start();
+
+            Logger.info("Started UiAutomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server on port " + server.getPort());
         }
 
         public void stopLooping() {

@@ -1,7 +1,5 @@
 package io.appium.uiautomator2.handler;
 
-import org.json.JSONException;
-
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.ScreenOrientation;
@@ -15,7 +13,7 @@ public class GetScreenOrientation extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         ScreenOrientation orientation;
         int rotation = Device.getUiDevice().getDisplayRotation();
         if (rotation == 0 || rotation == 3) {

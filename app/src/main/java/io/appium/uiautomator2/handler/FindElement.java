@@ -62,41 +62,47 @@ public class FindElement extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
-        Logger.info("Find element command");
-        KnownElements ke = new KnownElements();
-        JSONObject payload = getPayload(request);
-        String method = payload.getString("using");
-        String selector = payload.getString("value");
-        String id;
-        Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
-        By by = new NativeAndroidBySelector().pickFrom(method, selector);
-        UiObject2 element;
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
+            Logger.info("Find element command");
+            KnownElements ke = new KnownElements();
+            JSONObject payload = getPayload(request);
+            String method = payload.getString("using");
+            String selector = payload.getString("value");
+            Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
+            By by = new NativeAndroidBySelector().pickFrom(method, selector);
+
             getUiDevice().waitForIdle();
-            element = this.findElement(by);
+            UiObject2 element = this.findElement(by);
             if (element == null) {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element was not found.");
             } else {
-                id = UUID.randomUUID().toString();
+                String id = UUID.randomUUID().toString();
+                AndroidElement androidElement = new AndroidElement(id, element);
+                ke.add(androidElement);
+                JSONObject result = new JSONObject();
+                result.put("ELEMENT", id);
+                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, result);
             }
         } catch (UnsupportedOperationException e) {
-            Logger.error("Unable Operation ", e);
+            Logger.error("Unsupported operation: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (InvalidSelectorException e) {
-            Logger.error("Unable Operation ", e);
+            Logger.error("Invalid selector: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
-        } catch (Exception e) {
-            Logger.error("unable to perform action:" + e);
-            e.printStackTrace();
+        } catch (ElementNotFoundException e) {
+            Logger.error("Element not found: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (ParserConfigurationException e) {
+            Logger.error("Unable to parse configuration: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (ClassNotFoundException e) {
+            Logger.error("Class not found: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
-
-        AndroidElement androidElement = new AndroidElement(id, element);
-        ke.add(androidElement);
-        JSONObject result = new JSONObject();
-        result.put("ELEMENT", id);
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, result);
     }
 
     /**
@@ -118,7 +124,6 @@ public class FindElement extends SafeRequestHandler {
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObject(by.getElementLocator(), false, "");
         }
-
         String msg = String.format("By locator %s is curently not supported!", by.getClass().getSimpleName());
         throw new UnsupportedOperationException(msg);
     }

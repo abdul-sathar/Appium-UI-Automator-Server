@@ -1,7 +1,5 @@
 package io.appium.uiautomator2.handler;
 
-import org.json.JSONException;
-
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -15,15 +13,9 @@ public class PressBack extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Go Back");
-        try {
-            AndroidElement.back();
-        } catch (Exception e) {
-            Logger.error("Unable to Press Back", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
-        }
-
+        AndroidElement.back();
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Pressed Back");
     }
 }

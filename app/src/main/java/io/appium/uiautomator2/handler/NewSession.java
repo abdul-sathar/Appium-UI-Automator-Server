@@ -16,14 +16,14 @@ public class NewSession extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
 
         String sessionID;
         try {
             sessionID = new AppiumUiAutomatorDriver().initializeSession();
-        } catch (Exception e) {
-            Logger.error("Error creating session ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.SESSION_NOT_CREATED_EXCEPTION, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(sessionID, WDStatus.SUCCESS, "Created Session");
     }

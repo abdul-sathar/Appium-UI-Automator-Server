@@ -22,7 +22,6 @@ import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public abstract class TestHelper {
-
     public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
     private static final OkHttpClient client = new OkHttpClient();
     private static final String baseUrl = "http://localhost:8080";
@@ -96,14 +95,9 @@ public abstract class TestHelper {
         long start = elapsedRealtime();
         boolean waitStatus;
         do {
-            try {
-                getUiDevice().waitForIdle();
-
-                waitStatus = getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
-                if (waitStatus) break;
-            } catch (Exception e) {
-                Thread.sleep(500);
-            }
+            getUiDevice().waitForIdle();
+            waitStatus = getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
+            if (waitStatus) break;
         } while ((elapsedRealtime() - start < LAUNCH_TIMEOUT));
     }
 }

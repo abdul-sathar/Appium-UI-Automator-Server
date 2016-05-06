@@ -13,22 +13,24 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 public class Clear extends SafeRequestHandler {
-
     public Clear(String mappedUri) {
         super(mappedUri);
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
-        Logger.info("Clear element command");
-        JSONObject payload = getPayload(request);
-        String id = payload.getString("id");
-        AndroidElement element = KnownElements.getElementFromCache(id);
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
+            Logger.info("Clear element command");
+            JSONObject payload = getPayload(request);
+            String id = payload.getString("id");
+            AndroidElement element = KnownElements.getElementFromCache(id);
             element.clear();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Unable to Clear", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Element Cleared");
     }

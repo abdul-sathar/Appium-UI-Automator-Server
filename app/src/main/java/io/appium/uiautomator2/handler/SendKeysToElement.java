@@ -24,28 +24,27 @@ public class SendKeysToElement extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
-        Logger.info("send keys to element command");
-
-        JSONObject payload = getPayload(request);
-        String id = payload.getString("id");
-        AndroidElement element = KnownElements.getElementFromCache(id);
-        boolean isActionPerformed;
-        String actionMsg = "";
-
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
+            Logger.info("send keys to element command");
+            JSONObject payload = getPayload(request);
+            String id = payload.getString("id");
+            AndroidElement element = KnownElements.getElementFromCache(id);
             boolean replace = Boolean.parseBoolean(payload.getString("replace").toString());
             String text = payload.getString("text").toString();
+
             boolean pressEnter = false;
             if (text.endsWith("\\n")) {
                 pressEnter = true;
                 text = text.replace("\\n", "");
                 Logger.debug("Will press enter after setting text");
             }
+
             boolean unicodeKeyboard = false;
             if (payload.has("unicodeKeyboard")) {
                 unicodeKeyboard = Boolean.parseBoolean(payload.getString("unicodeKeyboard").toString());
             }
+
             String currText = element.getText();
             new Clear("/wd/hub/session/:sessionId/element/:id/clear").handle(request);
             if (element.getText() == null || element.getText().isEmpty()) {
@@ -59,23 +58,27 @@ public class SendKeysToElement extends SafeRequestHandler {
             }
             element.setText(text, unicodeKeyboard);
 
+            boolean isActionPerformed;
+            String actionMsg = "";
             if (pressEnter) {
                 final UiDevice d = Device.getUiDevice();
                 isActionPerformed = d.pressEnter();
                 if (isActionPerformed) {
                     actionMsg = "Sent keys to the device";
-                }else {
+                } else {
                     actionMsg = "Unable to send keys to the device";
                 }
             }
+
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);
         } catch (final UiObjectNotFoundException e) {
             Logger.error("Unable to Send Keys", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
-        } catch (final Exception e) { // handle NullPointerException
-            Logger.error("Unable to Send Keys", e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);
+
     }
 }
 

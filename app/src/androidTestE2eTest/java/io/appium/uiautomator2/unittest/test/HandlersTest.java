@@ -10,6 +10,7 @@ import com.squareup.okhttp.MediaType;
 
 import org.json.JSONException;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -39,9 +40,8 @@ import static org.junit.Assert.assertNotNull;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class HandlersTest {
-
     public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
-    private static final int port = 8080;
+    private static final int PORT = 8080;
     private static final String testAppPkg = "io.appium.android.apis";
     private static final int SECOND = 1000;
     private static ServerInstrumentation serverInstrumentation;
@@ -57,18 +57,12 @@ public class HandlersTest {
         if (serverInstrumentation == null) {
             assertNotNull(getUiDevice());
             ctx = InstrumentationRegistry.getInstrumentation().getContext();
-            serverInstrumentation = ServerInstrumentation.getInstance(ctx, port);
+            serverInstrumentation = ServerInstrumentation.getInstance(ctx, PORT);
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server ");
-            Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + "" + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            ctx.startActivity(intent);
             serverInstrumentation.startServer();
-            Logger.info("[AppiumUiAutomator2Server]", " waiting for app to launch ");
             TestHelper.waitForNetty();
             Configurator.getInstance().setWaitForSelectorTimeout(50000);
             Configurator.getInstance().setWaitForIdleTimeout(50000);
-            TestHelper.waitForAppToLaunch(testAppPkg, 15 * SECOND);
-            getUiDevice().waitForIdle();
-            Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
         }
 
     }
@@ -78,6 +72,19 @@ public class HandlersTest {
         if (serverInstrumentation != null) {
             serverInstrumentation.stopServer();
         }
+    }
+
+    @Before
+    public void launchAUT() throws InterruptedException {
+        Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + "" + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        ctx.stopService(intent);
+        ctx.startActivity(intent);
+        Logger.info("[AppiumUiAutomator2Server]", " waiting for app to launch ");
+
+        TestHelper.waitForAppToLaunch(testAppPkg, 15 * SECOND);
+        waitForElement(By.name("Accessibility"), 5 * SECOND);
+        getUiDevice().waitForIdle();
+        Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
     }
 
     /**
@@ -116,12 +123,12 @@ public class HandlersTest {
         response = findElement(By.xpath("(//*[@class='android.widget.TextView'][1])[2]"));
         Logger.info("[AppiumUiAutomator2Server]", "By.xpath:" + response);
         result = getAttribute(response, "text");
-        assertEquals("Accessibility Node Provider", getStringValueInJsonObject(result, "value"));
+        assertEquals("Accessibility", getStringValueInJsonObject(result, "value"));
 
         response = findElement(By.xpath("//*[@resource-id='android:id/content']//*[@resource-id='android:id/text1'][4]"));
         Logger.info("[AppiumUiAutomator2Server]", "By.xpath:" + response);
         result = getAttribute(response, "text");
-        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+        assertEquals("Content", getStringValueInJsonObject(result, "value"));
 
 
     }
@@ -143,7 +150,7 @@ public class HandlersTest {
      */
     @Test
     public void getAttributeTest() throws JSONException {
-        String element = findElement(By.name("Custom View"));
+        String element = findElement(By.name("App"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.name: " + element);
 
         String result = getAttribute(element, "resourceId");
@@ -151,10 +158,10 @@ public class HandlersTest {
         assertEquals("android:id/text1", getStringValueInJsonObject(result, "value"));
 
         result = getAttribute(element, "contentDescription");
-        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+        assertEquals("App", getStringValueInJsonObject(result, "value"));
 
         result = getAttribute(element, "text");
-        assertEquals("Custom View", getStringValueInJsonObject(result, "value"));
+        assertEquals("App", getStringValueInJsonObject(result, "value"));
 
         result = getAttribute(element, "className");
         assertEquals("android.widget.TextView", getStringValueInJsonObject(result, "value"));
@@ -168,7 +175,7 @@ public class HandlersTest {
         String element = findElement(By.id("android:id/text1"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
-        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Accessibility Node Provider");
+        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Accessibility");
     }
 
     /**
@@ -177,7 +184,6 @@ public class HandlersTest {
 
     @Test
     public void sendKeysTest() throws JSONException, InterruptedException {
-        getUiDevice().pressBack();
         getUiDevice().waitForIdle();
 
         waitForElement(By.name("Views"), 10 * SECOND);
@@ -194,9 +200,4 @@ public class HandlersTest {
         assertEquals("Dummy Theme", getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value"));
     }
 
-   public void openNotification(){
-       getUiDevice().waitForIdle();
-
-
-   }
 }

@@ -13,21 +13,25 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 public class TouchLongClick extends BaseRequestHandler {
+
     public TouchLongClick(String mappedUri) {
         super(mappedUri);
     }
 
     @Override
-    public AppiumResponse handle(IHttpRequest request) throws JSONException {
-        JSONObject payload = getPayload(request);
-        String id = payload.getString("id");
-
-        AndroidElement element = KnownElements.getElementFromCache(id);
+    public AppiumResponse handle(IHttpRequest request) {
         try {
+            JSONObject payload = getPayload(request);
+            String id = payload.getString("id");
+            AndroidElement element = KnownElements.getElementFromCache(id);
             element.longClick();
+
         } catch (UiObjectNotFoundException e) {
             Logger.error("Unable to Click on the element", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Long Click action performed");
     }

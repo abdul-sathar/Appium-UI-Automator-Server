@@ -3,11 +3,7 @@ package io.appium.uiautomator2.handler;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.util.NoSuchElementException;
-
-import io.appium.uiautomator2.common.exceptions.ElementNotVisibleException;
 import io.appium.uiautomator2.common.exceptions.NoSuchContextException;
-import io.appium.uiautomator2.common.exceptions.StaleElementReferenceException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -48,34 +44,20 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
         return toReturn;
     }
 
-    public abstract AppiumResponse safeHandle(IHttpRequest request) throws JSONException;
+    public abstract AppiumResponse safeHandle(IHttpRequest request);
 
     @Override
     public final AppiumResponse handle(IHttpRequest request) {
         try {
             return safeHandle(request);
-        } catch (ElementNotVisibleException e) {
-            Logger.debug("Element not visible");
-            return new AppiumResponse(getSessionId(request), WDStatus.ELEMENT_NOT_VISIBLE, e);
-        } catch (StaleElementReferenceException e) {
-            Logger.debug("Stale element reference");
-            return new AppiumResponse(getSessionId(request), WDStatus.STALE_ELEMENT_REFERENCE, e);
-        } catch (IllegalStateException e) {
-            Logger.debug("Invalid element state");
-            return new AppiumResponse(getSessionId(request), WDStatus.INVALID_ELEMENT_STATE, e);
-        } catch (NoSuchElementException e) {
-            Logger.debug("No such element");
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
-        } catch (UnsupportedOperationException e) {
-            Logger.debug("Unknown command");
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
         } catch (NoSuchContextException e) {
-            //TODO update error code when w3c spec gets updated
+            //TODO: update error code when w3c spec gets updated
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_WINDOW, new UiAutomator2Exception("Invalid window handle was used: only 'NATIVE_APP' and 'WEBVIEW' are supported."));
         } catch (NoClassDefFoundError e) {
             // This is a potentially interesting class path problem which should be returned to client.
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
         } catch (Exception e) {
+            // The advantage of catching general Exception here is that we can propagate the Exception to clients.
             Logger.error("Exception while handling action in: " + this.getClass().getName(), e);
             return AppiumResponse.forCatchAllError(getSessionId(request), e);
         } catch (Error e) {

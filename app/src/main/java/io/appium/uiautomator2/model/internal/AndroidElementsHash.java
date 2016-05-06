@@ -131,13 +131,6 @@ public class AndroidElementsHash {
         Logger.debug("getElements selector:" + selectorString);
         final ArrayList<AndroidElement> elements = new ArrayList<AndroidElement>();
 
-        // If sel is UiSelector[CLASS=android.widget.Button, INSTANCE=0]
-        // then invoking instance with a non-0 argument will corrupt the selector.
-        //
-        // sel.instance(1) will transform the selector into:
-        // UiSelector[CLASS=android.widget.Button, INSTANCE=1]
-        //
-        // The selector now points to an entirely different element.
         if (endsWithInstance) {
             Logger.debug("Selector ends with instance.");
             // There's exactly one element when using instance.
@@ -156,15 +149,6 @@ public class AndroidElementsHash {
         while (keepSearching) {
             if (baseEl == null) {
                 Logger.debug("Element[" + key + "] is null: (" + counter + ")");
-
-                // TODO: commednted below if else block because there is no way to find element
-                // using index and instance on BySelector object
-        /*if (useIndex) {
-          Logger.debug("  using index...");
-          tmp = sel.index(counter);
-        } else {
-          tmp = sel.instance(counter);
-        }*/
 
                 Logger.debug("getElements tmp selector:" + sel.toString());
 

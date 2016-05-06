@@ -12,7 +12,6 @@ import io.appium.uiautomator2.utils.Logger;
 
 @RunWith(AndroidJUnit4.class)
 public class AppiumUiAutomator2Server {
-
     private static final int port = 8080;
     private static ServerInstrumentation serverInstrumentation;
     private static boolean isStopServer;

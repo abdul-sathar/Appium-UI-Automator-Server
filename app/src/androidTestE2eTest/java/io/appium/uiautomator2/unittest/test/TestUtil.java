@@ -14,7 +14,6 @@ import static io.appium.uiautomator2.unittest.test.TestHelper.get;
 import static io.appium.uiautomator2.unittest.test.TestHelper.post;
 
 public class TestUtil {
-
     private static final String baseUrl = "/wd/hub/session/:sessionId";
 
     public static String findElement(By by) {
@@ -46,7 +45,6 @@ public class TestUtil {
             }
         } while (!foundStatus || ((elapsedRealtime() - start) <= TIME));
         Logger.debug("element found status:" + foundStatus + " response:" + jsonResponse);
-        Logger.debug("elapsedRealtime: " + elapsedRealtime() + " start:" + start + " TIME:" + TIME + " elapsedRealtime() - start  " + (elapsedRealtime() - start) + " : " + ((elapsedRealtime() - start) > TIME) + " : " + (foundStatus || ((elapsedRealtime() - start) > TIME)));
         return foundStatus;
 
     }

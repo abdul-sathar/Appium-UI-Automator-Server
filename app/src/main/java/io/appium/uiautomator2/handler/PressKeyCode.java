@@ -11,7 +11,6 @@ import io.appium.uiautomator2.utils.Logger;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class PressKeyCode extends SafeRequestHandler {
-
     public Integer keyCode;
     public Integer metaState;
 
@@ -20,7 +19,7 @@ public class PressKeyCode extends SafeRequestHandler {
     }
 
     @Override
-    public AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             Logger.info("Calling PressKeyCode... ");
             JSONObject payload = getPayload(request);
@@ -41,8 +40,8 @@ public class PressKeyCode extends SafeRequestHandler {
                 getUiDevice().pressKeyCode(keyCode);
             }
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "");
-        }catch ( Exception e){
-            Logger.error("Unable to PressKeyCode:"+ e.getMessage());
+        } catch (JSONException e) {
+            Logger.error("Unable to PressKeyCode:" + e.getMessage());
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e.getMessage());
         }
     }
