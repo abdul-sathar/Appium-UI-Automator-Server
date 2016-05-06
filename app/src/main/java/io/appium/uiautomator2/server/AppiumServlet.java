@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import io.appium.uiautomator2.handler.AppStrings;
 import io.appium.uiautomator2.handler.BaseRequestHandler;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;
 import io.appium.uiautomator2.handler.DeleteSession;
+import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
 import io.appium.uiautomator2.handler.FindElements;
 import io.appium.uiautomator2.handler.GetElementAttribute;
@@ -74,6 +76,8 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new OpenNotification("/wd/hub/session/:sessionId/appium/device/open_notifications"));
         register(postHandler, new PressKeyCode("/wd/hub/session/:sessionId/appium/device/press_keycode"));
         register(postHandler, new LongPressKeyCode("/wd/hub/session/:sessionId/appium/device/long_press_keycode"));
+        register(postHandler, new Drag("/wd/hub/session/:sessionId/touch/drag"));
+        register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
     }
 
     private void registerGetHandler() {

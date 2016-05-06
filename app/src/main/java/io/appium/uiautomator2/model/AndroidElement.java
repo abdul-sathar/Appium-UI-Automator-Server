@@ -32,7 +32,7 @@ public class AndroidElement {
         element.longClick();
     }
 
-    public String getText() throws UiObjectNotFoundException {
+   public String getText() throws UiObjectNotFoundException {
         return element.getText();
     }
 
@@ -86,7 +86,8 @@ public class AndroidElement {
     }
 
     public Rect getBounds() throws UiObjectNotFoundException {
-        return element.getVisibleBounds();
+        Rect rectangle = element.getVisibleBounds();
+        return rectangle;
     }
 
     public UiObject2 getChild(final BySelector sel) throws UiObjectNotFoundException {
