@@ -18,6 +18,6 @@ public abstract class AccessibilityNodeInfoGetter {
      * Gets the {@link AccessibilityNodeInfo} associated with the given {@link UiObject2}
      */
     public static AccessibilityNodeInfo fromUiObject(UiObject2 uiObject2) {
-        return (AccessibilityNodeInfo) invoke(method(UiObject2.class, "findAccessibilityNodeInfo", long.class), uiObject2, configurator.getWaitForSelectorTimeout());
+        return (AccessibilityNodeInfo) invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), uiObject2);
     }
 }

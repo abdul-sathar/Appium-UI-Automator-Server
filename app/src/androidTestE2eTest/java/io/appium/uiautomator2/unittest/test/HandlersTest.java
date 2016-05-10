@@ -6,10 +6,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.Configurator;
 
+import com.jayway.jsonpath.JsonPath;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONException;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -22,14 +24,7 @@ import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
-import static io.appium.uiautomator2.unittest.test.TestUtil.click;
-import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
-import static io.appium.uiautomator2.unittest.test.TestUtil.findElements;
-import static io.appium.uiautomator2.unittest.test.TestUtil.getAttribute;
-import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
-import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
-import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
-import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
+import static io.appium.uiautomator2.unittest.test.TestUtil.*;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,8 +44,11 @@ public class HandlersTest {
     private static boolean shouldStopRestOfSuite = false;
     private String response;
 
+
     /**
-     * start io.appium.uiautomator2.server and launch the application main activity     *
+     * start io.appium.uiautomator2.server and launch the application main activity
+     *
+     * @throws InterruptedException
      */
     @BeforeClass
     public static void beforeStartServer() throws InterruptedException {
@@ -99,6 +97,7 @@ public class HandlersTest {
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
         click(element);
         getUiDevice().waitForIdle();
+        waitForElementInvisible(By.name("Accessibility"), 5 * SECOND);
         element = findElement(By.name("Accessibility"));
         result = getStringValueInJsonObject(element, "status");
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
@@ -200,4 +199,71 @@ public class HandlersTest {
         assertEquals("Dummy Theme", getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value"));
     }
 
+    /**
+     * Test for element name
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void getNameTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        waitForElement(By.id("android:id/text1"), 5 * SECOND);
+        String response = getName(findElement(By.id("android:id/text1")));
+        assertEquals(getStringValueInJsonObject(response, "value"), "Accessibility");
+    }
+
+    /**
+     * Test for element size
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void getElementSizeTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        waitForElement(By.id("android:id/text1"), 5 * SECOND);
+        response = getSize(findElement(By.id("android:id/text1")));
+        Integer height = JsonPath.compile("$.value.height").read(response);
+        Integer width = JsonPath.compile("$.value.width").read(response);
+        Assert.assertTrue("Element height is zero(0), which is not expected", height > 0);
+        Assert.assertTrue("Element width is zero(0), which is not expected", width > 0);
+    }
+
+    /**
+     * Test for Device size
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void getDeviceSizeTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        response = getDeviceSize();
+        Integer height = JsonPath.compile("$.value.height").read(response);
+        Integer width = JsonPath.compile("$.value.width").read(response);
+        Assert.assertTrue("device window height is zero(0), which is not expected", height > 479);
+        Assert.assertTrue("device window width is zero(0), which is not expected", width > 319);
+    }
+
+    /**
+     * Test for flick on element
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void flickOnElementTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        waitForElement(By.id("android:id/text1"), 5 * SECOND);
+        response = flickOnElement(findElement(By.id("android:id/text1")));
+        Assert.assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
+    }
+
+    /**
+     * Test for flick on device screen
+     * @throws JSONException
+     */
+    @Test
+    public void flickTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        response = flickOnPosition();
+        Assert.assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
+    }
 }

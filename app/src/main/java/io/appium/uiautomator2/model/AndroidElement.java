@@ -6,9 +6,12 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
+import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
 import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
+import io.appium.uiautomator2.utils.Point;
+import io.appium.uiautomator2.utils.PositionHelper;
 import io.appium.uiautomator2.utils.UnicodeEncoder;
 
 public class AndroidElement {
@@ -32,7 +35,7 @@ public class AndroidElement {
         element.longClick();
     }
 
-   public String getText() throws UiObjectNotFoundException {
+    public String getText() throws UiObjectNotFoundException {
         return element.getText();
     }
 
@@ -94,7 +97,21 @@ public class AndroidElement {
         return element.findObject(sel);
     }
 
+    public String getContentDesc() throws UiObjectNotFoundException {
+        return element.getContentDescription();
+    }
+
     public UiObject2 getUiObject() {
         return element;
     }
+
+    public Point getAbsolutePosition(final Point point)
+            throws UiObjectNotFoundException, InvalidCoordinatesException {
+        final Rect rect = this.getBounds();
+
+        Logger.debug("Element bounds: " + rect.toShortString());
+
+        return PositionHelper.getAbsolutePosition(point, rect, new Point(rect.left, rect.top), false);
+    }
+
 }

@@ -101,7 +101,7 @@ public abstract class XMLHierarchy {
     }
 
     public static InputSource getRawXMLHierarchy(AccessibilityNodeInfo root) {
-        //TODO: need to handle corresponding exception only
+        //TODO: commented try catch block, need to handle corresponding exception only
        // try {
             String xmlDump = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(root);
             return new InputSource(new StringReader(xmlDump));
@@ -152,7 +152,7 @@ public abstract class XMLHierarchy {
         String androidClass;
         String instance;
 
-        //TODO: need to add corresponding exception handling
+        //TODO:commented try catch block, need to add corresponding exception handling if required
         //try {
             androidClass = attrElements.getNamedItem("class").getNodeValue();
             instance = attrElements.getNamedItem("instance").getNodeValue();

@@ -16,8 +16,12 @@ import io.appium.uiautomator2.handler.DeleteSession;
 import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
 import io.appium.uiautomator2.handler.FindElements;
+import io.appium.uiautomator2.handler.Flick;
+import io.appium.uiautomator2.handler.GetDeviceSize;
 import io.appium.uiautomator2.handler.GetElementAttribute;
+import io.appium.uiautomator2.handler.GetName;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
+import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetText;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
 import io.appium.uiautomator2.handler.NewSession;
@@ -59,7 +63,6 @@ public class AppiumServlet implements IHttpServlet {
 
     private void registerDeleteHandler() {
         register(deleteHandler, new DeleteSession("/wd/hub/session/:sessionId"));
-
     }
 
     private void registerPostHandler() {
@@ -78,6 +81,8 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new LongPressKeyCode("/wd/hub/session/:sessionId/appium/device/long_press_keycode"));
         register(postHandler, new Drag("/wd/hub/session/:sessionId/touch/drag"));
         register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
+        register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
+        register(postHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
     }
 
     private void registerGetHandler() {
@@ -86,6 +91,8 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetScreenOrientation("/wd/hub/session/:sessionId/orientation"));
         register(getHandler, new GetText("/wd/hub/session/:sessionId/element/:id/text"));
         register(getHandler, new GetElementAttribute("/wd/hub/session/:sessionId/element/:id/attribute/:name"));
+        register(getHandler, new GetSize("/wd/hub/session/:sessionId/element/:id/size"));
+        register(getHandler, new GetName("/wd/hub/session/:sessionId/element/:id/name"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
