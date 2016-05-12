@@ -1,29 +1,14 @@
 "use strict";
-var teen_process = require('teen_process');
-var runSequence = require('run-sequence');
-var shell = require('gulp-shell');
-//process.chdir('uiautomator2');
-var gulp = require('gulp'),
-    boilerplate = require('appium-gulp-plugins').boilerplate.use(gulp),
-	fs = require('fs');
+var packageJson = require('./package.json');
+var path = require('path');
+var gulp = require('gulp');
+var boilerplate = require('appium-gulp-plugins').boilerplate.use(gulp);
+var fs = require('fs');
 
-gulp.task('gradle-clean', shell.task([
-        'gradle clean'
-    ])
-);
-
-gulp.task('gradle-android', shell.task([
-        'gradle assembleServerDebug'
-    ])
-);
-
-gulp.task('gradle-androidTest', shell.task([
-        'gradle assembleServerDebugandroidTest'
-    ])
-);
-
-function mkdir(path, root) {
-    var dirs = path.split('/'), dir = dirs.shift(), root = (root || '') + dir + '/';	
+function mkdir(path) {
+    let dirs = path.split('/');
+	let dir = dirs.shift();
+	let root = dir + '/';
     try { fs.mkdirSync(root); }
     catch (e) {
         //dir wasn't made, something went wrong
@@ -34,30 +19,23 @@ function mkdir(path, root) {
 };
 
 //copy apk from tmp location current repo, apllicable only for Windows OS
-gulp.task('copy_apks',function () {
-	if(process.platform==="win32"){
-		var destPath='./appium-uiautomator2-server/build/outputs/';
-		var srcPath = 'C:\\tmp\\uiautomator2\\appium-uiautomator2-server\\outputs\\apk\\';
+gulp.task('copyServerApks',function () {
+	if(process.platform==="win32" && packageJson.windowsBuildDir !== undefined){
+		let moduleName = packageJson.name;
+		let destPath = path.resolve(__dirname, "app", "build");
+		let srcPath = path.resolve(packageJson.windowsBuildDir, moduleName, "app", "build");
 		var ncp = require('ncp').ncp;
 		ncp.limit = 16;
 		if (!fs.existsSync(destPath)){
 			mkdir(destPath);
 		}
-		console.log('Copying apks from tmp...');
+		console.log('Copying server APKs from tmp build directory...');
 		ncp(srcPath, destPath, function (err) {
 			if (err) {
 				return console.error(err);
 			}
 		});
 	}
-});
-
-gulp.task('build', function(callback) {
-  runSequence('gradle-clean',
-              'gradle-android',
-              'gradle-androidTest',
-			  'copy_apks',
-              callback);
 });
 
 boilerplate({
@@ -67,4 +45,3 @@ boilerplate({
   e2eTest: {android: true},
   testTimeout: 20000
 });
-

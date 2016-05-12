@@ -1,5 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 import org.apache.tools.ant.taskdefs.condition.Os
+import groovy.json.JsonSlurper
 
 buildscript {
     repositories {
@@ -17,11 +19,15 @@ allprojects {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 
         /**
-         * In Windows OS gradle can't build the project
+         * In Windows OS, gradle can't build the project
          * if the project path is containing more than 240 characters.
          * As a temporary fix, changing the buildDir to c:/temp
+         * refer: https://code.google.com/p/android/issues/detail?id=187430
          */
-        buildDir = "C:/tmp/${rootProject.name}/${project.name}"
+        def packagejson = new JsonSlurper().parseText(new File("./package.json").text)
+        if(packagejson.windowsBuildDir) {
+            buildDir = packagejson.windowsBuildDir + "/${rootProject.name}/${project.name}/build"
+        }
     }
     repositories {
         jcenter()
