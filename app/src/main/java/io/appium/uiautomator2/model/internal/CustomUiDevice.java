@@ -78,15 +78,15 @@ public class CustomUiDevice {
                 return (UiObject2) cons.newInstance(constructorParams);
             }  catch (InvocationTargetException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (InstantiationException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (IllegalAccessException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             }
         } else {
@@ -115,16 +115,16 @@ public class CustomUiDevice {
                 Object[] constructorParams = {device, selector, node};
                 ret.add((UiObject2) cons.newInstance(constructorParams));
             } catch (InvocationTargetException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                final String msg = String.format("error while creating  UiObject2 object:");
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (InstantiationException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (IllegalAccessException e) {
                 final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e.getMessage());
+                Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             }
         }

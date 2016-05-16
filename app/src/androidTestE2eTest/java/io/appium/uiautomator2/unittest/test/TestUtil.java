@@ -177,7 +177,7 @@ public class TestUtil {
                 throw new UiAutomator2Exception("Unable to create json object: " + by);
             }
         } catch (JSONException e) {
-            Logger.error("Unable to form JSON Object: " + e.getMessage());
+            Logger.error("Unable to form JSON Object: " + e);
         }
         return jsonObject;
     }

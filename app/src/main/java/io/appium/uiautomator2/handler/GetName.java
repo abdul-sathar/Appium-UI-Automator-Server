@@ -46,7 +46,7 @@ public class GetName extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, element.getContentDesc());
 
         } catch (UiObjectNotFoundException e) {
-            Logger.error(WDStatus.NO_SUCH_ELEMENT, e.getMessage());
+            Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
     }

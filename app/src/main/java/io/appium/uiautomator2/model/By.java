@@ -21,11 +21,6 @@ import java.util.List;
  * mechanisms, it is possible to subclass this class and override the protected methods as required.
  */
 public abstract class By {
-    public static By cssSelector(String css) {
-        if (css == null)
-            throw new IllegalArgumentException("Cannot find elements when css is null.");
-        return new ByCssSelector(css);
-    }
 
     /**
      * @param id The value of the "id" attribute to search for
@@ -144,29 +139,6 @@ public abstract class By {
     public String toString() {
         // A stub to prevent endless recursion in hashCode()
         return "[unknown locator]";
-    }
-
-    public static class ByCssSelector extends By {
-        private final String selector;
-
-        public ByCssSelector(String selector) {
-            this.selector = selector;
-        }
-
-        @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(By.cssSelector(selector));
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(By.cssSelector(selector));
-        }
-
-        @Override
-        public String getElementLocator() {
-            return selector;
-        }
     }
 
     public static class ById extends By {

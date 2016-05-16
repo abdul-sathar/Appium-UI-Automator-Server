@@ -39,10 +39,10 @@ public class PressKeyCode extends SafeRequestHandler {
             } else {
                 getUiDevice().pressKeyCode(keyCode);
             }
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "");
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
         } catch (JSONException e) {
-            Logger.error("Unable to PressKeyCode:" + e.getMessage());
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e.getMessage());
+            Logger.error("Unable to PressKeyCode:" + e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
     }
 

@@ -89,7 +89,7 @@ public class FindElement extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (InvalidSelectorException e) {
             Logger.error("Invalid selector: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.INVALID_SELECTOR, e);
         } catch (ElementNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
@@ -101,7 +101,7 @@ public class FindElement extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
     }
 

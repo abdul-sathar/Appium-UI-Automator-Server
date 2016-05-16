@@ -24,7 +24,7 @@ public class GetText extends SafeRequestHandler {
         try {
             text = element.getText();
         } catch (UiObjectNotFoundException e) {
-            Logger.error("Unable to Get Text", e);
+            Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, text);

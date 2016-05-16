@@ -57,10 +57,10 @@ public class LongPressKeyCode extends SafeRequestHandler {
                 final KeyEvent upEvent = new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, InputDevice.SOURCE_KEYBOARD);
                 interactionController.injectEventSync(upEvent);
             }
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "");
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
     }
 }

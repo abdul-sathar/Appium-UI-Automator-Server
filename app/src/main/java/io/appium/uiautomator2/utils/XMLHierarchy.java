@@ -66,7 +66,7 @@ public abstract class XMLHierarchy {
         try {
             exp = xpath.compile(xpathExpression);
         } catch (XPathExpressionException e) {
-            throw new InvalidSelectorException(e.getMessage());
+            throw new InvalidSelectorException("Invalid XPath expression: ", e);
         }
         return exp;
     }
@@ -78,8 +78,7 @@ public abstract class XMLHierarchy {
             nodes = (NodeList) xpathExpression.evaluate(root, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             e.printStackTrace();
-            throw new ElementNotFoundException("XMLWindowHierarchy could not be parsed:" +
-                    " " + e.getMessage());
+            throw new ElementNotFoundException("XMLWindowHierarchy could not be parsed:" + e);
         }
 
         ArrayList<ClassInstancePair> pairs = new ArrayList<ClassInstancePair>();
@@ -101,13 +100,8 @@ public abstract class XMLHierarchy {
     }
 
     public static InputSource getRawXMLHierarchy(AccessibilityNodeInfo root) {
-        //TODO: commented try catch block, need to handle corresponding exception only
-       // try {
-            String xmlDump = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(root);
-            return new InputSource(new StringReader(xmlDump));
-        /*} catch (Exception e) {
-            throw new RuntimeException("Failed to Dump Window Hierarchy", e);
-        }*/
+        String xmlDump = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(root);
+        return new InputSource(new StringReader(xmlDump));
     }
 
     private static AccessibilityNodeInfo getRootAccessibilityNode() {
@@ -134,7 +128,7 @@ public abstract class XMLHierarchy {
         try {
             root = (Node) xpath.evaluate("/", input, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
-            throw new RuntimeException("Could not read xml hierarchy: " + e.getMessage());
+            throw new RuntimeException("Could not read xml hierarchy: " + e);
         }
 
         HashMap<String, Integer> instances = new HashMap<String, Integer>();
@@ -151,15 +145,8 @@ public abstract class XMLHierarchy {
         NamedNodeMap attrElements = node.getAttributes();
         String androidClass;
         String instance;
-
-        //TODO:commented try catch block, need to add corresponding exception handling if required
-        //try {
-            androidClass = attrElements.getNamedItem("class").getNodeValue();
-            instance = attrElements.getNamedItem("instance").getNodeValue();
-        /*} catch (Exception e) {
-            throw new PairCreationException("Could not create ClassInstancePair object:" +
-                    " " + e.getMessage());
-        }*/
+        androidClass = attrElements.getNamedItem("class").getNodeValue();
+        instance = attrElements.getNamedItem("instance").getNodeValue();
 
         return new ClassInstancePair(androidClass, instance);
     }

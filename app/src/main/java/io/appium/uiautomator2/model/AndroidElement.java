@@ -23,8 +23,8 @@ public class AndroidElement {
         this.element = element;
     }
 
-    public static void back() {
-        Device.getUiDevice().pressBack();
+    public static boolean back() {
+       return Device.getUiDevice().pressBack();
     }
 
     public void click() throws UiObjectNotFoundException {

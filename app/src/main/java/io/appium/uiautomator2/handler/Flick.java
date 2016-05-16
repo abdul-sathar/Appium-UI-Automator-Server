@@ -68,12 +68,14 @@ public class Flick extends SafeRequestHandler {
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Flick did not complete successfully");
             }
         } catch (UiObjectNotFoundException e) {
-            Logger.error("Unable to Get Text", e);
+            Logger.error("Unable to find the element: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         } catch (JSONException e) {
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         } catch (InvalidCoordinatesException e) {
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            Logger.error("Invalid coordinates: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.INVALID_ELEMENT_COORDINATES, e);
         }
 
     }

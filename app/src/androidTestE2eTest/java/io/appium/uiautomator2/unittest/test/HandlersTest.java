@@ -74,7 +74,7 @@ public class HandlersTest {
 
     @Before
     public void launchAUT() throws InterruptedException {
-        Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + "" + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.stopService(intent);
         ctx.startActivity(intent);
         Logger.info("[AppiumUiAutomator2Server]", " waiting for app to launch ");

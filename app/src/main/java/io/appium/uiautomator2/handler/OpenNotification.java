@@ -24,7 +24,7 @@ public class OpenNotification extends SafeRequestHandler {
         }
 
         if (Device.getUiDevice().openNotification()) {
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Open notification");
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
         } else {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Device failed to open notifications.");
         }

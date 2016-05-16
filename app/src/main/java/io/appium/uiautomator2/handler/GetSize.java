@@ -40,7 +40,7 @@ public class GetSize extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        Logger.info("Get Text of element command");
+        Logger.info("Get Size of element command");
         String id = getElementId(request);
         final JSONObject res = new JSONObject();
         AndroidElement element = KnownElements.getElementFromCache(id);
@@ -49,11 +49,12 @@ public class GetSize extends SafeRequestHandler {
             res.put("width", rect.width());
             res.put("height", rect.height());
         } catch (UiObjectNotFoundException e) {
-            Logger.error(WDStatus.NO_SUCH_ELEMENT, e.getMessage());
+            Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         } catch (JSONException e) {
-            Logger.error(WDStatus.UNKNOWN_ERROR, e.getMessage());
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            Logger.error("Exception while reading JSON: ", e);
+            Logger.error(WDStatus.JSON_DECODER_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, res);
     }

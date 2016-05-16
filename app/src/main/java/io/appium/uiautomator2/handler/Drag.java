@@ -39,8 +39,8 @@ public class Drag extends BaseRequestHandler {
             } else
                 actionMsg = "Drag failed to performed";
         } catch (JSONException e) {
-            Logger.error(actionMsg, e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, actionMsg);
+            Logger.error("Unable to parse JSON data: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
 
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);

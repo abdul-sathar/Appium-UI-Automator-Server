@@ -27,11 +27,11 @@ public class TouchLongClick extends BaseRequestHandler {
             element.longClick();
 
         } catch (UiObjectNotFoundException e) {
-            Logger.error("Unable to Click on the element", e);
+            Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Long Click action performed");
     }

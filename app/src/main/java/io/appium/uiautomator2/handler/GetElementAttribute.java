@@ -27,7 +27,7 @@ public class GetElementAttribute extends SafeRequestHandler {
         try {
             text = element.getStringAttribute(attributeName);
         } catch (UiObjectNotFoundException e) {
-            Logger.error("Unable to get Element Attribute", e);
+            Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, text);

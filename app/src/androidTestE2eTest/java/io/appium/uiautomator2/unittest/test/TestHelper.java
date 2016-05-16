@@ -70,7 +70,7 @@ public abstract class TestHelper {
             Response response = client.newCall(request).execute();
             result = response.body().string();
         } catch (IOException e) {
-            throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. " + e.getMessage());
+            throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. " + e);
         }
         return result;
     }

@@ -45,8 +45,8 @@ public class GetDeviceSize extends SafeRequestHandler {
             res.put("width", getUiDevice().getDisplayWidth());
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, res);
         } catch (JSONException e) {
-            Logger.error(WDStatus.UNKNOWN_ERROR, e.getMessage());
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
 
     }

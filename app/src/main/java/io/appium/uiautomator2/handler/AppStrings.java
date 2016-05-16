@@ -33,7 +33,7 @@ public class AppStrings extends BaseRequestHandler {
             Logger.debug("json loading complete ");
 
         } catch (IOException e) {
-            Logger.error("Error loading json from " + filePath + " " + e.getMessage());
+            Logger.error("Error loading json from " + filePath + " : " + e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, jsonString);
