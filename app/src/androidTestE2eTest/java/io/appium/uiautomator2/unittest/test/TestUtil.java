@@ -1,5 +1,8 @@
 package io.appium.uiautomator2.unittest.test;
 
+import android.content.Context;
+import android.content.Intent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,10 +15,18 @@ import io.appium.uiautomator2.utils.Logger;
 import static android.os.SystemClock.elapsedRealtime;
 import static io.appium.uiautomator2.unittest.test.TestHelper.get;
 import static io.appium.uiautomator2.unittest.test.TestHelper.post;
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class TestUtil {
     private static final String baseUrl = "/wd/hub/session/:sessionId";
+    private static final int SECOND = 1000;
 
+    /**
+     * finds the element using By selector
+     *
+     * @param by
+     * @return
+     */
     public static String findElement(By by) {
         JSONObject json = new JSONObject();
         json = getJSon(by, json);
@@ -24,6 +35,13 @@ public class TestUtil {
         return result;
     }
 
+    /**
+     * waits for the element for specific time
+     *
+     * @param by
+     * @param TIME
+     * @return
+     */
     public static boolean waitForElement(By by, int TIME) {
         JSONObject jsonBody = new JSONObject();
         jsonBody = getJSon(by, jsonBody);
@@ -47,6 +65,13 @@ public class TestUtil {
         return foundStatus;
     }
 
+    /**
+     * waits for the element to invisible for specific time
+     *
+     * @param by
+     * @param TIME
+     * @return
+     */
     public static boolean waitForElementInvisible(By by, int TIME) {
         JSONObject jsonBody = new JSONObject();
         jsonBody = getJSon(by, jsonBody);
@@ -70,12 +95,25 @@ public class TestUtil {
         return foundStatus;
     }
 
+    /**
+     * finds the elements using By selector
+     *
+     * @param by
+     * @return
+     */
     public static String findElements(By by) {
         JSONObject json = new JSONObject();
         json = getJSon(by, json);
         return post(baseUrl + "/elements", json.toString());
     }
 
+    /**
+     * performs click on the given element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
     public static String click(String element) throws JSONException {
         String elementId;
         try {
@@ -89,6 +127,14 @@ public class TestUtil {
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
+    /**
+     * Send Keys to the element
+     *
+     * @param element
+     * @param text
+     * @return
+     * @throws JSONException
+     */
     public static String sendKeys(String element, String text) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
@@ -103,18 +149,40 @@ public class TestUtil {
         return new JSONObject(element).getString(key);
     }
 
+    /**
+     * get the text from the element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
     public static String getText(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         return get(baseUrl + "/element/" + elementId + "/text");
     }
 
+    /**
+     * returns the Attribute of element
+     *
+     * @param element
+     * @param attribute
+     * @return
+     * @throws JSONException
+     */
     public static String getAttribute(String element, String attribute) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         return get(baseUrl + "/element/" + elementId + "/attribute/" + attribute);
     }
 
+    /**
+     * get the content-desc from the element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
     public static String getName(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
@@ -159,6 +227,13 @@ public class TestUtil {
         return response;
     }
 
+    /**
+     * prepares the JSON Object
+     *
+     * @param by
+     * @param jsonObject
+     * @return
+     */
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
             if (by instanceof ByName) {
@@ -180,6 +255,35 @@ public class TestUtil {
             Logger.error("Unable to form JSON Object: " + e);
         }
         return jsonObject;
+    }
+
+    /**
+     * starts the activity
+     *
+     * @param ctx
+     * @param packg
+     * @param activity
+     * @throws InterruptedException
+     */
+    public static void startActivity(Context ctx, String packg, String activity) throws InterruptedException {
+        Intent intent = new Intent().setClassName(packg, packg + activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ctx.stopService(intent);
+        ctx.startActivity(intent);
+        Logger.info("[AppiumUiAutomator2Server]", " waiting for activity to launch ");
+        TestHelper.waitForAppToLaunch(packg, 15 * SECOND);
+        getUiDevice().waitForIdle();
+    }
+
+    /**
+     * return the element location on the screen
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
+    public static String getLocation(String element) throws JSONException {
+        String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
+        return get(baseUrl + "/element/" + elementId + "/location");
     }
 }
 

@@ -37,6 +37,7 @@ import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;
 import io.appium.uiautomator2.http.IHttpServlet;
+import io.appium.uiautomator2.handler.Location;
 
 public class AppiumServlet implements IHttpServlet {
 
@@ -83,6 +84,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
         register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
         register(postHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
+        register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
     }
 
     private void registerGetHandler() {

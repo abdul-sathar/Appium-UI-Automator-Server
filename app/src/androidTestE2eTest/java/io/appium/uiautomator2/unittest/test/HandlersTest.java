@@ -10,8 +10,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -24,10 +24,26 @@ import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
-import static io.appium.uiautomator2.unittest.test.TestUtil.*;
+import static io.appium.uiautomator2.unittest.test.TestUtil.click;
+import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
+import static io.appium.uiautomator2.unittest.test.TestUtil.findElements;
+import static io.appium.uiautomator2.unittest.test.TestUtil.flickOnElement;
+import static io.appium.uiautomator2.unittest.test.TestUtil.flickOnPosition;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getAttribute;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getDeviceSize;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getLocation;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getName;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
+import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
+import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
+import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
+import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 //TODO: need to remove explicit usage of waitForElement, once after configuring setWaitForSelectorTimeout() to driver instance
 //reference link: https://developer.android.com/intl/es/reference/android/support/test/uiautomator/Configurator.html#setWaitForSelectorTimeout%28long%29
@@ -224,8 +240,8 @@ public class HandlersTest {
         response = getSize(findElement(By.id("android:id/text1")));
         Integer height = JsonPath.compile("$.value.height").read(response);
         Integer width = JsonPath.compile("$.value.width").read(response);
-        Assert.assertTrue("Element height is zero(0), which is not expected", height > 0);
-        Assert.assertTrue("Element width is zero(0), which is not expected", width > 0);
+        assertTrue("Element height is zero(0), which is not expected", height > 0);
+        assertTrue("Element width is zero(0), which is not expected", width > 0);
     }
 
     /**
@@ -239,8 +255,8 @@ public class HandlersTest {
         response = getDeviceSize();
         Integer height = JsonPath.compile("$.value.height").read(response);
         Integer width = JsonPath.compile("$.value.width").read(response);
-        Assert.assertTrue("device window height is zero(0), which is not expected", height > 479);
-        Assert.assertTrue("device window width is zero(0), which is not expected", width > 319);
+        assertTrue("device window height is zero(0), which is not expected", height > 479);
+        assertTrue("device window width is zero(0), which is not expected", width > 319);
     }
 
     /**
@@ -253,17 +269,40 @@ public class HandlersTest {
         getUiDevice().waitForIdle();
         waitForElement(By.id("android:id/text1"), 5 * SECOND);
         response = flickOnElement(findElement(By.id("android:id/text1")));
-        Assert.assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
+        assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
     }
 
     /**
      * Test for flick on device screen
+     *
      * @throws JSONException
      */
     @Test
     public void flickTest() throws JSONException {
         getUiDevice().waitForIdle();
         response = flickOnPosition();
-        Assert.assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
+        assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
+    }
+
+    /**
+     * getLocation will get the location of the element on the screen
+     *
+     * @throws JSONException
+     * @throws InterruptedException
+     */
+
+    @Test
+    public void getLocationTest() throws JSONException, InterruptedException {
+        startActivity(ctx, "io.appium.android.apis", ".view.ChronometerDemo");
+        waitForElement(By.id("io.appium.android.apis:id/start"), 10 * SECOND);
+        String element = findElement(By.id("io.appium.android.apis:id/start"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + element);
+        String response = getLocation(element);
+        JSONObject json = new JSONObject(new JSONObject(response).get("value").toString());
+
+        int x = JsonPath.compile("$.x").read(json.toString());
+        int y = JsonPath.compile("$.y").read(json.toString());
+        assertTrue("element location x coordinate is zero(0), which is not expected", x > 0);
+        assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
     }
 }

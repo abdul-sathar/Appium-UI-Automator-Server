@@ -80,7 +80,7 @@ public class AndroidElement {
         element.clear();
     }
 
-    public void wake() throws RemoteException {
+    public static void wake() throws RemoteException {
         Device.getUiDevice().wakeUp();
     }
 
