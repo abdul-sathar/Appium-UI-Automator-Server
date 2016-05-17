@@ -5,6 +5,8 @@ import android.os.RemoteException;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiScrollable;
+import android.support.test.uiautomator.UiSelector;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
@@ -24,7 +26,7 @@ public class AndroidElement {
     }
 
     public static boolean back() {
-       return Device.getUiDevice().pressBack();
+        return Device.getUiDevice().pressBack();
     }
 
     public void click() throws UiObjectNotFoundException {
@@ -82,6 +84,12 @@ public class AndroidElement {
 
     public static void wake() throws RemoteException {
         Device.getUiDevice().wakeUp();
+    }
+
+    public static void scrollTo(String scrollToString) throws UiObjectNotFoundException {
+        UiScrollable uiScrollable = new UiScrollable(new UiSelector().scrollable(true).instance(0));
+        uiScrollable.scrollIntoView(new UiSelector().descriptionContains(scrollToString).instance(0));
+        uiScrollable.scrollIntoView(new UiSelector().textContains(scrollToString).instance(0));
     }
 
     public String getId() {

@@ -23,12 +23,14 @@ import io.appium.uiautomator2.handler.GetName;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetText;
+import io.appium.uiautomator2.handler.Location;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
 import io.appium.uiautomator2.handler.NewSession;
 import io.appium.uiautomator2.handler.OpenNotification;
 import io.appium.uiautomator2.handler.PressBack;
 import io.appium.uiautomator2.handler.PressKeyCode;
 import io.appium.uiautomator2.handler.RotateScreen;
+import io.appium.uiautomator2.handler.ScrollTo;
 import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Status;
 import io.appium.uiautomator2.handler.Swipe;
@@ -37,7 +39,6 @@ import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;
 import io.appium.uiautomator2.http.IHttpServlet;
-import io.appium.uiautomator2.handler.Location;
 
 public class AppiumServlet implements IHttpServlet {
 
@@ -84,7 +85,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
         register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
         register(postHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
-        register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
+        register(postHandler, new ScrollTo("/wd/hub/session/:sessionId/touch/scroll"));
     }
 
     private void registerGetHandler() {
@@ -95,6 +96,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetElementAttribute("/wd/hub/session/:sessionId/element/:id/attribute/:name"));
         register(getHandler, new GetSize("/wd/hub/session/:sessionId/element/:id/size"));
         register(getHandler, new GetName("/wd/hub/session/:sessionId/element/:id/name"));
+        register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
