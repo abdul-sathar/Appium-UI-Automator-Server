@@ -3,6 +3,7 @@ package io.appium.uiautomator2.handler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -30,9 +31,7 @@ public class PressKeyCode extends SafeRequestHandler {
                 keyCode = Integer.parseInt((String) kc);
             } else {
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Keycode of type " + kc.getClass() + "not supported.");
-
             }
-
             if (payload.has("metastate") && payload.get("metastate") != JSONObject.NULL) {
                 metaState = (Integer) payload.get("metastate");
                 getUiDevice().pressKeyCode(keyCode, metaState);

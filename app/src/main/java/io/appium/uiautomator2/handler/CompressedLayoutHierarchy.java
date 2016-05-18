@@ -1,5 +1,6 @@
 package io.appium.uiautomator2.handler;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -23,7 +24,13 @@ public class CompressedLayoutHierarchy extends SafeRequestHandler {
             if (API_18) {
                 isCompressLayout = true;
                 Device.getUiDevice().setCompressedLayoutHeirarchy(isCompressLayout);
+                Logger.info("Set the Compressed Layout Hierarchy");
+            } else {
+                Logger.info("SetCompressedLayoutHeirarchy doesn't exist on API <= 17");
+                return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Unable" +
+                        " to set Compressed Layout Hierarchy on device below API level 18");
             }
+
         } catch (Exception e) {
             Logger.error("error setting compressLayoutHierarchy " + e.getMessage());
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

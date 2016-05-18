@@ -3,6 +3,7 @@ package io.appium.uiautomator2.handler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -18,7 +19,7 @@ public class WaitForIdle extends BaseRequestHandler {
     @Override
     public AppiumResponse handle(IHttpRequest request) {
 
-        Integer timeout = 10;
+        Integer timeout = 1000;
         try {
             JSONObject payload = getPayload(request);
             if (payload.has("timeout")) {

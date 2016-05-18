@@ -3,6 +3,7 @@ package io.appium.uiautomator2.handler;
 
 import org.json.JSONException;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AppiumUiAutomatorDriver;
@@ -21,6 +22,7 @@ public class NewSession extends SafeRequestHandler {
         String sessionID;
         try {
             sessionID = new AppiumUiAutomatorDriver().initializeSession();
+            Logger.info("Session Created with SessionID:" + sessionID);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);

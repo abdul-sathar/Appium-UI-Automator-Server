@@ -5,6 +5,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -25,7 +26,6 @@ public class TouchLongClick extends BaseRequestHandler {
             String id = payload.getString("id");
             AndroidElement element = KnownElements.getElementFromCache(id);
             element.longClick();
-
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

@@ -1,4 +1,4 @@
-package io.appium.uiautomator2.handler;
+package io.appium.uiautomator2.handler.request;
 
 import org.json.JSONException;
 import org.json.JSONObject;

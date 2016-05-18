@@ -9,6 +9,7 @@ import org.json.JSONException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -30,6 +31,7 @@ public class ScrollTo extends BaseRequestHandler {
             uiSelectorString = JsonPath.compile(selector).read(json);
             Device.getUiDevice().waitForIdle();
             // Extracting (\"Radio Group\") text from the String
+            // TODO This logic needs to be changed according to the request body from the Driver
             Matcher m = Pattern.compile("\\(\"([^)]+)\"\\)").matcher(uiSelectorString);
             while (m.find())
                 scrollToString = m.group(1);

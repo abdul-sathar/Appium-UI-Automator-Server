@@ -2,6 +2,7 @@ package io.appium.uiautomator2.handler;
 
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -23,6 +24,7 @@ public class GetText extends SafeRequestHandler {
         AndroidElement element = KnownElements.getElementFromCache(id);
         try {
             text = element.getText();
+            Logger.info("Get Text :" + text);
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

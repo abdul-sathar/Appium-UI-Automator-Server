@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import io.appium.uiautomator2.handler.AppStrings;
-import io.appium.uiautomator2.handler.BaseRequestHandler;
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;

@@ -19,6 +19,7 @@ package io.appium.uiautomator2.handler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -43,11 +44,10 @@ public class GetDeviceSize extends SafeRequestHandler {
         try {
             res.put("height", getUiDevice().getDisplayHeight());
             res.put("width", getUiDevice().getDisplayWidth());
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, res);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
-
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, res);
     }
 }

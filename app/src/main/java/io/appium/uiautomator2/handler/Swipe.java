@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import org.json.JSONException;
 
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
@@ -39,6 +40,7 @@ public class Swipe extends BaseRequestHandler {
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);
             } else {
                 actionMsg = "Swipe failed to performed";
+                Logger.info(actionMsg);
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, actionMsg);
             }
         } catch (JSONException e) {

@@ -20,6 +20,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -42,12 +43,14 @@ public class GetName extends SafeRequestHandler {
         String id = getElementId(request);
         final JSONObject res = new JSONObject();
         AndroidElement element = KnownElements.getElementFromCache(id);
+        String elementName;
         try {
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, element.getContentDesc());
-
+            elementName = element.getContentDesc();
+            Logger.info("Element Name ", elementName);
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementName);
     }
 }

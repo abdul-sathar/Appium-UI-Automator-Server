@@ -87,6 +87,7 @@ public class AndroidElement {
     }
 
     public static void scrollTo(String scrollToString) throws UiObjectNotFoundException {
+        // TODO This logic needs to be changed according to the request body from the Driver
         UiScrollable uiScrollable = new UiScrollable(new UiSelector().scrollable(true).instance(0));
         uiScrollable.scrollIntoView(new UiSelector().descriptionContains(scrollToString).instance(0));
         uiScrollable.scrollIntoView(new UiSelector().textContains(scrollToString).instance(0));

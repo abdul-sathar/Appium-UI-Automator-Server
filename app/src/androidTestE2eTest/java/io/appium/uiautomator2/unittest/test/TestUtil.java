@@ -77,7 +77,7 @@ public class TestUtil {
         jsonBody = getJSon(by, jsonBody);
         long start = elapsedRealtime();
         boolean foundStatus = true;
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject jsonResponse;
 
         do {
             try {
@@ -191,14 +191,27 @@ public class TestUtil {
         return response;
     }
 
+
+    /**
+     * Finds the height and width of element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
     public static String getSize(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-
         String response = get(baseUrl + "/element/" + elementId + "/size");
         Logger.info("Element Size response:" + response);
         return response;
     }
 
+    /**
+     * Finds the height and width of screen
+     *
+     * @return
+     * @throws JSONException
+     */
     public static String getDeviceSize() throws JSONException {
 
         String response = post(baseUrl + "/window/current/size", "");
@@ -206,6 +219,13 @@ public class TestUtil {
         return response;
     }
 
+    /**
+     * Flick on the give element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
     public static String flickOnElement(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         JSONObject jsonObject = new JSONObject();
@@ -218,6 +238,12 @@ public class TestUtil {
         return response;
     }
 
+    /**
+     * Flick on given position
+     *
+     * @return
+     * @throws JSONException
+     */
     public static String flickOnPosition() throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("xSpeed", 50);

@@ -5,6 +5,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import net.minidev.json.JSONObject;
 
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
