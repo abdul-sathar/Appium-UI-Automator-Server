@@ -119,7 +119,7 @@ public class TestUtil {
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         } catch (JSONException e) {
-            throw new RuntimeException("Element not found");
+            throw new RuntimeException("Element not found", e);
         }
 
         JSONObject jsonObject = new JSONObject();
