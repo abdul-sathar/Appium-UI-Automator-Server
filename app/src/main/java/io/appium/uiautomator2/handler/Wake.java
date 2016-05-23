@@ -21,7 +21,7 @@ public class Wake extends BaseRequestHandler {
             AndroidElement.wake();
         } catch (RemoteException e) {
             Logger.error("Error waking up device");
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Wake up Device");
     }
