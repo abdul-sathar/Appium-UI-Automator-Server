@@ -35,7 +35,6 @@ public class ScrollTo extends BaseRequestHandler {
             Matcher m = Pattern.compile("\\(\"([^)]+)\"\\)").matcher(uiSelectorString);
             while (m.find())
                 scrollToString = m.group(1);
-
             AndroidElement.scrollTo(scrollToString);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
@@ -44,6 +43,6 @@ public class ScrollTo extends BaseRequestHandler {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Scrolled to specfied text");
+        return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, true);
     }
 }

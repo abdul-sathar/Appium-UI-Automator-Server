@@ -84,7 +84,6 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new Drag("/wd/hub/session/:sessionId/touch/drag"));
         register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
         register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
-        register(postHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
         register(postHandler, new ScrollTo("/wd/hub/session/:sessionId/touch/scroll"));
     }
 
@@ -97,6 +96,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetSize("/wd/hub/session/:sessionId/element/:id/size"));
         register(getHandler, new GetName("/wd/hub/session/:sessionId/element/:id/name"));
         register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
+        register(getHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {

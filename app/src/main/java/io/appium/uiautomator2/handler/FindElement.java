@@ -76,7 +76,7 @@ public class FindElement extends SafeRequestHandler {
             getUiDevice().waitForIdle();
             UiObject2 element = this.findElement(by);
             if (element == null) {
-                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element was not found.");
+                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, false);
             } else {
                 String id = UUID.randomUUID().toString();
                 AndroidElement androidElement = new AndroidElement(id, element);

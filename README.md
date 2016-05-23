@@ -5,8 +5,7 @@ A netty server that runs on the device listening for commands and executes using
 ### building project
 build the android project using below commands 
 
-`gradle clean assembleServerDebug`
-` assembleServerDebugAndroidTest`
+`gradle clean assembleServerDebug assembleServerDebugAndroidTest`
 
 
 ### Starting server
@@ -19,8 +18,7 @@ push both src and test apks to the device and execute the instrumentation tests.
 ### run unitTest
 build the unitTest flavor using the below commands 
 
-`gradle clean assembleE2ETestDebug`
-`assembleE2ETestDebugAndroidTest`
+`gradle clean assembleE2ETestDebug assembleE2ETestDebugAndroidTest`
 
 
 unitTest flavor contains tests for handlers and can be invoked by using following command 

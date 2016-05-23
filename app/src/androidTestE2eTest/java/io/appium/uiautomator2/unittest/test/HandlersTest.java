@@ -36,8 +36,11 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getName;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
+import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
+import static io.appium.uiautomator2.unittest.test.TestUtil.scrollTo;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
+import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
@@ -200,6 +203,7 @@ public class HandlersTest {
     @Test
     public void sendKeysTest() throws JSONException, InterruptedException {
         getUiDevice().waitForIdle();
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
 
         waitForElement(By.name("Views"), 10 * SECOND);
         click(findElement(By.name("Views")));
@@ -304,5 +308,70 @@ public class HandlersTest {
         int y = JsonPath.compile("$.y").read(json.toString());
         assertTrue("element location x coordinate is zero(0), which is not expected", x > 0);
         assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
+    }
+
+    @Test
+    public void swipeTest() throws JSONException, InterruptedException {
+        getUiDevice().waitForIdle();
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        waitForElement(By.name("Views"), 10 * SECOND);
+        click(findElement(By.name("Views")));
+        waitForElement(By.name("Focus"), 10 * SECOND);
+        String startElement = findElement(By.name("Focus"));
+        String endElement = findElement(By.name("Buttons"));
+
+        //Before Swipe
+        String startResponse = getLocation(startElement);
+        JSONObject json = new JSONObject(new JSONObject(startResponse).get("value").toString());
+        int x1 = JsonPath.compile("$.x").read(json.toString());
+        int y1 = JsonPath.compile("$.y").read(json.toString());
+
+        String endResponse = getLocation(endElement);
+        json = new JSONObject(new JSONObject(endResponse).get("value").toString());
+        int x2 = JsonPath.compile("$.x").read(json.toString());
+        int y2 = JsonPath.compile("$.y").read(json.toString());
+
+        swipe(x1, y1, x2, y2);
+
+        //After Swipe
+        startElement = findElement(By.name("Buttons"));
+        String afterStatus = getStringValueInJsonObject(startElement, "status");
+
+        // swipe performed hence the 'Buttons' element was not found on the screen
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(afterStatus));
+    }
+
+    @Test
+    public void touchLongClickTest() throws JSONException {
+        waitForElement(By.name("Accessibility"), 5 * SECOND);
+        String element = findElement(By.name("Accessibility"));
+        Logger.info
+                ("[AppiumUiAutomator2Server]", "long click element:" + element);
+        String result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        longClick(element);
+        getUiDevice().waitForIdle();
+        waitForElementInvisible(By.name("Accessibility"), 5 * SECOND);
+        element = findElement(By.name("Accessibility"));
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+    }
+
+    @Test
+    public void scrollTest() throws JSONException, InterruptedException {
+        getUiDevice().waitForIdle();
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        waitForElement(By.name("Views"), 10 * SECOND);
+        click(findElement(By.name("Views")));
+        String scrollToText = "Radio Group";
+        String element = findElement(By.name(scrollToText));
+        String status = getStringValueInJsonObject(element, "status");
+        // Before Scroll 'Radio Group' Element was not found
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(status));
+        scrollTo(scrollToText);
+        String AfterElement = findElement(By.name(scrollToText));
+        String afterStatus = getStringValueInJsonObject(AfterElement, "status");
+        // After Scroll Element was found
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(afterStatus));
     }
 }
