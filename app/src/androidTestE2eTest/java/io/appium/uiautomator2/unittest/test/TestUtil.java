@@ -214,7 +214,7 @@ public class TestUtil {
      */
     public static String getDeviceSize() throws JSONException {
 
-        String response = post(baseUrl + "/window/current/size", "");
+        String response = get(baseUrl + "/window/current/size");
         Logger.info("Device window Size response:" + response);
         return response;
     }
@@ -310,6 +310,53 @@ public class TestUtil {
     public static String getLocation(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         return get(baseUrl + "/element/" + elementId + "/location");
+    }
+
+    /**
+     * performs swipe on the device screen
+     *
+     * @return
+     * @throws JSONException
+     */
+    public static String swipe(int x1, int y1, int x2, int y2) throws JSONException {
+        // swipe from (x1,y1) to (x2,y2)
+        // TODO Create JSON object instead of below json string.Once the json is finalised from driver module
+        String json = "{\"actions\":[{\"action\":\"press\",\"options\":{\"x\":" + x1 + ",\"y\":" + y1 + "}}," +
+                "{\"action\":\"wait\",\"options\":{\"ms\":200}}," +
+                "{\"action\":\"moveTo\",\"options\":{\"x\":" + x2 + ",\"y\":" + y2 + "}}," +
+                "{\"action\":\"release\",\"options\":{}}]}";
+        JSONObject jsonObject = new JSONObject(json);
+        return post(baseUrl + "/touch/perform", jsonObject.toString());
+    }
+
+    /**
+     * performs long click on the given element
+     *
+     * @param element
+     * @return
+     * @throws JSONException
+     */
+    public static String longClick(String element) throws JSONException {
+        String elementId;
+        JSONObject jsonObject = new JSONObject();
+        try {
+            elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
+            jsonObject.put("id", elementId);
+        } catch (JSONException e) {
+            throw new RuntimeException("Element not found");
+        }
+        return post(baseUrl + "/touch/longclick", jsonObject.toString());
+    }
+
+    public static String scrollTo(String scrollToText) throws JSONException {
+        // TODO Create JSON object instead of below json string.Once the json is finalised from driver module
+        String json = " {\"cmd\":\"action\",\"action\":\"find\",\"params\":{\"strategy\":\"-android uiautomator\",\"selector\":\"" +
+                "new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().descriptionContains(\\\"" + scrollToText + "\\\").instance(0));" +
+                "new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().textContains(\\\"" + scrollToText + "\\\").instance(0));" +
+                "\",\"context\":\"\",\"multiple\":false}}";
+        JSONObject jsonObject = new JSONObject(json);
+        return post(baseUrl + "/touch/scroll", jsonObject.toString());
+
     }
 }
 
