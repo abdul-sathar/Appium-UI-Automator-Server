@@ -2,21 +2,21 @@ package io.appium.uiautomator2.handler;
 
 import android.os.RemoteException;
 
-import io.appium.uiautomator2.handler.request.BaseRequestHandler;
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
-public class Wake extends BaseRequestHandler {
+public class Wake extends SafeRequestHandler {
 
     public Wake(String mappedUri) {
         super(mappedUri);
     }
 
     @Override
-    public AppiumResponse handle(IHttpRequest request) {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             AndroidElement.wake();
         } catch (RemoteException e) {

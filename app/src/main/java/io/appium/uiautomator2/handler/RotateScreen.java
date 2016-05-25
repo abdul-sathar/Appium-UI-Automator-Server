@@ -21,9 +21,9 @@ public class RotateScreen extends SafeRequestHandler {
         try {
             Device.getUiDevice().setOrientationRight();
         } catch (RemoteException e) {
-            Logger.error("Exception while reading JSON: ", e);
+            Logger.error("Exception while rotating Screen ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
-        return new AppiumResponse(getSessionId(request), "Orientation has been changed");
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
     }
 }

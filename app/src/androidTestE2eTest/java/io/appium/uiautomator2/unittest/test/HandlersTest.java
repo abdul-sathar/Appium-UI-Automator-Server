@@ -310,6 +310,12 @@ public class HandlersTest {
         assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
     }
 
+    /**
+     * Swipes on the screen from Focus to Buttons
+     *
+     * @throws JSONException
+     * @throws InterruptedException
+     */
     @Test
     public void swipeTest() throws JSONException, InterruptedException {
         getUiDevice().waitForIdle();
@@ -341,6 +347,11 @@ public class HandlersTest {
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(afterStatus));
     }
 
+    /**
+     * Performs long click action on the element
+     *
+     * @throws JSONException
+     */
     @Test
     public void touchLongClickTest() throws JSONException {
         waitForElement(By.name("Accessibility"), 5 * SECOND);
@@ -357,6 +368,12 @@ public class HandlersTest {
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
     }
 
+    /**
+     * Performs Scroll to specified element
+     *
+     * @throws JSONException
+     * @throws InterruptedException
+     */
     @Test
     public void scrollTest() throws JSONException, InterruptedException {
         getUiDevice().waitForIdle();
@@ -369,9 +386,9 @@ public class HandlersTest {
         // Before Scroll 'Radio Group' Element was not found
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(status));
         scrollTo(scrollToText);
-        String AfterElement = findElement(By.name(scrollToText));
-        String afterStatus = getStringValueInJsonObject(AfterElement, "status");
+        element = findElement(By.name(scrollToText));
+        status = getStringValueInJsonObject(element, "status");
         // After Scroll Element was found
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(afterStatus));
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
     }
 }

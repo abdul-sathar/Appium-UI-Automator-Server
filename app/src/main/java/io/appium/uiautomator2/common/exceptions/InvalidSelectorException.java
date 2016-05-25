@@ -23,6 +23,7 @@ public class InvalidSelectorException extends Throwable {
     public InvalidSelectorException(String message) {
         super(message);
     }
+
     public InvalidSelectorException(String message, Throwable t) {
         super(message, t);
     }

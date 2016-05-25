@@ -47,7 +47,7 @@ public class TestUtil {
         jsonBody = getJSon(by, jsonBody);
         long start = elapsedRealtime();
         boolean foundStatus = false;
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject jsonResponse;
 
         do {
             try {
@@ -356,7 +356,6 @@ public class TestUtil {
                 "\",\"context\":\"\",\"multiple\":false}}";
         JSONObject jsonObject = new JSONObject(json);
         return post(baseUrl + "/touch/scroll", jsonObject.toString());
-
     }
 }
 

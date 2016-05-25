@@ -76,16 +76,16 @@ public class CustomUiDevice {
                 cons.setAccessible(true);
                 Object[] constructorParams = {device, selector, node};
                 return (UiObject2) cons.newInstance(constructorParams);
-            }  catch (InvocationTargetException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
+            } catch (InvocationTargetException e) {
+                final String msg = String.format("error while creating  UiObject2 object");
                 Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (InstantiationException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
+                final String msg = String.format("error while creating  UiObject2 object");
                 Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             } catch (IllegalAccessException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
+                final String msg = String.format("error while creating  UiObject2 object");
                 Logger.error(msg + " " + e);
                 throw new RuntimeException(msg, e);
             }
@@ -99,7 +99,7 @@ public class CustomUiDevice {
      */
     public List<UiObject2> findObjects(BySelector selector) throws ClassNotFoundException {
 
-        List<UiObject2> ret = new ArrayList<UiObject2>();
+        List<UiObject2> ret = new ArrayList<>();
 
         ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
 
@@ -137,7 +137,7 @@ public class CustomUiDevice {
     AccessibilityNodeInfo[] getWindowRoots(boolean multiWindow) {
         //waitForIdle();
 
-        ArrayList<AccessibilityNodeInfo> ret = new ArrayList<AccessibilityNodeInfo>();
+        ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
         // Support multi-window searches for API level 21 and up
         //TODO: need to handle multiWindows param better way
         if ((Integer) API_LEVEL_ACTUAL >= Build.VERSION_CODES.LOLLIPOP && multiWindow) {
@@ -145,7 +145,7 @@ public class CustomUiDevice {
                 AccessibilityNodeInfo root = window.getRoot();
 
                 if (root == null) {
-                    Logger.debug(  String.format("Skipping null root node for " + "window: %s", window.toString()));
+                    Logger.debug(String.format("Skipping null root node for " + "window: %s", window.toString()));
                     continue;
                 }
                 ret.add(root);
