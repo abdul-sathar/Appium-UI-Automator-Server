@@ -24,6 +24,7 @@ import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
+import static io.appium.uiautomator2.unittest.test.TestUtil.appStrings;
 import static io.appium.uiautomator2.unittest.test.TestUtil.click;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElements;
@@ -37,6 +38,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
 import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
+import static io.appium.uiautomator2.unittest.test.TestUtil.rotateScreen;
 import static io.appium.uiautomator2.unittest.test.TestUtil.scrollTo;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
@@ -45,6 +47,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -60,7 +63,6 @@ public class HandlersTest {
     private static final int SECOND = 1000;
     private static ServerInstrumentation serverInstrumentation;
     private static Context ctx;
-    private static boolean shouldStopRestOfSuite = false;
     private String response;
 
 
@@ -109,6 +111,7 @@ public class HandlersTest {
      */
     @Test
     public void clickElementTest() throws JSONException {
+
         waitForElement(By.name("Accessibility"), 5 * SECOND);
         String element = findElement(By.name("Accessibility"));
         Logger.info("[AppiumUiAutomator2Server]", " click element:" + element);
@@ -390,5 +393,28 @@ public class HandlersTest {
         status = getStringValueInJsonObject(element, "status");
         // After Scroll Element was found
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
+    }
+
+    /**
+     * gets the length of the AppStrings
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void appStringsTest() throws JSONException {
+        assertNotEquals(0, appStrings().length());
+    }
+
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationTest() throws JSONException {
+        getUiDevice().waitForIdle();
+        int defaultRotation = getUiDevice().getDisplayRotation();
+        rotateScreen();
+        assertNotEquals(getUiDevice().getDisplayRotation(), defaultRotation);
     }
 }

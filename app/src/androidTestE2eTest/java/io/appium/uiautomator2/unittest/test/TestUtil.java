@@ -348,6 +348,13 @@ public class TestUtil {
         return post(baseUrl + "/touch/longclick", jsonObject.toString());
     }
 
+    /**
+     * perfroms scroll to the given text
+     *
+     * @param scrollToText
+     * @return
+     * @throws JSONException
+     */
     public static String scrollTo(String scrollToText) throws JSONException {
         // TODO Create JSON object instead of below json string.Once the json is finalised from driver module
         String json = " {\"cmd\":\"action\",\"action\":\"find\",\"params\":{\"strategy\":\"-android uiautomator\",\"selector\":\"" +
@@ -357,5 +364,28 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject(json);
         return post(baseUrl + "/touch/scroll", jsonObject.toString());
     }
+
+    /**
+     * return the appStrings
+     *
+     * @return
+     * @throws JSONException
+     */
+    public static String appStrings() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        return post(baseUrl + "/appium/app/strings", jsonObject.toString());
+    }
+
+    /**
+     * performs screen rotation
+     *
+     * @return
+     * @throws JSONException
+     */
+    public static String rotateScreen() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        return post(baseUrl + "/orientation", jsonObject.toString());
+    }
+
 }
 
