@@ -31,11 +31,10 @@ public abstract class PositionHelper {
      * @param pointCoord The position to translate.
      * @param length     Length of side to use for percentage positions.
      * @param offset     Position offset.
-     *
      * @return
      */
     private static double translateCoordinate(double pointCoord, double length, double offset) {
-        double translatedCoord = 0;
+        double translatedCoord;
 
         if (pointCoord == 0) {
             translatedCoord = length * 0.5;
@@ -56,9 +55,7 @@ public abstract class PositionHelper {
      * @param offsets           X and Y values by which to offset the point. These are typically the
      *                          absolute coordinates of the display rectangle.
      * @param shouldCheckBounds Throw if the translated point is outside displayRect?
-     *
      * @return
-     *
      * @throws UiObjectNotFoundException
      * @throws InvalidCoordinatesException
      */

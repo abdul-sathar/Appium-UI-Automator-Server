@@ -9,7 +9,7 @@ import org.json.JSONException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.appium.uiautomator2.handler.request.BaseRequestHandler;
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
@@ -17,14 +17,14 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 
-public class ScrollTo extends BaseRequestHandler {
+public class ScrollTo extends SafeRequestHandler {
 
     public ScrollTo(String mappedUri) {
         super(mappedUri);
     }
 
     @Override
-    public AppiumResponse handle(IHttpRequest request) {
+    public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             String json = getPayload(request).toString();
             String selector = "$.params.selector", uiSelectorString, scrollToString = "";

@@ -5,20 +5,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import io.appium.uiautomator2.handler.request.BaseRequestHandler;
+import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
-public class AppStrings extends BaseRequestHandler {
+public class AppStrings extends SafeRequestHandler {
     public AppStrings(String mappedUri) {
         super(mappedUri);
     }
 
     @Override
-    public AppiumResponse handle(IHttpRequest request) {
-        String jsonString = "";
+    public AppiumResponse safeHandle(IHttpRequest request) {
+        String jsonString;
         final String filePath = "/data/local/tmp/strings.json";
 
         try {

@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import io.appium.uiautomator2.handler.AppStrings;
-import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;
@@ -35,6 +34,7 @@ import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Status;
 import io.appium.uiautomator2.handler.Swipe;
 import io.appium.uiautomator2.handler.TouchLongClick;
+import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;

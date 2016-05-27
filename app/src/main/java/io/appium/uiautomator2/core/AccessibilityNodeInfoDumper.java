@@ -17,7 +17,6 @@ package io.appium.uiautomator2.core;
 
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.util.Log;
 import android.util.Xml;
 import android.view.Display;
 import android.view.accessibility.AccessibilityNodeInfo;
