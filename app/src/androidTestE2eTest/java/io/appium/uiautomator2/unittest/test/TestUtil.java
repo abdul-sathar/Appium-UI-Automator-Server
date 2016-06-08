@@ -387,5 +387,8 @@ public class TestUtil {
         return post(baseUrl + "/orientation", jsonObject.toString());
     }
 
+   public  static String multiPointerGesture(String body){
+       return post(baseUrl + "/touch/multi/perform", body);
+   }
 }
 

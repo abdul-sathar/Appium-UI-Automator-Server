@@ -9,6 +9,7 @@ import android.support.test.uiautomator.Configurator;
 import com.jayway.jsonpath.JsonPath;
 import com.squareup.okhttp.MediaType;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -38,6 +39,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
 import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
+import static io.appium.uiautomator2.unittest.test.TestUtil.multiPointerGesture;
 import static io.appium.uiautomator2.unittest.test.TestUtil.rotateScreen;
 import static io.appium.uiautomator2.unittest.test.TestUtil.scrollTo;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
@@ -150,8 +152,6 @@ public class HandlersTest {
         Logger.info("[AppiumUiAutomator2Server]", "By.xpath:" + response);
         result = getAttribute(response, "text");
         assertEquals("Content", getStringValueInJsonObject(result, "value"));
-
-
     }
 
     /**
@@ -311,6 +311,60 @@ public class HandlersTest {
         int y = JsonPath.compile("$.y").read(json.toString());
         assertTrue("element location x coordinate is zero(0), which is not expected", x > 0);
         assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
+    }
+
+    /**
+     * Performs multi pointer touch actions
+     *
+     * @throws InterruptedException
+     * @throws JSONException
+     */
+    @Test
+    public void multiPointerGestureTest() throws InterruptedException, JSONException {
+        JSONArray actions = new JSONArray();
+        startActivity(ctx, "io.appium.android.apis", ".view.ChronometerDemo");
+        waitForElement(By.id("io.appium.android.apis:id/start"), 10 * SECOND);
+        click(findElement(By.id("io.appium.android.apis:id/start")));
+        String elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
+        assertNotEquals(getStringValueInJsonObject(elementTxt, "value"), "Initial format: 00:00");
+
+        String stop = findElement(By.id("io.appium.android.apis:id/stop"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + stop);
+        String response = getLocation(stop);
+        JSONObject json = new JSONObject(new JSONObject(response).get("value").toString());
+        int x = JsonPath.compile("$.x").read(json.toString());
+        int y = JsonPath.compile("$.y").read(json.toString());
+        JSONObject touch1 = new JSONObject().put("x", x).put("y", y);
+        JSONArray action1 = new JSONArray();
+        action1.put(new JSONObject().put("time", 0.05).put("touch", touch1));
+
+
+        String reset = findElement(By.id("io.appium.android.apis:id/reset"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + reset);
+        response = getLocation(reset);
+        json = new JSONObject(new JSONObject(response).get("value").toString());
+        x = JsonPath.compile("$.x").read(json.toString());
+        y = JsonPath.compile("$.y").read(json.toString());
+        JSONObject touch2 = new JSONObject().put("x", x).put("y", y);
+        JSONArray action2 = new JSONArray();
+        action2.put(new JSONObject().put("time", 0.05).put("touch", touch2));
+
+        /**
+         * actions, e.g.:
+         * [
+         * [{"time": 0.005, "touch": {"y": 705, "x": 540 }}],
+         * [{"time": 0.005, "touch": {"y": 561, "x": 540 }}]
+         * ]
+         */
+        actions.put(action1).put(action2);
+
+        response = multiPointerGesture((new JSONObject().put("actions",actions)).toString());
+        Logger.info("multi touch response: "+response);
+        assertEquals(getStringValueInJsonObject(response, "value"), "OK");
+
+        elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
+        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Initial format: 00:00");
+
     }
 
     /**
