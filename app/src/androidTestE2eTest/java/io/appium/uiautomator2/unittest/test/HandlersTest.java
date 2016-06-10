@@ -47,6 +47,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getScreenOrientation;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -467,8 +468,11 @@ public class HandlersTest {
     @Test
     public void screenRotationTest() throws JSONException {
         getUiDevice().waitForIdle();
-        int defaultRotation = getUiDevice().getDisplayRotation();
-        rotateScreen();
-        assertNotEquals(getUiDevice().getDisplayRotation(), defaultRotation);
+
+        rotateScreen("LANDSCAPE");
+        assertEquals("LANDSCAPE", getScreenOrientation());
+
+        rotateScreen("PORTRAIT");
+        assertEquals("PORTRAIT", getScreenOrientation());
     }
 }

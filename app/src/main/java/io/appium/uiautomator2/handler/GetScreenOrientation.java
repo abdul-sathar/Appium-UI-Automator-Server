@@ -17,7 +17,7 @@ public class GetScreenOrientation extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         ScreenOrientation orientation;
         int rotation = Device.getUiDevice().getDisplayRotation();
-        if (rotation == 0 || rotation == 3) {
+        if (rotation == 1 || rotation == 3) {
             orientation = ScreenOrientation.LANDSCAPE;
         } else {
             orientation = ScreenOrientation.PORTRAIT;
