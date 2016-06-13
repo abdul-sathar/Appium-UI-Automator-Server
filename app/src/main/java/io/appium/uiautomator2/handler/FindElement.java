@@ -112,9 +112,7 @@ public class FindElement extends SafeRequestHandler {
     private UiObject2 findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException {
         if (by instanceof ById) {
             return getInstance().findObject(android.support.test.uiautomator.By.res(by.getElementLocator()));
-        }/* else if (by instanceof ByTagName) {
-            return findElementByTagName(by.getElementLocator());
-        }*/ else if (by instanceof ByLinkText) {
+        } else if (by instanceof ByLinkText) {
             return getInstance().findObject(android.support.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByPartialLinkText) {
             return getInstance().findObject(android.support.test.uiautomator.By.descContains(by.getElementLocator()));

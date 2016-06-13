@@ -9,7 +9,6 @@ import io.appium.uiautomator2.utils.Logger;
 public class NativeAndroidBySelector {
     public static final String SELECTOR_NATIVE_ID = "id";
     // TODO review this, not perfect, but main goal is to use default bindings
-    public static final String SELECTOR_L10N = "tag name";
     public static final String SELECTOR_TEXT = "link text";
     public static final String SELECTOR_PARTIAL_TEXT = "partial link text";
     public static final String SELECTOR_XPATH = "xpath";
@@ -19,9 +18,7 @@ public class NativeAndroidBySelector {
     public By pickFrom(String method, String selector) {
         if (SELECTOR_NATIVE_ID.equals(method)) {
             return By.id(selector);
-        } /*else if (SELECTOR_L10N.equals(method)) {
-      return By.tagName(selector);
-    } */ else if (SELECTOR_NAME.equals(method)) {
+        } else if (SELECTOR_NAME.equals(method)) {
             return By.name(selector);
         } else if (SELECTOR_TEXT.equals(method)) {
             return By.linkText(selector);

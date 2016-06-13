@@ -40,36 +40,6 @@ public abstract class By {
         return new ByLinkText(text);
     }
 
-/*
-  public static class ByTagName extends By {
-    private final String tagName;
-
-    public ByTagName(String tagName) {
-      this.tagName = tagName;
-    }
-
-    @Override
-    public AndroidElement findElement(SearchContext context) {
-      return ((FindsByTagName) context).findElementByTagName(tagName);
-    }
-
-    @Override
-    public List<AndroidElement> findElements(SearchContext context) {
-      return ((FindsByTagName) context).findElementsByTagName((tagName));
-    }
-
-    @Override
-    public String getElementLocator() {
-      return tagName;
-    }
-
-    @Override
-    public String toString() {
-      return "By.tagName: " + tagName;
-    }
-  }
-*/
-
     public static By partialLinkText(final String text) {
         if (text == null)
             throw new IllegalArgumentException("Cannot find elements when text is null.");
@@ -112,13 +82,6 @@ public abstract class By {
      * @return The AndroidElement that matches the selector
      */
     public abstract AndroidElement findElement(SearchContext context);
-
-  /*public static By tagName(final String tagName) {
-    if (tagName == null)
-      throw new IllegalArgumentException("Cannot find elements when tag name is null.");
-
-    return new ByTagName(tagName);
-  }*/
 
     /**
      * Find many elements.
