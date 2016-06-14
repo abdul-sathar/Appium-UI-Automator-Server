@@ -28,6 +28,7 @@ import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.XMLHierarchy;
 
 import static io.appium.uiautomator2.model.internal.CustomUiDevice.getInstance;
+import static io.appium.uiautomator2.utils.Device.getAndroidElement;
 
 public class FindElements extends SafeRequestHandler {
 
@@ -67,7 +68,7 @@ public class FindElements extends SafeRequestHandler {
             Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
             By by = new NativeAndroidBySelector().pickFrom(method, selector);
 
-            List<UiObject2> elements = this.findElememnts(by);
+            List<UiObject2> elements = this.findElements(by);
             if (elements == null) {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element was not found.");
             }
@@ -75,7 +76,7 @@ public class FindElements extends SafeRequestHandler {
 
             for (UiObject2 element : elements) {
                 String id = UUID.randomUUID().toString();
-                AndroidElement androidElement = new AndroidElement(id, element);
+                AndroidElement androidElement = getAndroidElement(id, element);
                 ke.add(androidElement);
                 JSONObject jsonElement = new JSONObject();
                 jsonElement.put("ELEMENT", id);
@@ -103,7 +104,7 @@ public class FindElements extends SafeRequestHandler {
         }
     }
 
-    private List<UiObject2> findElememnts(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException {
+    private List<UiObject2> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException {
         if (by instanceof By.ById) {
             return getInstance().findObjects(android.support.test.uiautomator.By.res(by.getElementLocator()));
         }/* else if (by instanceof ByTagName) {
