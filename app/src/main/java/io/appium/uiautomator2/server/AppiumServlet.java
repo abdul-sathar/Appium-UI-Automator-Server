@@ -24,6 +24,7 @@ import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetText;
 import io.appium.uiautomator2.handler.Location;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
+import io.appium.uiautomator2.handler.MultiPointerGesture;
 import io.appium.uiautomator2.handler.NewSession;
 import io.appium.uiautomator2.handler.OpenNotification;
 import io.appium.uiautomator2.handler.PressBack;
@@ -86,6 +87,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new AppStrings("/wd/hub/session/:sessionId/appium/app/strings"));
         register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
         register(postHandler, new ScrollTo("/wd/hub/session/:sessionId/touch/scroll"));
+        register(postHandler, new MultiPointerGesture("/wd/hub/session/:sessionId/touch/multi/perform"));
     }
 
     private void registerGetHandler() {
