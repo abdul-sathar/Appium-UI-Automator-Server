@@ -34,12 +34,12 @@ public abstract class TouchEvent extends SafeRequestHandler {
                 String id = json.getString("id");
                 element = KnownElements.getElementFromCache(id);
 
-                if (element != null)
-                    isElement = true;
-                if (isElement) {
+                if (element != null) {
                     final Rect bounds = element.getBounds();
                     clickX = bounds.centerX();
                     clickY = bounds.centerY();
+                } else {
+                    throw new UiObjectNotFoundException("TouchEvent element does not exist.");
                 }
             } else { // no element so extract x and y from params
                 clickX = JsonPath.compile(path + "x").read(json.toString());
