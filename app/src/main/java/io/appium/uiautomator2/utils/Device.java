@@ -3,6 +3,7 @@ package io.appium.uiautomator2.utils;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
@@ -10,6 +11,7 @@ import android.support.test.uiautomator.UiSelector;
 
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.UiObject2Element;
+import io.appium.uiautomator2.model.UiObjectElement;
 
 public abstract class Device {
     private static UiDevice uiDevice;
@@ -24,6 +26,8 @@ public abstract class Device {
     public static AndroidElement getAndroidElement(String id, Object element) {
         if (element instanceof UiObject2) {
             return new UiObject2Element(id, (UiObject2) element);
+        } else if (element instanceof UiObject) {
+            return new UiObjectElement(id, (UiObject) element);
         } else {
             throw new RuntimeException("Unknown Element type: " + element.getClass().getName());
         }
