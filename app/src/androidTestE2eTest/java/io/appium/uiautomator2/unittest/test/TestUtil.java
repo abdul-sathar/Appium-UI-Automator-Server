@@ -25,6 +25,7 @@ public class TestUtil {
      * finds the element using By selector
      *
      * @param by
+     *
      * @return
      */
     public static String findElement(By by) {
@@ -40,6 +41,7 @@ public class TestUtil {
      *
      * @param by
      * @param TIME
+     *
      * @return
      */
     public static boolean waitForElement(By by, int TIME) {
@@ -70,6 +72,7 @@ public class TestUtil {
      *
      * @param by
      * @param TIME
+     *
      * @return
      */
     public static boolean waitForElementInvisible(By by, int TIME) {
@@ -99,6 +102,7 @@ public class TestUtil {
      * finds the elements using By selector
      *
      * @param by
+     *
      * @return
      */
     public static String findElements(By by) {
@@ -111,7 +115,9 @@ public class TestUtil {
      * performs click on the given element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String click(String element) throws JSONException {
@@ -132,7 +138,9 @@ public class TestUtil {
      *
      * @param element
      * @param text
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String sendKeys(String element, String text) throws JSONException {
@@ -153,7 +161,9 @@ public class TestUtil {
      * get the text from the element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String getText(String element) throws JSONException {
@@ -167,7 +177,9 @@ public class TestUtil {
      *
      * @param element
      * @param attribute
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String getAttribute(String element, String attribute) throws JSONException {
@@ -180,7 +192,9 @@ public class TestUtil {
      * get the content-desc from the element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String getName(String element) throws JSONException {
@@ -196,7 +210,9 @@ public class TestUtil {
      * Finds the height and width of element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String getSize(String element) throws JSONException {
@@ -210,6 +226,7 @@ public class TestUtil {
      * Finds the height and width of screen
      *
      * @return
+     *
      * @throws JSONException
      */
     public static String getDeviceSize() throws JSONException {
@@ -223,7 +240,9 @@ public class TestUtil {
      * Flick on the give element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String flickOnElement(String element) throws JSONException {
@@ -242,6 +261,7 @@ public class TestUtil {
      * Flick on given position
      *
      * @return
+     *
      * @throws JSONException
      */
     public static String flickOnPosition() throws JSONException {
@@ -258,6 +278,7 @@ public class TestUtil {
      *
      * @param by
      * @param jsonObject
+     *
      * @return
      */
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
@@ -289,6 +310,7 @@ public class TestUtil {
      * @param ctx
      * @param packg
      * @param activity
+     *
      * @throws InterruptedException
      */
     public static void startActivity(Context ctx, String packg, String activity) throws InterruptedException {
@@ -304,7 +326,9 @@ public class TestUtil {
      * return the element location on the screen
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String getLocation(String element) throws JSONException {
@@ -316,6 +340,7 @@ public class TestUtil {
      * performs swipe on the device screen
      *
      * @return
+     *
      * @throws JSONException
      */
     public static String swipe(int x1, int y1, int x2, int y2) throws JSONException {
@@ -333,7 +358,9 @@ public class TestUtil {
      * performs long click on the given element
      *
      * @param element
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String longClick(String element) throws JSONException {
@@ -352,7 +379,9 @@ public class TestUtil {
      * perfroms scroll to the given text
      *
      * @param scrollToText
+     *
      * @return
+     *
      * @throws JSONException
      */
     public static String scrollTo(String scrollToText) throws JSONException {
@@ -369,6 +398,7 @@ public class TestUtil {
      * return the appStrings
      *
      * @return
+     *
      * @throws JSONException
      */
     public static String appStrings() throws JSONException {
@@ -380,15 +410,30 @@ public class TestUtil {
      * performs screen rotation
      *
      * @return
+     *
      * @throws JSONException
      */
-    public static String rotateScreen() throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        return post(baseUrl + "/orientation", jsonObject.toString());
+    public static String rotateScreen(String orientation) throws JSONException {
+        JSONObject postBody = new JSONObject().put("params"
+                ,new JSONObject().put("orientation", orientation));
+
+        return post(baseUrl + "/orientation", postBody.toString());
     }
 
-   public  static String multiPointerGesture(String body){
-       return post(baseUrl + "/touch/multi/perform", body);
-   }
+    /**
+     * return screen orientation
+     *
+     * @return
+     *
+     * @throws JSONException
+     */
+    public static String getScreenOrientation() throws JSONException {
+        String response = get(baseUrl + "/orientation");
+        return new JSONObject(response).get("value").toString();
+    }
+
+    public static String multiPointerGesture(String body) {
+        return post(baseUrl + "/touch/multi/perform", body);
+    }
 }
 
