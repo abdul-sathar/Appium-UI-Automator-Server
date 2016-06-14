@@ -19,7 +19,6 @@ import io.appium.uiautomator2.utils.Logger;
 public abstract class TouchEvent extends SafeRequestHandler {
     protected int clickX, clickY;
     private AndroidElement element;
-    private boolean isElement;
 
     public TouchEvent(String mappedUri) {
         super(mappedUri);
@@ -67,7 +66,6 @@ public abstract class TouchEvent extends SafeRequestHandler {
         if (duration.length > 0) {
             extra = ", duration: " + duration[0];
         }
-        Logger.debug("Performing " + methodName + " using element? " + isElement
-                + " x: " + clickX + ", y: " + clickY + extra);
+        Logger.debug("Performing " + methodName + " x: " + clickX + ", y: " + clickY + extra);
     }
 }
