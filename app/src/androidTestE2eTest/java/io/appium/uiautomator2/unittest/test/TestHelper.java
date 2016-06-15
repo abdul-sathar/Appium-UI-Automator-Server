@@ -13,8 +13,12 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -70,7 +74,7 @@ public abstract class TestHelper {
             Response response = client.newCall(request).execute();
             result = response.body().string();
         } catch (IOException e) {
-            throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. " + e);
+            throw new UiAutomator2Exception(request.method() + " \"" + request.urlString() + "\" failed. " + e);
         }
         return result;
     }
@@ -99,5 +103,24 @@ public abstract class TestHelper {
             waitStatus = getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
             if (waitStatus) break;
         } while ((elapsedRealtime() - start < LAUNCH_TIMEOUT));
+    }
+
+    /**
+     * return JSONObjects count in a JSONArray
+     *
+     * @param jsonArray
+     *
+     * @return
+     */
+    public static int getJsonObjectCountInJsonArray(JSONArray jsonArray) {
+        int count = 0;
+        try {
+            for (int i = 0; i < jsonArray.length(); i++, count++) {
+                jsonArray.getJSONObject(i);
+            }
+            return count;
+        } catch (JSONException e) {
+            return count;
+        }
     }
 }

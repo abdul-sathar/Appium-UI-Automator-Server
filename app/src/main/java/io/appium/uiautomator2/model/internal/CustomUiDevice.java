@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
@@ -15,10 +16,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.ReflectionUtils;
 
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
@@ -66,67 +71,76 @@ public class CustomUiDevice {
     /**
      * Returns the first object to match the {@code selector} criteria.
      */
-    public UiObject2 findObject(BySelector selector) throws ClassNotFoundException {
+    public Object findObject(Object selector) throws ClassNotFoundException, ElementNotFoundException, InvalidSelectorException {
 
-        AccessibilityNodeInfo node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots(false));
-        if (node != null) {
-            try {
-                Class uiObject2 = Class.forName("android.support.test.uiautomator" + ".UiObject2");
-                Constructor cons = uiObject2.getDeclaredConstructors()[0];
-                cons.setAccessible(true);
-                Object[] constructorParams = {device, selector, node};
-                return (UiObject2) cons.newInstance(constructorParams);
-            } catch (InvocationTargetException e) {
-                final String msg = String.format("error while creating  UiObject2 object");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
-            } catch (InstantiationException e) {
-                final String msg = String.format("error while creating  UiObject2 object");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
-            } catch (IllegalAccessException e) {
-                final String msg = String.format("error while creating  UiObject2 object");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
+        if (selector instanceof BySelector) {
+            AccessibilityNodeInfo node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots(false));
+            if (node != null) {
+                try {
+                    Class uiObject2 = Class.forName("android.support.test.uiautomator" + ".UiObject2");
+                    Constructor cons = uiObject2.getDeclaredConstructors()[0];
+                    cons.setAccessible(true);
+                    Object[] constructorParams = {device, selector, node};
+                    return (UiObject2) cons.newInstance(constructorParams);
+                } catch (InvocationTargetException e) {
+                    final String msg = String.format("error while creating  UiObject2 object");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                } catch (InstantiationException e) {
+                    final String msg = String.format("error while creating  UiObject2 object");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                } catch (IllegalAccessException e) {
+                    final String msg = String.format("error while creating  UiObject2 object");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                }
+            } else {
+                return null;
             }
+        } else if (selector instanceof UiSelector) {
+            return getUiDevice().findObject((UiSelector) selector);
         } else {
-            return null;
+            throw new InvalidSelectorException("Selector of type " + selector.getClass().getName() + " not supported");
         }
     }
 
     /**
-     * Returns the first object to match the {@code selector} criteria.
+     * Returns List<object> to match the {@code selector} criteria.
      */
-    public List<UiObject2> findObjects(BySelector selector) throws ClassNotFoundException {
+    public List<Object> findObjects(Object selector) throws ClassNotFoundException, InvalidSelectorException {
 
-        List<UiObject2> ret = new ArrayList<>();
+        List<Object> ret = new ArrayList<>();
 
-        ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
+        if (selector instanceof BySelector) {
+            ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
 
-        Object nodes = invoke(METHOD_FIND_MATCHS, ByMatcher, device, selector, getWindowRoots(false));
+            Object nodes = invoke(METHOD_FIND_MATCHS, ByMatcher, device, selector, getWindowRoots(false));
 
-        ArrayList<AccessibilityNodeInfo> list = (ArrayList) nodes;
-        for (Object node : list) {
-            try {
-
-                Class uiObject2 = Class.forName("android.support.test.uiautomator" + ".UiObject2");
-                Constructor cons = uiObject2.getDeclaredConstructors()[0];
-                cons.setAccessible(true);
-                Object[] constructorParams = {device, selector, node};
-                ret.add((UiObject2) cons.newInstance(constructorParams));
-            } catch (InvocationTargetException e) {
-                final String msg = String.format("error while creating  UiObject2 object:");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
-            } catch (InstantiationException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
-            } catch (IllegalAccessException e) {
-                final String msg = String.format("error while creating  UiObject2 bject");
-                Logger.error(msg + " " + e);
-                throw new RuntimeException(msg, e);
+            ArrayList<AccessibilityNodeInfo> list = (ArrayList) nodes;
+            for (Object node : list) {
+                try {
+                    Class uiObject2 = Class.forName("android.support.test.uiautomator" + ".UiObject2");
+                    Constructor cons = uiObject2.getDeclaredConstructors()[0];
+                    cons.setAccessible(true);
+                    Object[] constructorParams = {device, selector, node};
+                    ret.add((UiObject2) cons.newInstance(constructorParams));
+                } catch (InvocationTargetException e) {
+                    final String msg = String.format("error while creating  UiObject2 object:");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                } catch (InstantiationException e) {
+                    final String msg = String.format("error while creating  UiObject2 object");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                } catch (IllegalAccessException e) {
+                    final String msg = String.format("error while creating  UiObject2 object");
+                    Logger.error(msg + " " + e);
+                    throw new UiAutomator2Exception(msg, e);
+                }
             }
+        } else {
+            throw new InvalidSelectorException("Selector of type " + selector.getClass().getName() + " not supported");
         }
         return ret;
     }

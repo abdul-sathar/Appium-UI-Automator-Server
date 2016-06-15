@@ -124,8 +124,8 @@ public class TestUtil {
         String elementId;
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-        } catch (JSONException e) {
-            throw new RuntimeException("Element not found", e);
+        } catch (JSONException jsonException) {
+            throw jsonException;
         }
 
         JSONObject jsonObject = new JSONObject();
@@ -295,6 +295,9 @@ public class TestUtil {
             } else if (by instanceof By.ByXPath) {
                 jsonObject.put("using", "xpath");
                 jsonObject.put("value", ((By.ByXPath) by).getElementLocator());
+            } else if (by instanceof By.ByAndroidUiAutomator) {
+                jsonObject.put("using", "-android uiautomator");
+                jsonObject.put("value", ((By.ByAndroidUiAutomator) by).getElementLocator());
             } else {
                 throw new UiAutomator2Exception("Unable to create json object: " + by);
             }
@@ -415,7 +418,7 @@ public class TestUtil {
      */
     public static String rotateScreen(String orientation) throws JSONException {
         JSONObject postBody = new JSONObject().put("params"
-                ,new JSONObject().put("orientation", orientation));
+                , new JSONObject().put("orientation", orientation));
 
         return post(baseUrl + "/orientation", postBody.toString());
     }

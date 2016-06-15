@@ -18,12 +18,14 @@ import java.util.List;
 
 /**
  * Mechanism used to locate elements within a document. In order to create your own locating
- * mechanisms, it is possible to subclass this class and override the protected methods as required.
+ * mechanisms, it is possible to subclass this class and override the protected methods as
+ * required.
  */
 public abstract class By {
 
     /**
      * @param id The value of the "id" attribute to search for
+     *
      * @return a By which locates elements by the value of the "id" attribute.
      */
     public static By id(final String id) {
@@ -65,6 +67,13 @@ public abstract class By {
         return new ByClass(className);
     }
 
+    public static By androidUiAutomator(String expression) {
+        if (expression == null)
+            throw new IllegalArgumentException("Cannot find elements when '-android uiautomator'" +
+                    " is null.");
+        return new ByAndroidUiAutomator(expression);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,6 +88,7 @@ public abstract class By {
      * Find a single element. Override this method if necessary.
      *
      * @param context A context to use to find the element
+     *
      * @return The AndroidElement that matches the selector
      */
     public abstract AndroidElement findElement(SearchContext context);
@@ -87,6 +97,7 @@ public abstract class By {
      * Find many elements.
      *
      * @param context A context to use to find the element
+     *
      * @return A list of AndroidElement matching the selector
      */
     public abstract List<AndroidElement> findElements(SearchContext context);
@@ -259,6 +270,39 @@ public abstract class By {
         @Override
         public String getElementLocator() {
             return xpathExpression;
+        }
+
+        @Override
+        public String toString() {
+            return "By.xpath: " + xpathExpression;
+        }
+    }
+
+    public static class ByAndroidUiAutomator extends By {
+        private final String expresion;
+
+        public ByAndroidUiAutomator(String expresion) {
+            this.expresion = expresion;
+        }
+
+        @Override
+        public AndroidElement findElement(SearchContext context) {
+            return context.findElement(this);
+        }
+
+        @Override
+        public List<AndroidElement> findElements(SearchContext context) {
+            return context.findElements(this);
+        }
+
+        @Override
+        public String getElementLocator() {
+            return expresion;
+        }
+
+        @Override
+        public String toString() {
+            return "By.AndroidUiAutomator: " + expresion;
         }
     }
 }
