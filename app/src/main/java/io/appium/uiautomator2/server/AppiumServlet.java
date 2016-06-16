@@ -35,7 +35,10 @@ import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Source;
 import io.appium.uiautomator2.handler.Status;
 import io.appium.uiautomator2.handler.Swipe;
+import io.appium.uiautomator2.handler.TouchDown;
 import io.appium.uiautomator2.handler.TouchLongClick;
+import io.appium.uiautomator2.handler.TouchMove;
+import io.appium.uiautomator2.handler.TouchUp;
 import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -88,6 +91,9 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new Flick("/wd/hub/session/:sessionId/touch/flick"));
         register(postHandler, new ScrollTo("/wd/hub/session/:sessionId/touch/scroll"));
         register(postHandler, new MultiPointerGesture("/wd/hub/session/:sessionId/touch/multi/perform"));
+        register(postHandler, new TouchDown("/wd/hub/session/:sessionId/touch/down"));
+        register(postHandler, new TouchUp("/wd/hub/session/:sessionId/touch/up"));
+        register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
     }
 
     private void registerGetHandler() {
