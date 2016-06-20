@@ -5,6 +5,8 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
@@ -24,7 +26,7 @@ public abstract class AccessibilityNodeInfoGetter {
         } else if (object instanceof UiObject) {
             return (AccessibilityNodeInfo) invoke(method(UiObject.class, "findAccessibilityNodeInfo"), object);
         } else {
-            throw new RuntimeException("Unknown object type: " + object.getClass().getName());
+            throw new UiAutomator2Exception("Unknown object type: " + object.getClass().getName());
         }
     }
 }

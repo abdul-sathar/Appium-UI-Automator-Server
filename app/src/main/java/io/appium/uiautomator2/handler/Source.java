@@ -11,6 +11,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -45,7 +46,7 @@ public class Source extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, xmlString);
         } catch (final TransformerConfigurationException e) {
             Logger.error("Unable to handle the request:" + e);
-            throw new RuntimeException("Something went terribly wrong while converting xml document to string", e);
+            throw new UiAutomator2Exception("Something went terribly wrong while converting xml document to string", e);
         } catch (final TransformerException e) {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Could not parse xml hierarchy to string: " + e);
         }

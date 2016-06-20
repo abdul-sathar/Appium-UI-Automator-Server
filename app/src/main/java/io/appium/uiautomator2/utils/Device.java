@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.UiObject2Element;
 import io.appium.uiautomator2.model.UiObjectElement;
@@ -29,7 +30,7 @@ public abstract class Device {
         } else if (element instanceof UiObject) {
             return new UiObjectElement(id, (UiObject) element);
         } else {
-            throw new RuntimeException("Unknown Element type: " + element.getClass().getName());
+            throw new UiAutomator2Exception("Unknown Element type: " + element.getClass().getName());
         }
     }
 

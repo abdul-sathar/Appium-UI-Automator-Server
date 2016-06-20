@@ -60,7 +60,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
             // The advantage of catching general Exception here is that we can propagate the Exception to clients.
             Logger.error("Exception while handling action in: " + this.getClass().getName(), e);
             return AppiumResponse.forCatchAllError(getSessionId(request), e);
-        } catch (Error e) {
+        } catch (Throwable e) {
             // Catching Errors seems like a bad idea in general but if we don't catch this, Netty will catch it anyway.
             // The advantage of catching it here is that we can propagate the Error to clients.
             Logger.error("Fatal error while handling action in: " + this.getClass().getName(), e);
