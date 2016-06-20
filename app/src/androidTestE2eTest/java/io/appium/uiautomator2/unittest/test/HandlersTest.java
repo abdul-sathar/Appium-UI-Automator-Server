@@ -25,6 +25,7 @@ import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
+import static io.appium.uiautomator2.unittest.test.TestHelper.getJsonObjectCountInJsonArray;
 import static io.appium.uiautomator2.unittest.test.TestUtil.appStrings;
 import static io.appium.uiautomator2.unittest.test.TestUtil.click;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
@@ -35,6 +36,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getAttribute;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getDeviceSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getLocation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getName;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getScreenOrientation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
@@ -47,7 +49,6 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
-import static io.appium.uiautomator2.unittest.test.TestUtil.getScreenOrientation;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -67,6 +68,8 @@ public class HandlersTest {
     private static ServerInstrumentation serverInstrumentation;
     private static Context ctx;
     private String response;
+    private String element;
+    private String result;
 
 
     /**
@@ -116,9 +119,9 @@ public class HandlersTest {
     public void clickElementTest() throws JSONException {
 
         waitForElement(By.name("Accessibility"), 5 * SECOND);
-        String element = findElement(By.name("Accessibility"));
+        element = findElement(By.name("Accessibility"));
         Logger.info("[AppiumUiAutomator2Server]", " click element:" + element);
-        String result = getStringValueInJsonObject(element, "status");
+        result = getStringValueInJsonObject(element, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
         click(element);
         getUiDevice().waitForIdle();
@@ -132,11 +135,11 @@ public class HandlersTest {
      * Test for findElement
      */
     @Test
-    public void findElementTest() throws JSONException {
+    public void findElementTest() throws JSONException, InterruptedException {
         waitForElement(By.name("API Demos"), 5 * SECOND);
         response = findElement(By.name("API Demos"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.name: " + response);
-        String result = getStringValueInJsonObject(response, "status");
+        result = getStringValueInJsonObject(response, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
 
         response = findElement(By.xpath("//*[@resource-id='android:id/action_bar']"));
@@ -156,6 +159,54 @@ public class HandlersTest {
     }
 
     /**
+     * test to find element using "-android automator" property
+     */
+    @Test
+    public void findElementUsingUiAutomatorTest() throws JSONException {
+        waitForElement(By.name("API Demos"), 5 * SECOND);
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        click(findElement(By.name("Views")));
+
+        element = findElement(By.androidUiAutomator("new UiScrollable(new UiSelector()"
+                + ".resourceId(\"android:id/list\")).scrollIntoView("
+                + "new UiSelector().text(\"Radio Group\"));"));
+
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+
+        click(element);
+
+        element = findElement(By.name("Radio Group"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+    }
+
+
+    /**
+     * test to find elements using "-android automator" property
+     */
+    @Test
+    public void findElementsUsingUiAutomatorTest() throws JSONException {
+        waitForElement(By.name("API Demos"), 5 * SECOND);
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        click(findElement(By.name("Views")));
+
+        response = findElements(By.androidUiAutomator("resourceId(\"android:id/text1\")"));
+
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + response);
+        result = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+
+        JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
+        int elementCount = getJsonObjectCountInJsonArray(elements);
+        assertTrue("Elements Count in views screen should at least > 5, " +
+                "in all variants of screen sizes, but actual" + elementCount, elementCount > 5);
+
+    }
+
+    /**
      * Test for findElements
      */
     @Test
@@ -163,7 +214,7 @@ public class HandlersTest {
 
         response = findElements(By.className("android.widget.TextView"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + response);
-        String result = getStringValueInJsonObject(response, "status");
+        result = getStringValueInJsonObject(response, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
     }
 
@@ -172,10 +223,10 @@ public class HandlersTest {
      */
     @Test
     public void getAttributeTest() throws JSONException {
-        String element = findElement(By.name("App"));
+        element = findElement(By.name("App"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.name: " + element);
 
-        String result = getAttribute(element, "resourceId");
+        result = getAttribute(element, "resourceId");
         Logger.info("[AppiumUiAutomator2Server]", " getAttribute: resourceId - " + result);
         assertEquals("android:id/text1", getStringValueInJsonObject(result, "value"));
 
@@ -194,7 +245,7 @@ public class HandlersTest {
      */
     @Test
     public void getTextTest() throws JSONException {
-        String element = findElement(By.id("android:id/text1"));
+        element = findElement(By.id("android:id/text1"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
         assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Accessibility");
@@ -303,7 +354,7 @@ public class HandlersTest {
     public void getLocationTest() throws JSONException, InterruptedException {
         startActivity(ctx, "io.appium.android.apis", ".view.ChronometerDemo");
         waitForElement(By.id("io.appium.android.apis:id/start"), 10 * SECOND);
-        String element = findElement(By.id("io.appium.android.apis:id/start"));
+        element = findElement(By.id("io.appium.android.apis:id/start"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + element);
         String response = getLocation(element);
         JSONObject json = new JSONObject(new JSONObject(response).get("value").toString());
@@ -359,8 +410,8 @@ public class HandlersTest {
          */
         actions.put(action1).put(action2);
 
-        response = multiPointerGesture((new JSONObject().put("actions",actions)).toString());
-        Logger.info("multi touch response: "+response);
+        response = multiPointerGesture((new JSONObject().put("actions", actions)).toString());
+        Logger.info("multi touch response: " + response);
         assertEquals(getStringValueInJsonObject(response, "value"), "OK");
 
         elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
@@ -413,10 +464,9 @@ public class HandlersTest {
     @Test
     public void touchLongClickTest() throws JSONException {
         waitForElement(By.name("Accessibility"), 5 * SECOND);
-        String element = findElement(By.name("Accessibility"));
-        Logger.info
-                ("[AppiumUiAutomator2Server]", "long click element:" + element);
-        String result = getStringValueInJsonObject(element, "status");
+        element = findElement(By.name("Accessibility"));
+        Logger.info("[AppiumUiAutomator2Server]", "long click element:" + element);
+        result = getStringValueInJsonObject(element, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
         longClick(element);
         getUiDevice().waitForIdle();
@@ -439,7 +489,7 @@ public class HandlersTest {
         waitForElement(By.name("Views"), 10 * SECOND);
         click(findElement(By.name("Views")));
         String scrollToText = "Radio Group";
-        String element = findElement(By.name(scrollToText));
+        element = findElement(By.name(scrollToText));
         String status = getStringValueInJsonObject(element, "status");
         // Before Scroll 'Radio Group' Element was not found
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(status));
