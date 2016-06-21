@@ -446,7 +446,7 @@ public class HandlersTest {
         int x2 = JsonPath.compile("$.x").read(json.toString());
         int y2 = JsonPath.compile("$.y").read(json.toString());
 
-        swipe(x1, y1, x2, y2);
+        swipe(x1, y1, x2, y2, 1 * SECOND);
 
         //After Swipe
         startElement = findElement(By.name("Buttons"));

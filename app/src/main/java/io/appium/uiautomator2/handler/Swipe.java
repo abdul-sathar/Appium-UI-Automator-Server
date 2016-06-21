@@ -23,14 +23,14 @@ public class Swipe extends SafeRequestHandler {
             String json = getPayload(request).toString();
             boolean isActionPerformed;
             int startX, startY, endX, endY, steps;
-            String actionMsg, options = "$.actions[*].options.";
+            String actionMsg, options = "swipeOpts.";
             Logger.info("Json Payload: ", json);
 
-            startX = JsonPath.compile(options + "x[0]").read(json);
-            startY = JsonPath.compile(options + "y[0]").read(json);
-            endX = JsonPath.compile(options + "x[1]").read(json);
-            endY = JsonPath.compile(options + "y[1]").read(json);
-            steps = JsonPath.compile(options + "ms[0]").read(json);
+            startX = JsonPath.compile(options + "startX").read(json);
+            startY = JsonPath.compile(options + "startY").read(json);
+            endX = JsonPath.compile(options + "endX").read(json);
+            endY = JsonPath.compile(options + "endY").read(json);
+            steps = JsonPath.compile(options + "steps").read(json);
 
             isActionPerformed = Device.getUiDevice().swipe(startX, startY, endX, endY, steps);
 
@@ -47,7 +47,5 @@ public class Swipe extends SafeRequestHandler {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
-
-
     }
 }
