@@ -6,7 +6,6 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
-import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
@@ -58,8 +57,11 @@ public class CustomUiDevice {
 
             ByMatcher = ReflectionUtils.getClass("android.support.test.uiautomator" + ".ByMatcher");
         } catch (Error error) {
-            Log.e("ERROR", "error", error);
+            Logger.error("ERROR", "error", error);
             throw error;
+        } catch (UiAutomator2Exception error) {
+            Logger.error("ERROR", "error", error);
+            throw new Error(error);
         }
     }
 
@@ -71,7 +73,7 @@ public class CustomUiDevice {
     /**
      * Returns the first object to match the {@code selector} criteria.
      */
-    public Object findObject(Object selector) throws ClassNotFoundException, ElementNotFoundException, InvalidSelectorException {
+    public Object findObject(Object selector) throws ClassNotFoundException, ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception {
 
         if (selector instanceof BySelector) {
             AccessibilityNodeInfo node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots(false));
@@ -108,10 +110,9 @@ public class CustomUiDevice {
     /**
      * Returns List<object> to match the {@code selector} criteria.
      */
-    public List<Object> findObjects(Object selector) throws ClassNotFoundException, InvalidSelectorException {
+    public List<Object> findObjects(Object selector) throws ClassNotFoundException, InvalidSelectorException, UiAutomator2Exception {
 
         List<Object> ret = new ArrayList<>();
-
         if (selector instanceof BySelector) {
             ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
 
@@ -148,9 +149,8 @@ public class CustomUiDevice {
     /**
      * Returns a list containing the root {@link AccessibilityNodeInfo}s for each active window
      */
-    AccessibilityNodeInfo[] getWindowRoots(boolean multiWindow) {
-        //waitForIdle();
-
+    AccessibilityNodeInfo[] getWindowRoots(boolean multiWindow) throws UiAutomator2Exception {
+        device.waitForIdle();
         ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
         // Support multi-window searches for API level 21 and up
         //TODO: need to handle multiWindows param better way
@@ -166,7 +166,33 @@ public class CustomUiDevice {
             }
             // Prior to API level 21 we can only access the active window
         } else {
-            ret.add(mInstrumentation.getUiAutomation().getRootInActiveWindow());
+            AccessibilityNodeInfo node = mInstrumentation.getUiAutomation().getRootInActiveWindow();
+            if (node != null) {
+                ret.add(node);
+            } else {
+                /*TODO: As we can't proceed to find element with out root node,
+                 TODO: retrying for 5 times to get the root node if UiTestAutomationBridge reruns null
+                 TODO: need to handle gracefully*/
+                //AccessibilityNodeInfo should not be null.
+                int retryCount = 0;
+                while (node == null) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {
+                    }
+                    device.waitForIdle();
+                    Logger.debug(" ERROR: null root node returned by UiTestAutomationBridge, retrying: " + retryCount);
+                    node = mInstrumentation.getUiAutomation().getRootInActiveWindow();
+                    retryCount++;
+                    if (node != null) {
+                        ret.add(node);
+                        break;
+                    } else if (retryCount > 5) {
+                        throw new UiAutomator2Exception("Unable to get Root in Active window," +
+                                " ERROR: null root node returned by UiTestAutomationBridge.");
+                    }
+                }
+            }
         }
         return ret.toArray(new AccessibilityNodeInfo[ret.size()]);
     }
