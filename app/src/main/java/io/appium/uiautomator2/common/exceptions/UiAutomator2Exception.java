@@ -1,6 +1,6 @@
 package io.appium.uiautomator2.common.exceptions;
 
-public class UiAutomator2Exception extends RuntimeException {
+public class UiAutomator2Exception extends Exception {
     private static final long serialVersionUID = -1592305571101012889L;
 
     public UiAutomator2Exception(String message) {

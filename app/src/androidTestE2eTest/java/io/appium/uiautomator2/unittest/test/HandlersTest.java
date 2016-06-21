@@ -194,7 +194,6 @@ public class HandlersTest {
         click(findElement(By.name("Views")));
 
         response = findElements(By.androidUiAutomator("resourceId(\"android:id/text1\")"));
-
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + response);
         result = getStringValueInJsonObject(response, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
@@ -202,7 +201,7 @@ public class HandlersTest {
         JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
         int elementCount = getJsonObjectCountInJsonArray(elements);
         assertTrue("Elements Count in views screen should at least > 5, " +
-                "in all variants of screen sizes, but actual" + elementCount, elementCount > 5);
+                "in all variants of screen sizes, but actual: " + elementCount, elementCount > 5);
 
     }
 

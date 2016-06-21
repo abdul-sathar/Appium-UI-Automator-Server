@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.API;
 import io.appium.uiautomator2.utils.Logger;
 
@@ -50,7 +51,7 @@ public class AccessibilityNodeInfoDumper {
      *
      * @param root The root accessibility node.
      */
-    public static String getWindowXMLHierarchy(AccessibilityNodeInfo root) {
+    public static String getWindowXMLHierarchy(AccessibilityNodeInfo root) throws UiAutomator2Exception {
         final long startTime = SystemClock.uptimeMillis();
         StringWriter xmlDump = new StringWriter();
         try {

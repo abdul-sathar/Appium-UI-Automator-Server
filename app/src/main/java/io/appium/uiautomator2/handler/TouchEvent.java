@@ -8,6 +8,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -55,10 +56,12 @@ public abstract class TouchEvent extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         } catch (UiObjectNotFoundException e) {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (UiAutomator2Exception e) {
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
     }
 
-    protected abstract boolean executeTouchEvent() throws UiObjectNotFoundException;
+    protected abstract boolean executeTouchEvent() throws UiObjectNotFoundException, UiAutomator2Exception;
 
     protected void printEventDebugLine(final String methodName,
                                        final Integer... duration) {

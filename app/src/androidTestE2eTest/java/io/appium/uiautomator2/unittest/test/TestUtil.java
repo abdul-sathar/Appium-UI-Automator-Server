@@ -6,7 +6,6 @@ import android.content.Intent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.By.ByName;
 import io.appium.uiautomator2.server.WDStatus;
@@ -299,7 +298,7 @@ public class TestUtil {
                 jsonObject.put("using", "-android uiautomator");
                 jsonObject.put("value", ((By.ByAndroidUiAutomator) by).getElementLocator());
             } else {
-                throw new UiAutomator2Exception("Unable to create json object: " + by);
+                throw new JSONException("Unable to create json object: " + by);
             }
         } catch (JSONException e) {
             Logger.error("Unable to form JSON Object: " + e);

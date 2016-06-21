@@ -18,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.common.exceptions.UiSelectorSyntaxException;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -49,7 +50,7 @@ public class FindElements extends SafeRequestHandler {
     /**
      * returns  UiObject2 for an xpath expression
      **/
-    private static List<Object> getXPathUiObjects(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException {
+    private static List<Object> getXPathUiObjects(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception {
         final List<BySelector> selectors = new ArrayList<BySelector>();
 
         final ArrayList<ClassInstancePair> pairs = contextId.equals("") ? XMLHierarchy.getClassInstancePairs(expression) : XMLHierarchy.getClassInstancePairs(expression, contextId);
@@ -78,7 +79,7 @@ public class FindElements extends SafeRequestHandler {
             String selector = payload.getString("value");
             Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
             By by = new NativeAndroidBySelector().pickFrom(method, selector);
-
+            getUiDevice().waitForIdle();
             List<Object> elements = this.findElements(by);
 
 
@@ -112,10 +113,13 @@ public class FindElements extends SafeRequestHandler {
         } catch (ClassNotFoundException e) {
             Logger.error("Class not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (UiAutomator2Exception e) {
+            Logger.error("Exception while finding element: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
     }
 
-    private List<Object> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException {
+    private List<Object> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException, UiAutomator2Exception {
         if (by instanceof By.ById) {
             return getInstance().findObjects(android.support.test.uiautomator.By.res(by.getElementLocator()));
         }/* else if (by instanceof ByTagName) {

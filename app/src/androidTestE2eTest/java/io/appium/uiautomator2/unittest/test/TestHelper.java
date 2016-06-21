@@ -18,7 +18,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -74,7 +73,7 @@ public abstract class TestHelper {
             Response response = client.newCall(request).execute();
             result = response.body().string();
         } catch (IOException e) {
-            throw new UiAutomator2Exception(request.method() + " \"" + request.urlString() + "\" failed. " + e);
+            throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. " + e);
         }
         return result;
     }

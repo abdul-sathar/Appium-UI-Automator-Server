@@ -24,7 +24,7 @@ public abstract class Device {
         return uiDevice;
     }
 
-    public static AndroidElement getAndroidElement(String id, Object element) {
+    public static AndroidElement getAndroidElement(String id, Object element) throws UiAutomator2Exception {
         if (element instanceof UiObject2) {
             return new UiObject2Element(id, (UiObject2) element);
         } else if (element instanceof UiObject) {

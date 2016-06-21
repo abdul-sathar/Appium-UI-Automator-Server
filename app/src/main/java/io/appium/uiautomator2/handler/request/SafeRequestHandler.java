@@ -29,7 +29,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
     }
 
 
-    protected String[] extractKeysToSendFromPayload(IHttpRequest request) throws JSONException {
+    protected String[] extractKeysToSendFromPayload(IHttpRequest request) throws JSONException, UiAutomator2Exception {
         JSONArray valueArr = getPayload(request).getJSONArray("value");
         if (valueArr == null || valueArr.length() == 0) {
             throw new UiAutomator2Exception("No key to send to an element was found.");

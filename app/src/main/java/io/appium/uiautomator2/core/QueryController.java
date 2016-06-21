@@ -17,6 +17,8 @@ package io.appium.uiautomator2.core;
 
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
@@ -31,7 +33,7 @@ public class QueryController {
         this.queryController = queryController;
     }
 
-    public AccessibilityNodeInfo getAccessibilityRootNode() {
+    public AccessibilityNodeInfo getAccessibilityRootNode() throws UiAutomator2Exception {
         return (AccessibilityNodeInfo) invoke(method(CLASS_QUERY_CONTROLLER, METHOD_GET_ACCESSIBILITY_ROOT_NODE), queryController);
     }
 

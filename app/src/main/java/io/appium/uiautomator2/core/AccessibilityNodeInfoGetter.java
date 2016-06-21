@@ -20,7 +20,7 @@ public abstract class AccessibilityNodeInfoGetter {
     /**
      * Gets the {@link AccessibilityNodeInfo} associated with the given {@link UiObject2}
      */
-    public static AccessibilityNodeInfo fromUiObject(Object object) {
+    public static AccessibilityNodeInfo fromUiObject(Object object) throws UiAutomator2Exception {
         if (object instanceof UiObject2) {
             return (AccessibilityNodeInfo) invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), object);
         } else if (object instanceof UiObject) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.PowerManager;
 
-import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Logger;
 
 public class ServerInstrumentation {
@@ -64,7 +63,7 @@ public class ServerInstrumentation {
         Logger.info("io.appium.uiautomator2.server started:");
     }
 
-    private void stopServerThread() {
+    private void stopServerThread()  {
         if (serverThread == null) {
             return;
         }
@@ -78,8 +77,7 @@ public class ServerInstrumentation {
         serverThread.interrupt();
         try {
             serverThread.join();
-        } catch (InterruptedException e) {
-            throw new UiAutomator2Exception(e);
+        } catch (InterruptedException ignored) {
         }
         serverThread = null;
     }
