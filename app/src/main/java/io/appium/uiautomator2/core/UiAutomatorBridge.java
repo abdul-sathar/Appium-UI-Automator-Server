@@ -48,10 +48,10 @@ public class UiAutomatorBridge {
 
             this.uiAutomatorBridge = getField(UiDevice.class, FIELD_UI_AUTOMATOR_BRIDGE, device);
         } catch (Error error) {
-            Logger.error("ERROR", "error", error);
+            Logger.error("ERROR", error);
             throw error;
         } catch (UiAutomator2Exception error) {
-            Logger.error("ERROR", "error", error);
+            Logger.error("ERROR", error);
             throw new Error(error);
         }
     }
