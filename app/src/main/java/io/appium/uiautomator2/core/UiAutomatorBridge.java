@@ -16,12 +16,12 @@
 package io.appium.uiautomator2.core;
 
 import android.support.test.uiautomator.UiDevice;
-import android.util.Log;
 import android.view.Display;
 import android.view.InputEvent;
 
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Device;
+import io.appium.uiautomator2.utils.Logger;
 
 import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
@@ -48,10 +48,10 @@ public class UiAutomatorBridge {
 
             this.uiAutomatorBridge = getField(UiDevice.class, FIELD_UI_AUTOMATOR_BRIDGE, device);
         } catch (Error error) {
-            Log.e("ERROR", "error", error);
+            Logger.error("ERROR", "error", error);
             throw error;
         } catch (UiAutomator2Exception error) {
-            Log.e("ERROR", "error", error);
+            Logger.error("ERROR", "error", error);
             throw new Error(error);
         }
     }
