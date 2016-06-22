@@ -63,7 +63,7 @@ public class ServerInstrumentation {
         Logger.info("io.appium.uiautomator2.server started:");
     }
 
-    private void stopServerThread() {
+    private void stopServerThread()  {
         if (serverThread == null) {
             return;
         }
@@ -77,8 +77,7 @@ public class ServerInstrumentation {
         serverThread.interrupt();
         try {
             serverThread.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException ignored) {
         }
         serverThread = null;
     }

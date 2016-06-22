@@ -29,7 +29,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
     }
 
 
-    protected String[] extractKeysToSendFromPayload(IHttpRequest request) throws JSONException {
+    protected String[] extractKeysToSendFromPayload(IHttpRequest request) throws JSONException, UiAutomator2Exception {
         JSONArray valueArr = getPayload(request).getJSONArray("value");
         if (valueArr == null || valueArr.length() == 0) {
             throw new UiAutomator2Exception("No key to send to an element was found.");
@@ -60,7 +60,7 @@ public abstract class SafeRequestHandler extends BaseRequestHandler {
             // The advantage of catching general Exception here is that we can propagate the Exception to clients.
             Logger.error("Exception while handling action in: " + this.getClass().getName(), e);
             return AppiumResponse.forCatchAllError(getSessionId(request), e);
-        } catch (Error e) {
+        } catch (Throwable e) {
             // Catching Errors seems like a bad idea in general but if we don't catch this, Netty will catch it anyway.
             // The advantage of catching it here is that we can propagate the Error to clients.
             Logger.error("Fatal error while handling action in: " + this.getClass().getName(), e);

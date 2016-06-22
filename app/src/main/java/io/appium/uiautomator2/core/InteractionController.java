@@ -18,6 +18,8 @@ package io.appium.uiautomator2.core;
 import android.view.InputEvent;
 import android.view.MotionEvent.PointerCoords;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
@@ -36,27 +38,27 @@ public class InteractionController {
         this.interactionController = interactionController;
     }
 
-    public boolean sendKey(int keyCode, int metaState) {
+    public boolean sendKey(int keyCode, int metaState) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_SEND_KEY, int.class, int.class), interactionController, keyCode, metaState);
     }
 
-    public boolean injectEventSync(InputEvent event) {
+    public boolean injectEventSync(InputEvent event) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_INJECT_EVENT_SYNC, InputEvent.class), interactionController, event);
     }
 
-    public boolean touchDown(int x, int y) {
+    public boolean touchDown(int x, int y) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_TOUCH_DOWN, int.class, int.class), interactionController, x, y);
     }
 
-    public boolean touchUp(int x, int y) {
+    public boolean touchUp(int x, int y) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_TOUCH_UP, int.class, int.class), interactionController, x, y);
     }
 
-    public boolean touchMove(int x, int y) {
+    public boolean touchMove(int x, int y) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_TOUCH_MOVE, int.class, int.class), interactionController, x, y);
     }
 
-    public Boolean performMultiPointerGesture(PointerCoords[][] pcs) {
+    public Boolean performMultiPointerGesture(PointerCoords[][] pcs) throws UiAutomator2Exception {
         return (Boolean) invoke(method(CLASS_INTERACTION_CONTROLLER, METHOD_PERFORM_MULTI_POINTER_GESTURE, PointerCoords[][].class), interactionController, (Object) pcs);
     }
 }

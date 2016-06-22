@@ -38,6 +38,7 @@ import javax.xml.xpath.XPathFactory;
 import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.PairCreationException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoDumper;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.core.UiAutomatorBridge;
@@ -48,12 +49,12 @@ import io.appium.uiautomator2.model.internal.AndroidElementsHash;
 
 public abstract class XMLHierarchy {
 
-    public static ArrayList<ClassInstancePair> getClassInstancePairs(String xpathExpression) throws ElementNotFoundException, InvalidSelectorException, ParserConfigurationException {
+    public static ArrayList<ClassInstancePair> getClassInstancePairs(String xpathExpression) throws ElementNotFoundException, InvalidSelectorException, ParserConfigurationException, UiAutomator2Exception {
 
         return getClassInstancePairs(compileXpath(xpathExpression), getFormattedXMLDoc());
     }
 
-    public static ArrayList<ClassInstancePair> getClassInstancePairs(final String xpathExpression, final String contextId) throws InvalidSelectorException, ElementNotFoundException {
+    public static ArrayList<ClassInstancePair> getClassInstancePairs(final String xpathExpression, final String contextId) throws InvalidSelectorException, ElementNotFoundException, UiAutomator2Exception {
         AndroidElement contextElement = AndroidElementsHash.getInstance().getElement(contextId);
         AccessibilityNodeInfo contextNode = AccessibilityNodeInfoGetter.fromUiObject(contextElement.getUiObject());
 
@@ -94,17 +95,17 @@ public abstract class XMLHierarchy {
         return pairs;
     }
 
-    public static InputSource getRawXMLHierarchy() {
+    public static InputSource getRawXMLHierarchy() throws UiAutomator2Exception {
         AccessibilityNodeInfo root = getRootAccessibilityNode();
         return getRawXMLHierarchy(root);
     }
 
-    public static InputSource getRawXMLHierarchy(AccessibilityNodeInfo root) {
+    public static InputSource getRawXMLHierarchy(AccessibilityNodeInfo root) throws UiAutomator2Exception {
         String xmlDump = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(root);
         return new InputSource(new StringReader(xmlDump));
     }
 
-    private static AccessibilityNodeInfo getRootAccessibilityNode() {
+    private static AccessibilityNodeInfo getRootAccessibilityNode() throws UiAutomator2Exception {
         while (true) {
             AccessibilityNodeInfo root = UiAutomatorBridge.getInstance().getQueryController().getAccessibilityRootNode();
             if (root != null) {
@@ -113,11 +114,11 @@ public abstract class XMLHierarchy {
         }
     }
 
-    public static Node getFormattedXMLDoc() {
+    public static Node getFormattedXMLDoc() throws UiAutomator2Exception {
         return formatXMLInput(getRawXMLHierarchy());
     }
 
-    public static Node getFormattedXMLDoc(AccessibilityNodeInfo root) {
+    public static Node getFormattedXMLDoc(AccessibilityNodeInfo root) throws UiAutomator2Exception {
         return formatXMLInput(getRawXMLHierarchy(root));
     }
 

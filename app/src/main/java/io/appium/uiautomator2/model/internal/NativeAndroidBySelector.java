@@ -16,7 +16,7 @@ public class NativeAndroidBySelector {
     public static final String SELECTOR_CLASS = "class name";
     public static final String SELECTOR_ANDROID_UIAUTOMATOR = "-android uiautomator";
 
-    public By pickFrom(String method, String selector) {
+    public By pickFrom(String method, String selector) throws UiAutomator2Exception {
         if (SELECTOR_NATIVE_ID.equals(method)) {
             return By.id(selector);
         } else if (SELECTOR_NAME.equals(method)) {

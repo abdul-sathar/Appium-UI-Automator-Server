@@ -48,13 +48,13 @@ public class SendKeysToElement extends SafeRequestHandler {
 
             String currText = element.getText();
             new Clear("/wd/hub/session/:sessionId/element/:id/clear").handle(request);
-            if (element.getText() == null || element.getText().isEmpty()) {
+            if (!isTextFieldCleared(element)) {
                 // clear could have failed, or we could have a hint in the field
                 // we'll assume it is the latter
                 Logger.debug("Text not cleared. Assuming remainder is hint text.");
                 currText = "";
             }
-            if (!replace) {
+            if (!replace && currText != null) {
                 text = currText + text;
             }
             element.setText(text, unicodeKeyboard);
@@ -79,7 +79,16 @@ public class SendKeysToElement extends SafeRequestHandler {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
+    }
 
+    private boolean isTextFieldCleared(AndroidElement element) throws UiObjectNotFoundException {
+        if(element.getText() == null){
+            return true;
+        } else if(element.getText().isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

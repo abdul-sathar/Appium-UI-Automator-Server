@@ -169,7 +169,7 @@ public class AppiumServlet implements IHttpServlet {
     }
 
     @Override
-    public void handleHttpRequest(IHttpRequest request, IHttpResponse response) throws Exception {
+    public void handleHttpRequest(IHttpRequest request, IHttpResponse response) {
         BaseRequestHandler handler = null;
         if ("GET".equals(request.method())) {
             handler = findMatcher(request, getHandler);
@@ -182,7 +182,7 @@ public class AppiumServlet implements IHttpServlet {
         handleRequest(request, response, handler);
     }
 
-    public void handleRequest(IHttpRequest request, IHttpResponse response, BaseRequestHandler handler) throws Exception {
+    public void handleRequest(IHttpRequest request, IHttpResponse response, BaseRequestHandler handler) {
         if (handler == null) {
             response.setStatus(HttpStatusCode.NOT_FOUND.getStatusCode()).end();
             return;

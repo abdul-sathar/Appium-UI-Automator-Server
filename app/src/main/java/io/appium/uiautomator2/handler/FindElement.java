@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.common.exceptions.UiSelectorSyntaxException;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -47,7 +48,7 @@ public class FindElement extends SafeRequestHandler {
     /**
      * returns  UiObject2 for an xpath expression
      */
-    private static Object getXPathUiObject(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException {
+    private static Object getXPathUiObject(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception {
         final List<BySelector> selectors = new ArrayList<BySelector>();
 
         final ArrayList<ClassInstancePair> pairs = contextId.equals("") ? XMLHierarchy.getClassInstancePairs(expression) : XMLHierarchy.getClassInstancePairs(expression, contextId);
@@ -109,13 +110,16 @@ public class FindElement extends SafeRequestHandler {
         } catch (UiSelectorSyntaxException e) {
             Logger.error("Unable to parse UiSelector: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (UiAutomator2Exception e) {
+            Logger.error("Exception while finding element: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
     }
 
     /**
      * returns  UiObject2 for an xpath expression
      */
-    private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException {
+    private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException, UiAutomator2Exception {
         if (by instanceof ById) {
             return getInstance().findObject(android.support.test.uiautomator.By.res(by.getElementLocator()));
         } else if (by instanceof ByLinkText) {

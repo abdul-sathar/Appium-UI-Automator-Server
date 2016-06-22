@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.core.UiAutomatorBridge;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -41,6 +42,9 @@ public class MultiPointerGesture extends SafeRequestHandler {
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
+        } catch (UiAutomator2Exception e) {
+            Logger.error("Exception while performing LongPressKeyCode action: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
     }
 
