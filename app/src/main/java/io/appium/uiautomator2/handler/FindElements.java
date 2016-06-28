@@ -75,8 +75,8 @@ public class FindElements extends SafeRequestHandler {
             Logger.info("Find elements command");
             KnownElements ke = new KnownElements();
             JSONObject payload = getPayload(request);
-            String method = payload.getString("using");
-            String selector = payload.getString("value");
+            String method = payload.getString("strategy");
+            String selector = payload.getString("selector");
             Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
             By by = new NativeAndroidBySelector().pickFrom(method, selector);
             getUiDevice().waitForIdle();

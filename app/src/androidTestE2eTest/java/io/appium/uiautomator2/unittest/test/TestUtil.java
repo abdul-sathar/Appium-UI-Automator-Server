@@ -283,20 +283,20 @@ public class TestUtil {
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
             if (by instanceof ByName) {
-                jsonObject.put("using", "name");
-                jsonObject.put("value", ((By.ByName) by).getElementLocator());
+                jsonObject.put("strategy", "name");
+                jsonObject.put("selector", ((By.ByName) by).getElementLocator());
             } else if (by instanceof By.ByClass) {
-                jsonObject.put("using", "class name");
-                jsonObject.put("value", ((By.ByClass) by).getElementLocator());
+                jsonObject.put("strategy", "class name");
+                jsonObject.put("selector", ((By.ByClass) by).getElementLocator());
             } else if (by instanceof By.ById) {
-                jsonObject.put("using", "id");
-                jsonObject.put("value", ((By.ById) by).getElementLocator());
+                jsonObject.put("strategy", "id");
+                jsonObject.put("selector", ((By.ById) by).getElementLocator());
             } else if (by instanceof By.ByXPath) {
-                jsonObject.put("using", "xpath");
-                jsonObject.put("value", ((By.ByXPath) by).getElementLocator());
+                jsonObject.put("strategy", "xpath");
+                jsonObject.put("selector", ((By.ByXPath) by).getElementLocator());
             } else if (by instanceof By.ByAndroidUiAutomator) {
-                jsonObject.put("using", "-android uiautomator");
-                jsonObject.put("value", ((By.ByAndroidUiAutomator) by).getElementLocator());
+                jsonObject.put("strategy", "-android uiautomator");
+                jsonObject.put("selector", ((By.ByAndroidUiAutomator) by).getElementLocator());
             } else {
                 throw new JSONException("Unable to create json object: " + by);
             }
@@ -372,7 +372,7 @@ public class TestUtil {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
             jsonObject.put("id", elementId);
         } catch (JSONException e) {
-            throw new RuntimeException("Element not found");
+            throw new RuntimeException("Element not found", e);
         }
         return post(baseUrl + "/touch/longclick", jsonObject.toString());
     }
