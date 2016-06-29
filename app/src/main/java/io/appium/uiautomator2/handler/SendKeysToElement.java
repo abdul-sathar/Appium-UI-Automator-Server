@@ -29,7 +29,7 @@ public class SendKeysToElement extends SafeRequestHandler {
         try {
             Logger.info("send keys to element command");
             JSONObject payload = getPayload(request);
-            String id = payload.getString("id");
+            String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
             boolean replace = Boolean.parseBoolean(payload.getString("replace").toString());
             String text = payload.getString("text").toString();

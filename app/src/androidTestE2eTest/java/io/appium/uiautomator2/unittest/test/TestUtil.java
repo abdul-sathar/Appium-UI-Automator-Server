@@ -128,7 +128,7 @@ public class TestUtil {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
@@ -146,7 +146,7 @@ public class TestUtil {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         jsonObject.put("text", text);
         jsonObject.put("replace", false);
         return post(baseUrl + "/element/" + elementId + "/value", jsonObject.toString());
@@ -247,7 +247,7 @@ public class TestUtil {
     public static String flickOnElement(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         jsonObject.put("xoffset", 1);
         jsonObject.put("yoffset", 1);
         jsonObject.put("speed", 1000);
@@ -370,7 +370,7 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject();
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-            jsonObject.put("id", elementId);
+            jsonObject.put("elementId", elementId);
         } catch (JSONException e) {
             throw new RuntimeException("Element not found", e);
         }

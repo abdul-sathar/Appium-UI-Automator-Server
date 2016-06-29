@@ -31,7 +31,7 @@ public abstract class TouchEvent extends SafeRequestHandler {
         try {
             JSONObject json = getPayload(request);
             if (json.has("id")) {
-                String id = json.getString("id");
+                String id = json.getString("elementId");
                 element = KnownElements.getElementFromCache(id);
 
                 if (element != null) {
