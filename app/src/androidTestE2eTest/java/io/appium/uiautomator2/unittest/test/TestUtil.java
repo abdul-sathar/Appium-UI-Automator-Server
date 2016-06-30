@@ -416,8 +416,7 @@ public class TestUtil {
      * @throws JSONException
      */
     public static String rotateScreen(String orientation) throws JSONException {
-        JSONObject postBody = new JSONObject().put("params"
-                , new JSONObject().put("orientation", orientation));
+        JSONObject postBody = new JSONObject().put("orientation", orientation);
 
         return post(baseUrl + "/orientation", postBody.toString());
     }
