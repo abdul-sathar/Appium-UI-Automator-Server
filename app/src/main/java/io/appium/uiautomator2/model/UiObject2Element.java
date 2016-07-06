@@ -31,7 +31,8 @@ public class UiObject2Element implements AndroidElement{
     }
 
     public String getText() throws UiObjectNotFoundException {
-        return element.getText();
+        // on null returning empty string
+        return element.getText() != null ? element.getText() : "";
     }
 
     public String getName() throws UiObjectNotFoundException {

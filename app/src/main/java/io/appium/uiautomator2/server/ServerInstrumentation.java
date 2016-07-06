@@ -72,7 +72,7 @@ public class ServerInstrumentation {
             return;
         }
 
-        Logger.error("Stopping uiautomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server");
+        Logger.info("Stopping uiautomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server");
         serverThread.stopLooping();
         serverThread.interrupt();
         try {

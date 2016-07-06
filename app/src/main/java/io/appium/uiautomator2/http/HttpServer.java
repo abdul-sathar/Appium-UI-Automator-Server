@@ -35,6 +35,7 @@ public class HttpServer {
                 try {
                     ServerBootstrap bootstrap = new ServerBootstrap();
                     bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
+                    bootstrap.option(ChannelOption.SO_REUSEADDR, true);
                     bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ServerInitializer(handlers));
 
                     Channel ch = bootstrap.bind(port).sync().channel();
