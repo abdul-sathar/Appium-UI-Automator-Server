@@ -129,7 +129,7 @@ public abstract class XMLHierarchy {
         try {
             root = (Node) xpath.evaluate("/", input, XPathConstants.NODE);
         } catch (XPathExpressionException e) {
-            throw new RuntimeException("Could not read xml hierarchy: " + e);
+            throw new RuntimeException("Could not read xml hierarchy: ", e);
         }
 
         HashMap<String, Integer> instances = new HashMap<String, Integer>();

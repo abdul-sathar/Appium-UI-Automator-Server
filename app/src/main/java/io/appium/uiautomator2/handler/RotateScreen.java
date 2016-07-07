@@ -3,8 +3,6 @@ package io.appium.uiautomator2.handler;
 import android.os.RemoteException;
 import android.support.test.uiautomator.UiDevice;
 
-import com.jayway.jsonpath.JsonPath;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,8 +25,7 @@ public class RotateScreen extends SafeRequestHandler {
 
         try {
             JSONObject payload = getPayload(request);
-            String selector = "$.params.orientation";
-            String orientation = JsonPath.compile(selector).read(payload.toString());
+            String orientation = payload.getString("orientation");
             return handleRotation(request, orientation);
         } catch (RemoteException e) {
             Logger.error("Exception while rotating Screen ", e);

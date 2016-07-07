@@ -23,7 +23,7 @@ public class Clear extends SafeRequestHandler {
         try {
             Logger.info("Clear element command");
             JSONObject payload = getPayload(request);
-            String id = payload.getString("id");
+            String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
             element.clear();
         } catch (UiObjectNotFoundException e) {

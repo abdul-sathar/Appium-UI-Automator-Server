@@ -1,5 +1,7 @@
 package io.appium.uiautomator2.handler;
 
+import org.json.JSONObject;
+
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -17,13 +19,14 @@ public class CompressedLayoutHierarchy extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        boolean isCompressLayout;
+        boolean compressLayout;
         // setCompressedLayoutHeirarchy doesn't exist on API <= 17
 
         try {
             if (API_18) {
-                isCompressLayout = true;
-                Device.getUiDevice().setCompressedLayoutHeirarchy(isCompressLayout);
+                JSONObject payload = getPayload(request);
+                compressLayout = (Boolean) payload.get("compressLayout");
+                Device.getUiDevice().setCompressedLayoutHeirarchy(compressLayout);
                 Logger.info("Set the Compressed Layout Hierarchy");
             } else {
                 Logger.info("SetCompressedLayoutHeirarchy doesn't exist on API <= 17");
@@ -36,6 +39,6 @@ public class CompressedLayoutHierarchy extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
         }
 
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Compressed Layout");
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, compressLayout);
     }
 }

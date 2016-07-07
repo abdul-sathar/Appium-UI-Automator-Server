@@ -122,7 +122,7 @@ public class TestUtil {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
@@ -138,7 +138,7 @@ public class TestUtil {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         jsonObject.put("text", text);
         jsonObject.put("replace", false);
         return post(baseUrl + "/element/" + elementId + "/value", jsonObject.toString());
@@ -228,7 +228,7 @@ public class TestUtil {
     public static String flickOnElement(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", elementId);
+        jsonObject.put("elementId", elementId);
         jsonObject.put("xoffset", 1);
         jsonObject.put("yoffset", 1);
         jsonObject.put("speed", 1000);
@@ -262,20 +262,20 @@ public class TestUtil {
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
             if (by instanceof ByName) {
-                jsonObject.put("using", "name");
-                jsonObject.put("value", ((By.ByName) by).getElementLocator());
+                jsonObject.put("strategy", "name");
+                jsonObject.put("selector", ((By.ByName) by).getElementLocator());
             } else if (by instanceof By.ByClass) {
-                jsonObject.put("using", "class name");
-                jsonObject.put("value", ((By.ByClass) by).getElementLocator());
+                jsonObject.put("strategy", "class name");
+                jsonObject.put("selector", ((By.ByClass) by).getElementLocator());
             } else if (by instanceof By.ById) {
-                jsonObject.put("using", "id");
-                jsonObject.put("value", ((By.ById) by).getElementLocator());
+                jsonObject.put("strategy", "id");
+                jsonObject.put("selector", ((By.ById) by).getElementLocator());
             } else if (by instanceof By.ByXPath) {
-                jsonObject.put("using", "xpath");
-                jsonObject.put("value", ((By.ByXPath) by).getElementLocator());
+                jsonObject.put("strategy", "xpath");
+                jsonObject.put("selector", ((By.ByXPath) by).getElementLocator());
             } else if (by instanceof By.ByAndroidUiAutomator) {
-                jsonObject.put("using", "-android uiautomator");
-                jsonObject.put("value", ((By.ByAndroidUiAutomator) by).getElementLocator());
+                jsonObject.put("strategy", "-android uiautomator");
+                jsonObject.put("selector", ((By.ByAndroidUiAutomator) by).getElementLocator());
             } else {
                 throw new JSONException("Unable to create json object: " + by);
             }
@@ -349,9 +349,9 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject();
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-            jsonObject.put("id", elementId);
+            jsonObject.put("elementId", elementId);
         } catch (JSONException e) {
-            throw new RuntimeException("Element not found");
+            throw new RuntimeException("Element not found", e);
         }
         return post(baseUrl + "/touch/longclick", jsonObject.toString());
     }
@@ -391,8 +391,7 @@ public class TestUtil {
      * @throws JSONException
      */
     public static String rotateScreen(String orientation) throws JSONException {
-        JSONObject postBody = new JSONObject().put("params"
-                , new JSONObject().put("orientation", orientation));
+        JSONObject postBody = new JSONObject().put("orientation", orientation);
 
         return post(baseUrl + "/orientation", postBody.toString());
     }

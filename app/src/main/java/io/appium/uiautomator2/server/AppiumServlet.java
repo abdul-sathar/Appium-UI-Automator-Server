@@ -11,6 +11,7 @@ import io.appium.uiautomator2.handler.AppStrings;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;
+import io.appium.uiautomator2.handler.CompressedLayoutHierarchy;
 import io.appium.uiautomator2.handler.DeleteSession;
 import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
@@ -94,6 +95,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchDown("/wd/hub/session/:sessionId/touch/down"));
         register(postHandler, new TouchUp("/wd/hub/session/:sessionId/touch/up"));
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
+        register(postHandler, new CompressedLayoutHierarchy("/wd/hub/session/:sessionId/appium/device/compressedLayoutHierarchy"));
     }
 
     private void registerGetHandler() {

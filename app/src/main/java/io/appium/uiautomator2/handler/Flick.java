@@ -33,8 +33,8 @@ public class Flick extends SafeRequestHandler {
         Double steps;
         try {
             JSONObject payload = getPayload(request);
-            if (payload.has("id")) {
-                String id = payload.getString("id");
+            if (payload.has("elementId")) {
+                String id = payload.getString("elementId");
                 AndroidElement element = KnownElements.getElementFromCache(id);
                 start = element.getAbsolutePosition(start);
                 final Integer xoffset = Integer.parseInt(payload.getString("xoffset"));

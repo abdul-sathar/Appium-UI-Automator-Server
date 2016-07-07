@@ -26,7 +26,7 @@ public class Click extends SafeRequestHandler {
         try {
             Logger.info("Click element command");
             JSONObject payload = getPayload(request);
-            String id = payload.getString("id");
+            String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
             element.click();
             getUiDevice().waitForIdle();
