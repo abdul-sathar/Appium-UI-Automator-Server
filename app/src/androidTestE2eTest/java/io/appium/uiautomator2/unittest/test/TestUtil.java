@@ -410,5 +410,16 @@ public class TestUtil {
     public static String multiPointerGesture(String body) {
         return post(baseUrl + "/touch/multi/perform", body);
     }
+
+    public static void waitForSeconds(int TIME) {
+        try {
+            if (TIME > 10 * SECOND) {
+                TIME = 10 * SECOND;
+            }
+            Thread.sleep(TIME);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
 

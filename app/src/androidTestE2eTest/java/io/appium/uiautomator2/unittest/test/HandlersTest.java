@@ -49,6 +49,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
+import static io.appium.uiautomator2.unittest.test.TestUtil.waitForSeconds;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -100,7 +101,7 @@ public class HandlersTest {
     }
 
     @Before
-    public void launchAUT() throws InterruptedException {
+    public void launchAUT() throws InterruptedException, JSONException {
         Intent intent = new Intent().setClassName(testAppPkg, testAppPkg + ".ApiDemos").addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.stopService(intent);
         ctx.startActivity(intent);
@@ -110,6 +111,10 @@ public class HandlersTest {
         waitForElement(By.name("Accessibility"), 5 * SECOND);
         getUiDevice().waitForIdle();
         Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
+        element = findElement(By.name("Accessibility"));
+        Logger.info("[AppiumUiAutomator2Server]", " click element:" + element);
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
     }
 
     /**
@@ -215,6 +220,11 @@ public class HandlersTest {
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + response);
         result = getStringValueInJsonObject(response, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+
+        JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
+        int elementCount = getJsonObjectCountInJsonArray(elements);
+        assertTrue("Elements Count in Home launch screen should at least > 5, " +
+                "in all variants of screen sizes, but actual: " + elementCount, elementCount > 5);
     }
 
     /**
@@ -247,7 +257,7 @@ public class HandlersTest {
         element = findElement(By.id("android:id/text1"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
-        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Accessibility");
+        assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
     }
 
     /**
@@ -270,7 +280,8 @@ public class HandlersTest {
 
         waitForElement(By.id("io.appium.android.apis:id/edit"), 5 * SECOND);
         sendKeys(findElement(By.id("io.appium.android.apis:id/edit")), "Dummy Theme");
-        assertEquals("Dummy Theme", getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value"));
+        String enteredText = getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value");
+        assertEquals("Dummy Theme", enteredText);
     }
 
     /**
@@ -283,7 +294,7 @@ public class HandlersTest {
         getUiDevice().waitForIdle();
         waitForElement(By.id("android:id/text1"), 5 * SECOND);
         String response = getName(findElement(By.id("android:id/text1")));
-        assertEquals(getStringValueInJsonObject(response, "value"), "Accessibility");
+        assertEquals("Accessibility", getStringValueInJsonObject(response, "value"));
     }
 
     /**
@@ -376,8 +387,9 @@ public class HandlersTest {
         startActivity(ctx, "io.appium.android.apis", ".view.ChronometerDemo");
         waitForElement(By.id("io.appium.android.apis:id/start"), 10 * SECOND);
         click(findElement(By.id("io.appium.android.apis:id/start")));
+        waitForSeconds(2 * SECOND);
         String elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
-        assertNotEquals(getStringValueInJsonObject(elementTxt, "value"), "Initial format: 00:00");
+        assertNotEquals("Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
 
         String stop = findElement(By.id("io.appium.android.apis:id/stop"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + stop);
@@ -411,10 +423,10 @@ public class HandlersTest {
 
         response = multiPointerGesture((new JSONObject().put("actions", actions)).toString());
         Logger.info("multi touch response: " + response);
-        assertEquals(getStringValueInJsonObject(response, "value"), "OK");
+        assertEquals("OK", getStringValueInJsonObject(response, "value"));
 
         elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
-        assertEquals(getStringValueInJsonObject(elementTxt, "value"), "Initial format: 00:00");
+        assertEquals( "Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
 
     }
 
@@ -430,8 +442,8 @@ public class HandlersTest {
         scrollTo("Views"); // Due to 'Views' option not visible on small screen
         waitForElement(By.name("Views"), 10 * SECOND);
         click(findElement(By.name("Views")));
-        waitForElement(By.name("Focus"), 10 * SECOND);
-        String startElement = findElement(By.name("Focus"));
+        waitForElement(By.name("Custom"), 10 * SECOND);
+        String startElement = findElement(By.name("Custom"));
         String endElement = findElement(By.name("Buttons"));
 
         //Before Swipe
