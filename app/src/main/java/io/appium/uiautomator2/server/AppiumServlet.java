@@ -190,7 +190,7 @@ public class AppiumServlet implements IHttpServlet {
             return;
         }
         addHandlerAttributesToRequest(request, handler.getMappedUri());
-        AppiumResponse result = handler.safeHandle(request);
+        AppiumResponse result = handler.handle(request);
         handleResponse(request, response, result);
     }
 
