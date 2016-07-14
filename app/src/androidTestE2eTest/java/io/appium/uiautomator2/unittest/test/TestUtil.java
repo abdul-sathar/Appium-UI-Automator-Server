@@ -3,6 +3,8 @@ package io.appium.uiautomator2.unittest.test;
 import android.content.Context;
 import android.content.Intent;
 
+import com.squareup.okhttp.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,6 +34,22 @@ public class TestUtil {
         String result = post(baseUrl + "/element", json.toString());
         Logger.info("findElement: " + result);
         return result;
+    }
+
+    /**
+     * finds the element using By selector
+     *
+     * @param by
+     * @param response
+     *
+     * @return
+     */
+    public static Response findElement(By by, Response response) {
+        JSONObject json = new JSONObject();
+        json = getJSon(by, json);
+        response = post(baseUrl + "/element", json.toString(), response);
+        Logger.info("findElement: " + response.body().toString());
+        return response;
     }
 
     /**
@@ -159,6 +177,22 @@ public class TestUtil {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         return get(baseUrl + "/element/" + elementId + "/text");
+    }
+
+    /**
+     * get the text from the element
+     *
+     * @param element
+     * @param response
+     *
+     * @return
+     *
+     * @throws JSONException
+     */
+    public static Response getText(String element, Response response) throws JSONException {
+        String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
+        response = get(baseUrl + "/element/" + elementId + "/text", response);
+        return response;
     }
 
     /**

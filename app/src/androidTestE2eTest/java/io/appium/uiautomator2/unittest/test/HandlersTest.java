@@ -8,6 +8,7 @@ import android.support.test.uiautomator.Configurator;
 
 import com.jayway.jsonpath.JsonPath;
 import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +20,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+
+import java.io.IOException;
 
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.server.ServerInstrumentation;
@@ -535,5 +538,27 @@ public class HandlersTest {
 
         rotateScreen("PORTRAIT");
         assertEquals("PORTRAIT", getScreenOrientation());
+    }
+
+    /**
+     * Test to verify 500 HTTP Status code for unsuccessful request
+     *
+     * @throws JSONException
+     * @throws IOException
+     */
+    @Test
+    public void verify_500_HTTPStatusCode() throws JSONException, IOException {
+        Response response = null;
+        String responseBody = null;
+        int responseCode;
+        response = findElement(By.id("invalid_ID"), response);
+
+        responseBody = response.body().string();
+        responseCode = response.code();
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: responseBody " + responseBody);
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: responseCode " + responseCode);
+
+        assertEquals("HTTP Status code for unsuccessful request should be '500'.", 500, responseCode);
+        assertEquals("AppiumResponse status code for element not found should be '7'.", WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(getStringValueInJsonObject(responseBody, "status")));
     }
 }

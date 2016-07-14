@@ -43,6 +43,12 @@ public abstract class TestHelper {
         return execute(request);
     }
 
+    public static Response get(final String path, Response response) {
+        Request request = new Request.Builder().url(baseUrl + path).build();
+        response = execute(request,response);
+        return response;
+    }
+
     public static final void waitForNetty() {
         long start = elapsedRealtime();
         boolean unsuccessful = true;
@@ -67,6 +73,12 @@ public abstract class TestHelper {
         return execute(request);
     }
 
+    public static Response post(final String path, String body, Response response) {
+        Request request = new Request.Builder().url(baseUrl + path).post(RequestBody.create(JSON, body)).build();
+        Logger.info("POST: " + body);
+        return execute(request, response);
+    }
+
     private static String execute(Request request) {
         String result;
         try {
@@ -76,6 +88,15 @@ public abstract class TestHelper {
             throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. ", e);
         }
         return result;
+    }
+
+    private static Response execute(Request request, Response response) {
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(request.method() + " \"" + request.urlString() + "\" failed. ", e);
+        }
+        return response;
     }
 
     // Ported from android-support-test/rules/src/main/java/android/support/test/rule/ActivityTestRule.java
