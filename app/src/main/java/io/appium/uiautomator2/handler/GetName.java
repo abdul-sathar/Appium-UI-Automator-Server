@@ -18,8 +18,6 @@ package io.appium.uiautomator2.handler;
 
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
-import org.json.JSONObject;
-
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -41,16 +39,19 @@ public class GetName extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Get Name of element command");
         String id = getElementId(request);
-        final JSONObject res = new JSONObject();
         AndroidElement element = KnownElements.getElementFromCache(id);
         String elementName;
-        try {
-            elementName = element.getContentDesc();
-            Logger.info("Element Name ", elementName);
-        } catch (UiObjectNotFoundException e) {
-            Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+        if (element != null) {
+            try {
+                elementName = element.getContentDesc();
+                Logger.info("Element Name ", elementName);
+            } catch (UiObjectNotFoundException e) {
+                Logger.error("Element not found: ", e);
+                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            }
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementName);
+        } else {
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementName);
     }
 }

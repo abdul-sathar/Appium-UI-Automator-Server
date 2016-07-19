@@ -18,18 +18,25 @@ public class AppStrings extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        String jsonString;
+        String jsonString, msg;
         final String filePath = "/data/local/tmp/strings.json";
 
         try {
             final File jsonFile = new File(filePath);
             Logger.debug("Loading strings.json from file location: " + filePath);
 
+            if (!jsonFile.exists()) {
+                msg = "strings.json doesn't exist";
+                Logger.error(msg);
+                return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, msg);
+            }
+
             DataInputStream dataInput = new DataInputStream(
                     new FileInputStream(jsonFile));
             byte[] jsonBytes = new byte[(int) jsonFile.length()];
             dataInput.readFully(jsonBytes);
             dataInput.close();
+
             jsonString = new String(jsonBytes, "UTF-8");
             Logger.debug("json loading complete ");
 
