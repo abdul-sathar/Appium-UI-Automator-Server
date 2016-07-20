@@ -43,24 +43,24 @@ public class GetSize extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Get Size of element command");
         String id = getElementId(request);
-        final JSONObject res = new JSONObject();
+        final JSONObject result = new JSONObject();
         AndroidElement element = KnownElements.getElementFromCache(id);
-        if (element != null) {
-            try {
-                final Rect rect = element.getBounds();
-                res.put("width", rect.width());
-                res.put("height", rect.height());
-            } catch (UiObjectNotFoundException e) {
-                Logger.error("Element not found: ", e);
-                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
-            } catch (JSONException e) {
-                Logger.error("Exception while reading JSON: ", e);
-                Logger.error(WDStatus.JSON_DECODER_ERROR, e);
-                return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
-            }
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, res);
-        } else {
+        if (element == null) {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
         }
+        try {
+            final Rect rect = element.getBounds();
+            result.put("width", rect.width());
+            result.put("height", rect.height());
+        } catch (UiObjectNotFoundException e) {
+            Logger.error("Element not found: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            Logger.error(WDStatus.JSON_DECODER_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
+        }
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, result);
     }
+
 }

@@ -26,7 +26,7 @@ public class Swipe extends SafeRequestHandler {
             String actionMsg, options = "swipeOpts.";
             Logger.info("Json Payload: ", json);
 
-            // TODO Swipe based on Elements
+            // TODO Swipe on Element
 
             startX = JsonPath.compile(options + "startX").read(json);
             startY = JsonPath.compile(options + "startY").read(json);

@@ -25,11 +25,10 @@ public class Clear extends SafeRequestHandler {
             JSONObject payload = getPayload(request);
             String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
-            if (element != null) {
-                element.clear();
-            } else {
+            if (element == null) {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
             }
+            element.clear();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

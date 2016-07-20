@@ -31,6 +31,9 @@ public class SendKeysToElement extends SafeRequestHandler {
             JSONObject payload = getPayload(request);
             String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
+            if (element == null) {
+                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+            }
             boolean replace = Boolean.parseBoolean(payload.getString("replace").toString());
             String text = payload.getString("text").toString();
 
@@ -70,7 +73,6 @@ public class SendKeysToElement extends SafeRequestHandler {
                     actionMsg = "Unable to send keys to the device";
                 }
             }
-
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, actionMsg);
         } catch (final UiObjectNotFoundException e) {
             Logger.error("Unable to Send Keys", e);
