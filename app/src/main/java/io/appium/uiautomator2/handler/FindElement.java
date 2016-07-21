@@ -24,8 +24,6 @@ import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.By.ByClass;
 import io.appium.uiautomator2.model.By.ById;
-import io.appium.uiautomator2.model.By.ByLinkText;
-import io.appium.uiautomator2.model.By.ByName;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
@@ -116,26 +114,19 @@ public class FindElement extends SafeRequestHandler {
         }
     }
 
-    /**
-     * returns  UiObject2 for an xpath expression
-     */
     private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException, UiAutomator2Exception {
         if (by instanceof ById) {
             return getInstance().findObject(android.support.test.uiautomator.By.res(by.getElementLocator()));
-        } else if (by instanceof ByLinkText) {
+        } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObject(android.support.test.uiautomator.By.desc(by.getElementLocator()));
-        } else if (by instanceof By.ByPartialLinkText) {
-            return getInstance().findObject(android.support.test.uiautomator.By.descContains(by.getElementLocator()));
         } else if (by instanceof ByClass) {
             return getInstance().findObject(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
-        } else if (by instanceof ByName) {
-            return getInstance().findObject(android.support.test.uiautomator.By.text(by.getElementLocator()));
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObject(by.getElementLocator(), false, "");
         } else if (by instanceof By.ByAndroidUiAutomator) {
             return getInstance().findObject(findByUiAutomator(by.getElementLocator()));
         }
-        String msg = String.format("By locator %s is curently not supported!", by.getClass().getSimpleName());
+        String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());
         throw new UnsupportedOperationException(msg);
     }
 

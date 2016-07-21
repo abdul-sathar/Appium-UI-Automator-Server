@@ -13,9 +13,6 @@
  */
 package io.appium.uiautomator2.model;
 
-import java.util.List;
-
-
 /**
  * Mechanism used to locate elements within a document. In order to create your own locating
  * mechanisms, it is possible to subclass this class and override the protected methods as
@@ -35,11 +32,11 @@ public abstract class By {
         return new ById(id);
     }
 
-    public static By linkText(final String text) {
+    public static By accessibilityId(final String text) {
         if (text == null)
             throw new IllegalArgumentException("Cannot find elements when text is null.");
 
-        return new ByLinkText(text);
+        return new ByAccessibilityId(text);
     }
 
     public static By partialLinkText(final String text) {
@@ -84,24 +81,6 @@ public abstract class By {
         return toString().equals(by.toString());
     }
 
-    /**
-     * Find a single element. Override this method if necessary.
-     *
-     * @param context A context to use to find the element
-     *
-     * @return The AndroidElement that matches the selector
-     */
-    public abstract AndroidElement findElement(SearchContext context);
-
-    /**
-     * Find many elements.
-     *
-     * @param context A context to use to find the element
-     *
-     * @return A list of AndroidElement matching the selector
-     */
-    public abstract List<AndroidElement> findElements(SearchContext context);
-
     public abstract String getElementLocator();
 
     @Override
@@ -123,16 +102,6 @@ public abstract class By {
         }
 
         @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(By.id(id));
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(By.id(id));
-        }
-
-        @Override
         public String getElementLocator() {
             return id;
         }
@@ -151,16 +120,6 @@ public abstract class By {
         }
 
         @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(By.className(clazz));
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(By.className(clazz));
-        }
-
-        @Override
         public String getElementLocator() {
             return clazz;
         }
@@ -171,31 +130,21 @@ public abstract class By {
         }
     }
 
-    public static class ByLinkText extends By {
-        private final String text;
+    public static class ByAccessibilityId extends By {
+        private final String accessibilityId;
 
-        public ByLinkText(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(By.linkText(text));
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(By.linkText(text));
+        public ByAccessibilityId(String accessibilityId) {
+            this.accessibilityId = accessibilityId;
         }
 
         @Override
         public String getElementLocator() {
-            return text;
+            return accessibilityId;
         }
 
         @Override
         public String toString() {
-            return "By.text: " + text;
+            return "By.accessibilityId: " + accessibilityId;
         }
     }
 
@@ -204,16 +153,6 @@ public abstract class By {
 
         public ByPartialLinkText(String text) {
             this.text = text;
-        }
-
-        @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(By.partialLinkText(text));
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(By.partialLinkText(text));
         }
 
         @Override
@@ -235,16 +174,6 @@ public abstract class By {
         }
 
         @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(this);
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(this);
-        }
-
-        @Override
         public String getElementLocator() {
             return name;
         }
@@ -255,16 +184,6 @@ public abstract class By {
 
         public ByXPath(String xpathExpression) {
             this.xpathExpression = xpathExpression;
-        }
-
-        @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(this);
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(this);
         }
 
         @Override
@@ -283,16 +202,6 @@ public abstract class By {
 
         public ByAndroidUiAutomator(String expresion) {
             this.expresion = expresion;
-        }
-
-        @Override
-        public AndroidElement findElement(SearchContext context) {
-            return context.findElement(this);
-        }
-
-        @Override
-        public List<AndroidElement> findElements(SearchContext context) {
-            return context.findElements(this);
         }
 
         @Override

@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.model.By;
-import io.appium.uiautomator2.model.By.ByName;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
@@ -295,9 +294,9 @@ public class TestUtil {
      */
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
-            if (by instanceof ByName) {
-                jsonObject.put("strategy", "name");
-                jsonObject.put("selector", ((By.ByName) by).getElementLocator());
+            if (by instanceof By.ByAccessibilityId) {
+                jsonObject.put("strategy", "accessibility id");
+                jsonObject.put("selector", ((By.ByAccessibilityId) by).getElementLocator());
             } else if (by instanceof By.ByClass) {
                 jsonObject.put("strategy", "class name");
                 jsonObject.put("selector", ((By.ByClass) by).getElementLocator());
