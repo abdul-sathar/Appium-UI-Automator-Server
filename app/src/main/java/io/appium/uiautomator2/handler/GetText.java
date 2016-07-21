@@ -22,6 +22,9 @@ public class GetText extends SafeRequestHandler {
         String id = getElementId(request);
         String text;
         AndroidElement element = KnownElements.getElementFromCache(id);
+        if (element == null) {
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+        }
         try {
             text = element.getText();
             Logger.info("Get Text :" + text);
@@ -31,4 +34,5 @@ public class GetText extends SafeRequestHandler {
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, text);
     }
+
 }

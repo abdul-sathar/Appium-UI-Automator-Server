@@ -22,9 +22,12 @@ public class Location extends SafeRequestHandler {
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
         final JSONObject response = new JSONObject();
+        String id = getElementId(request);
+        AndroidElement element = KnownElements.getElementFromCache(id);
+        if (element == null) {
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+        }
         try {
-            String id = getElementId(request);
-            AndroidElement element = KnownElements.getElementFromCache(id);
             final Rect bounds = element.getBounds();
             response.put("x", bounds.left);
             response.put("y", bounds.top);
@@ -38,5 +41,8 @@ public class Location extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, response);
+
     }
 }
+
+

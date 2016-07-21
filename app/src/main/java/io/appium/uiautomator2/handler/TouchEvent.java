@@ -33,14 +33,12 @@ public abstract class TouchEvent extends SafeRequestHandler {
             if (json.has("id")) {
                 String id = json.getString("elementId");
                 element = KnownElements.getElementFromCache(id);
-
-                if (element != null) {
-                    final Rect bounds = element.getBounds();
-                    clickX = bounds.centerX();
-                    clickY = bounds.centerY();
-                } else {
-                    throw new UiObjectNotFoundException("TouchEvent element does not exist.");
+                if (element == null) {
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
                 }
+                final Rect bounds = element.getBounds();
+                clickX = bounds.centerX();
+                clickY = bounds.centerY();
             } else { // no element so extract x and y from params
                 clickX = JsonPath.compile(path + "x").read(json.toString());
                 clickY = JsonPath.compile(path + "y").read(json.toString());
@@ -50,7 +48,6 @@ public abstract class TouchEvent extends SafeRequestHandler {
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
             else
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, false);
-
 
         } catch (JSONException e) {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);

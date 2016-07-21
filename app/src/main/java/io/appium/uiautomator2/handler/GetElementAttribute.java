@@ -24,6 +24,9 @@ public class GetElementAttribute extends SafeRequestHandler {
         String id = getElementId(request);
         String attributeName = getNameAttribute(request);
         AndroidElement element = KnownElements.getElementFromCache(id);
+        if (element == null) {
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+        }
         Object text = JSONObject.NULL;
         try {
             text = element.getStringAttribute(attributeName);

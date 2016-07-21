@@ -36,6 +36,9 @@ public class Flick extends SafeRequestHandler {
             if (payload.has("elementId")) {
                 String id = payload.getString("elementId");
                 AndroidElement element = KnownElements.getElementFromCache(id);
+                if (element == null) {
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+                }
                 start = element.getAbsolutePosition(start);
                 final Integer xoffset = Integer.parseInt(payload.getString("xoffset"));
                 final Integer yoffset = Integer.parseInt(payload.getString("yoffset"));
