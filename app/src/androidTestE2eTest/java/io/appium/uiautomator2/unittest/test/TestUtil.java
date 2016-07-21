@@ -143,6 +143,13 @@ public class TestUtil {
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
+    public static String tap(int x, int y) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("x", x);
+        jsonObject.put("y", y);
+        return post(baseUrl + "/element/elementId/click", jsonObject.toString());
+    }
+
     /**
      * Send Keys to the element
      *
@@ -163,6 +170,10 @@ public class TestUtil {
 
     public static String getStringValueInJsonObject(String element, String key) throws JSONException {
         return new JSONObject(element).getString(key);
+    }
+
+    public static Object getValueInJsonObject(String jsonString, String key) throws JSONException {
+        return new JSONObject(jsonString).get(key);
     }
 
     /**

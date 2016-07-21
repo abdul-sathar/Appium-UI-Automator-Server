@@ -43,6 +43,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getScreenOrientation
 import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
 import static io.appium.uiautomator2.unittest.test.TestUtil.multiPointerGesture;
 import static io.appium.uiautomator2.unittest.test.TestUtil.rotateScreen;
@@ -50,6 +51,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.scrollTo;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
+import static io.appium.uiautomator2.unittest.test.TestUtil.tap;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForSeconds;
@@ -133,6 +135,26 @@ public class HandlersTest {
         click(element);
         getUiDevice().waitForIdle();
         waitForElementInvisible(By.accessibilityId("Accessibility"), 5 * SECOND);
+        element = findElement(By.accessibilityId("Accessibility"));
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+    }
+
+    @Test
+    public void tapOnElement() throws JSONException {
+        waitForElement(By.accessibilityId("Accessibility"), 5 * SECOND);
+        element = findElement(By.accessibilityId("Accessibility"));
+        result = getStringValueInJsonObject(element, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        String response = getLocation(element);
+        JSONObject json = new JSONObject(new JSONObject(response).get("value").toString());
+
+        int x = JsonPath.compile("$.x").read(json.toString());
+        int y = JsonPath.compile("$.y").read(json.toString());
+        assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
+        String tapResponse = tap(x,y);
+        Boolean tapStatus = (Boolean)getValueInJsonObject(tapResponse,"value" );
+        assertTrue("Unable to tap on location: " + x + " " + y, tapStatus);
         element = findElement(By.accessibilityId("Accessibility"));
         result = getStringValueInJsonObject(element, "status");
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
