@@ -35,4 +35,9 @@ public interface AndroidElement {
     public Point getAbsolutePosition(final Point point)
             throws UiObjectNotFoundException, InvalidCoordinatesException;
 
+    public boolean dragTo(final int destX, final int destY, final int steps)
+            throws UiObjectNotFoundException, InvalidCoordinatesException;
+
+    public boolean dragTo(final Object destObj, final int steps)
+            throws UiObjectNotFoundException, InvalidCoordinatesException;
 }
