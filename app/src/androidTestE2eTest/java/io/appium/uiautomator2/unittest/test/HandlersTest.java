@@ -31,6 +31,7 @@ import io.appium.uiautomator2.utils.Logger;
 import static io.appium.uiautomator2.unittest.test.TestHelper.getJsonObjectCountInJsonArray;
 import static io.appium.uiautomator2.unittest.test.TestUtil.appStrings;
 import static io.appium.uiautomator2.unittest.test.TestUtil.click;
+import static io.appium.uiautomator2.unittest.test.TestUtil.drag;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.findElements;
 import static io.appium.uiautomator2.unittest.test.TestUtil.flickOnElement;
@@ -140,6 +141,49 @@ public class HandlersTest {
         assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
     }
 
+    /**
+     * test to perform drag and drop
+     * @throws JSONException
+     * @throws InterruptedException
+     */
+    @Test
+    public void dragAndDropTest() throws JSONException, InterruptedException {
+        getUiDevice().waitForIdle();
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        waitForElement(By.accessibilityId("Views"), 10 * SECOND);
+        click(findElement(By.accessibilityId("Views")));
+        waitForElement(By.xpath(".//*[@text='Drag and Drop']"), 10 * SECOND);
+        click(findElement(By.xpath(".//*[@text='Drag and Drop']")));
+        waitForElement(By.id("io.appium.android.apis:id/drag_dot_1"), 10 * SECOND);
+
+        String srcElement = findElement(By.id("io.appium.android.apis:id/drag_dot_1"));
+        String destElement = findElement(By.id("io.appium.android.apis:id/drag_dot_2"));
+        String srcLocationRes = getLocation(srcElement);
+        String destLocationRes = getLocation(destElement);
+        JSONObject srcLocation = new JSONObject(new JSONObject(srcLocationRes).get("value").toString());
+        int startX = srcLocation.getInt("x");
+        int startY = srcLocation.getInt("y");
+        ;
+        JSONObject destLocation = new JSONObject(new JSONObject(destLocationRes).get("value").toString());
+        int endX = destLocation.getInt("x");
+        int endY = destLocation.getInt("y");
+        String srcElementId = new JSONObject(new JSONObject(srcElement).get("value").toString()).get("ELEMENT").toString();
+        String destElementId = new JSONObject(new JSONObject(destElement).get("value").toString()).get("ELEMENT").toString();
+
+        JSONObject dragBody = new JSONObject();
+        dragBody.put("elementId", srcElementId);
+        dragBody.put("destElId", destElementId);
+        dragBody.put("startX", startX);
+        dragBody.put("startY", startY);
+        dragBody.put("endX", endX);
+        dragBody.put("endY", endY);
+        dragBody.put("steps", 1000);
+
+        response = drag(dragBody.toString());
+        boolean result = (Boolean) getValueInJsonObject(response, "value");
+        assertTrue("Drag status from src to dest should be true. ", result);
+    }
+
     @Test
     public void tapOnElement() throws JSONException {
         waitForElement(By.accessibilityId("Accessibility"), 5 * SECOND);
@@ -152,8 +196,8 @@ public class HandlersTest {
         int x = JsonPath.compile("$.x").read(json.toString());
         int y = JsonPath.compile("$.y").read(json.toString());
         assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
-        String tapResponse = tap(x,y);
-        Boolean tapStatus = (Boolean)getValueInJsonObject(tapResponse,"value" );
+        String tapResponse = tap(x, y);
+        Boolean tapStatus = (Boolean) getValueInJsonObject(tapResponse, "value");
         assertTrue("Unable to tap on location: " + x + " " + y, tapStatus);
         element = findElement(By.accessibilityId("Accessibility"));
         result = getStringValueInJsonObject(element, "status");
@@ -450,7 +494,7 @@ public class HandlersTest {
         assertEquals("OK", getStringValueInJsonObject(response, "value"));
 
         elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
-        assertEquals( "Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
 
     }
 

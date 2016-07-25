@@ -465,5 +465,10 @@ public class TestUtil {
             Thread.currentThread().interrupt();
         }
     }
+
+    public static String drag(String dragBody) throws JSONException {
+        return post(baseUrl + "/touch/drag", dragBody);
+    }
+
 }
 
