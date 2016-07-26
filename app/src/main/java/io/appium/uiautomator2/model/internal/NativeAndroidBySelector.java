@@ -9,14 +9,14 @@ import io.appium.uiautomator2.utils.Logger;
 public class NativeAndroidBySelector {
     public static final String SELECTOR_NATIVE_ID = "id";
     public static final String SELECTOR_XPATH = "xpath";
-    public static final String SELECTOR_ACCESSIBILITYID = "accessibility id";
+    public static final String SELECTOR_ACCESSIBILITY_ID = "accessibility id";
     public static final String SELECTOR_CLASS = "class name";
     public static final String SELECTOR_ANDROID_UIAUTOMATOR = "-android uiautomator";
 
     public By pickFrom(String method, String selector) throws UiAutomator2Exception {
         if (SELECTOR_NATIVE_ID.equals(method)) {
             return By.id(selector);
-        } else if (SELECTOR_ACCESSIBILITYID.equals(method)) {
+        } else if (SELECTOR_ACCESSIBILITY_ID.equals(method)) {
             return By.accessibilityId(selector);
         } else if (SELECTOR_XPATH.equals(method)) {
             return By.xpath(selector);
