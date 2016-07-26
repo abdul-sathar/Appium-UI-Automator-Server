@@ -16,6 +16,9 @@
     "android",
     "uiautomator2"
   ],
+  "dependencies": {
+    "ncp": "^2.0.0"
+  },
   "author": "https://github.com/appium",
   "license": "Apache-2.0",
   "bugs": {

@@ -3,6 +3,7 @@ package io.appium.uiautomator2.model;
 import android.graphics.Rect;
 import android.support.test.uiautomator.Configurator;
 import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -18,7 +19,7 @@ import io.appium.uiautomator2.utils.UnicodeEncoder;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
-public class UiObjectElement implements AndroidElement{
+public class UiObjectElement implements AndroidElement {
 
     private final UiObject element;
     private final String id;
@@ -92,7 +93,7 @@ public class UiObjectElement implements AndroidElement{
     }
 
     public UiObject getChild(final Object selector) throws UiObjectNotFoundException {
-        return element.getChild((UiSelector)selector);
+        return element.getChild((UiSelector) selector);
     }
 
     public String getContentDesc() throws UiObjectNotFoundException {
@@ -130,7 +131,7 @@ public class UiObjectElement implements AndroidElement{
        * The returned string matches exactly what is displayed in the
        * UiAutomater inspector.
        */
-            AccessibilityNodeInfo node = (AccessibilityNodeInfo) invoke( method(element.getClass(), "findAccessibilityNodeInfo", long.class),
+            AccessibilityNodeInfo node = (AccessibilityNodeInfo) invoke(method(element.getClass(), "findAccessibilityNodeInfo", long.class),
                     element, Configurator.getInstance().getWaitForSelectorTimeout());
 
             if (node == null) {
@@ -143,5 +144,36 @@ public class UiObjectElement implements AndroidElement{
         }
 
         return resourceId;
+    }
+
+    public boolean dragTo(final int destX, final int destY, final int steps)
+            throws UiObjectNotFoundException, InvalidCoordinatesException {
+        if (API.API_18) {
+            Point coords = new Point(destX, destY);
+            coords = PositionHelper.getDeviceAbsPos(coords);
+            return element.dragTo(coords.x.intValue(), coords.y.intValue(), steps);
+        } else {
+            Logger.error("Device does not support API >= 18!");
+            return false;
+        }
+    }
+
+    public boolean dragTo(final Object destObj, final int steps)
+            throws UiObjectNotFoundException, InvalidCoordinatesException {
+        if (API.API_18) {
+            if(destObj instanceof UiObject) {
+                return element.dragTo((UiObject) destObj, steps);
+            } else if(destObj instanceof UiObject2) {
+                android.graphics.Point coords = ((UiObject2)destObj).getVisibleCenter();
+                return dragTo(coords.x, coords.y, steps);
+            } else {
+                Logger.error("Destination should be either UiObject or UiObject2");
+                return false;
+            }
+        } else {
+            Logger.error("Device does not support API >= 18!");
+            return false;
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package io.appium.uiautomator2.model;
 
 import android.graphics.Rect;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
@@ -12,7 +13,7 @@ import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
 import io.appium.uiautomator2.utils.UnicodeEncoder;
 
-public class UiObject2Element implements AndroidElement{
+public class UiObject2Element implements AndroidElement {
 
     private final UiObject2 element;
     private final String id;
@@ -86,7 +87,7 @@ public class UiObject2Element implements AndroidElement{
     }
 
     public UiObject2 getChild(final Object selector) throws UiObjectNotFoundException {
-        return element.findObject((BySelector)selector);
+        return element.findObject((BySelector) selector);
     }
 
     public String getContentDesc() throws UiObjectNotFoundException {
@@ -104,5 +105,30 @@ public class UiObject2Element implements AndroidElement{
         Logger.debug("Element bounds: " + rect.toShortString());
 
         return PositionHelper.getAbsolutePosition(point, rect, new Point(rect.left, rect.top), false);
+    }
+
+    @Override
+    public boolean dragTo(Object destObj, int steps) throws UiObjectNotFoundException {
+        if (destObj instanceof UiObject){
+            int destX = ((UiObject) destObj).getBounds().centerX();
+            int destY = ((UiObject) destObj).getBounds().centerY();
+            element.drag(new android.graphics.Point(destX, destY), steps);
+            return true;
+        }else if (destObj instanceof UiObject2) {
+            android.graphics.Point coord = ((UiObject2) destObj).getVisibleCenter();
+            element.drag(coord, steps);
+            return true;
+        } else {
+            Logger.error("Destination should be either UiObject or UiObject2");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean dragTo(int destX, int destY, int steps) throws UiObjectNotFoundException, InvalidCoordinatesException {
+        Point coords = new Point(destX, destY);
+        coords = PositionHelper.getDeviceAbsPos(coords);
+        element.drag(new android.graphics.Point(coords.x.intValue(), coords.y.intValue()), steps);
+        return true;
     }
 }

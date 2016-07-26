@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.model.By;
-import io.appium.uiautomator2.model.By.ByName;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
@@ -144,6 +143,13 @@ public class TestUtil {
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
+    public static String tap(int x, int y) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("x", x);
+        jsonObject.put("y", y);
+        return post(baseUrl + "/element/elementId/click", jsonObject.toString());
+    }
+
     /**
      * Send Keys to the element
      *
@@ -164,6 +170,10 @@ public class TestUtil {
 
     public static String getStringValueInJsonObject(String element, String key) throws JSONException {
         return new JSONObject(element).getString(key);
+    }
+
+    public static Object getValueInJsonObject(String jsonString, String key) throws JSONException {
+        return new JSONObject(jsonString).get(key);
     }
 
     /**
@@ -295,9 +305,9 @@ public class TestUtil {
      */
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
-            if (by instanceof ByName) {
-                jsonObject.put("strategy", "name");
-                jsonObject.put("selector", ((By.ByName) by).getElementLocator());
+            if (by instanceof By.ByAccessibilityId) {
+                jsonObject.put("strategy", "accessibility id");
+                jsonObject.put("selector", ((By.ByAccessibilityId) by).getElementLocator());
             } else if (by instanceof By.ByClass) {
                 jsonObject.put("strategy", "class name");
                 jsonObject.put("selector", ((By.ByClass) by).getElementLocator());
@@ -455,5 +465,10 @@ public class TestUtil {
             Thread.currentThread().interrupt();
         }
     }
+
+    public static String drag(String dragBody) throws JSONException {
+        return post(baseUrl + "/touch/drag", dragBody);
+    }
+
 }
 
