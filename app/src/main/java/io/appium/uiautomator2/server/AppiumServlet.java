@@ -204,7 +204,7 @@ public class AppiumServlet implements IHttpServlet {
             response.setEncoding(Charset.forName("UTF-8"));
             response.setContent(resultString);
             try {
-                if (new JSONObject(resultString).get("status") == 0) {
+                if (new JSONObject(resultString).getInt("status") == 0) {
                     response.setStatus(HttpStatusCode.OK.getStatusCode());
                 } else {
                     response.setStatus(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
