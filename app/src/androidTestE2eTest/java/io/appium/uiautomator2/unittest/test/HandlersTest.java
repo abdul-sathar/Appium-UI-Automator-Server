@@ -525,7 +525,7 @@ public class HandlersTest {
         int x2 = JsonPath.compile("$.x").read(json.toString());
         int y2 = JsonPath.compile("$.y").read(json.toString());
 
-        swipe(x1, y1, x2, y2, 1 * SECOND);
+        swipe(x1, y1, x2, y2, 100);
 
         //After Swipe
         startElement = findElement(By.accessibilityId("Auto Complete"));
