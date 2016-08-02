@@ -1,5 +1,8 @@
 package io.appium.uiautomator2.handler;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +21,9 @@ public class AppStrings extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        String jsonString, msg;
+        String msg;
         final String filePath = "/data/local/tmp/strings.json";
-
+        JSONObject appStrings = new JSONObject();
         try {
             final File jsonFile = new File(filePath);
             Logger.debug("Loading strings.json from file location: " + filePath);
@@ -37,13 +40,16 @@ public class AppStrings extends SafeRequestHandler {
             dataInput.readFully(jsonBytes);
             dataInput.close();
 
-            jsonString = new String(jsonBytes, "UTF-8");
+            appStrings = new JSONObject(new String(jsonBytes, "UTF-8"));
             Logger.debug("json loading complete ");
 
         } catch (IOException e) {
             Logger.error("Error loading json from " + filePath + " : " + e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        } catch (JSONException e) {
+            Logger.error("Exception while reading JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, jsonString);
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, appStrings);
     }
 }

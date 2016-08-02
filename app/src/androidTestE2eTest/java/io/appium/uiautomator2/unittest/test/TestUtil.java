@@ -367,7 +367,6 @@ public class TestUtil {
     public static String swipe(int x1, int y1, int x2, int y2, int steps) throws JSONException {
         // swipe from (x1,y1) to (x2,y2)
 
-        JSONObject jsonObject = new JSONObject();
 
         JSONObject swipeOpts = new JSONObject();
         swipeOpts.put("startX", x1);
@@ -376,9 +375,7 @@ public class TestUtil {
         swipeOpts.put("endY", y2);
         swipeOpts.put("steps", steps);
 
-        jsonObject.put("swipeOpts", swipeOpts);
-
-        return post(baseUrl + "/touch/perform", jsonObject.toString());
+        return post(baseUrl + "/touch/perform", swipeOpts.toString());
     }
 
     /**

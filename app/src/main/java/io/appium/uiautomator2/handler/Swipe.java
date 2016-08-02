@@ -1,8 +1,7 @@
 package io.appium.uiautomator2.handler;
 
-import com.jayway.jsonpath.JsonPath;
-
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -20,19 +19,18 @@ public class Swipe extends SafeRequestHandler {
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
         try {
-            String json = getPayload(request).toString();
+            JSONObject payload = getPayload(request);
             boolean isActionPerformed;
-            int startX, startY, endX, endY, steps;
-            String actionMsg, options = "swipeOpts.";
-            Logger.info("Json Payload: ", json);
+            String actionMsg;
+            Logger.info("Json Payload: ", payload.toString());
 
             // TODO Swipe on Element
 
-            startX = JsonPath.compile(options + "startX").read(json);
-            startY = JsonPath.compile(options + "startY").read(json);
-            endX = JsonPath.compile(options + "endX").read(json);
-            endY = JsonPath.compile(options + "endY").read(json);
-            steps = JsonPath.compile(options + "steps").read(json);
+            int startX = payload.getInt("startX");
+            int startY = payload.getInt("startY");
+            int endX = payload.getInt("endX");
+            int endY = payload.getInt("endY");
+            int steps = payload.getInt("steps");
 
             isActionPerformed = Device.getUiDevice().swipe(startX, startY, endX, endY, steps);
 
