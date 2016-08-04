@@ -36,7 +36,7 @@ public class Swipe extends SafeRequestHandler {
             swipeArgs = new SwipeArguments(request);
             device = Device.getUiDevice();
 
-            if (getPayload(request).has("elementId")) {
+            if (payload.has("elementId")) {
                 absStartPos = swipeArgs.element.getAbsolutePosition(swipeArgs.start);
                 absEndPos = swipeArgs.element.getAbsolutePosition(swipeArgs.end);
                 Logger.debug("Swiping the element with ElementId " + swipeArgs.element.getId()
@@ -55,7 +55,7 @@ public class Swipe extends SafeRequestHandler {
             if (!isSwipePerformed) {
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Swipe did not complete successfully");
             } else {
-                return new AppiumResponse(getSessionId(request), isSwipePerformed);
+                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, isSwipePerformed);
             }
 
         } catch (JSONException e) {
