@@ -23,6 +23,13 @@ public class Logger {
     }
 
     /**
+     * Logger error
+     */
+    public static void error(String message, Throwable throwable) {
+        android.util.Log.e(TAG, getString(message), throwable);
+    }
+
+    /**
      * Logger info
      */
     public static void info(Object... messages) {
