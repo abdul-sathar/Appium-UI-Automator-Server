@@ -1,6 +1,5 @@
 package io.appium.uiautomator2.handler;
 
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
@@ -27,19 +26,19 @@ import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.By.ById;
 import io.appium.uiautomator2.model.KnownElements;
+import io.appium.uiautomator2.model.XPathFinder;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.utils.ClassInstancePair;
 import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.ElementHelpers;
 import io.appium.uiautomator2.utils.Logger;
+import io.appium.uiautomator2.utils.NodeInfoList;
 import io.appium.uiautomator2.utils.UiAutomatorParser;
-import io.appium.uiautomator2.utils.XMLHierarchy;
 
+import static io.appium.uiautomator2.handler.FindElement.getElementLocator;
 import static io.appium.uiautomator2.model.internal.CustomUiDevice.getInstance;
 import static io.appium.uiautomator2.utils.Device.getAndroidElement;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
-import static  io.appium.uiautomator2.handler.FindElement.getElementLocator;
 
 public class FindElements extends SafeRequestHandler {
 
@@ -53,21 +52,11 @@ public class FindElements extends SafeRequestHandler {
      * returns  UiObject2 for an xpath expression
      **/
     private static List<Object> getXPathUiObjects(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception {
-        final List<BySelector> selectors = new ArrayList<BySelector>();
-
-        final ArrayList<ClassInstancePair> pairs = contextId.equals("") ? XMLHierarchy.getClassInstancePairs(expression) : XMLHierarchy.getClassInstancePairs(expression, contextId);
-
-        if (!multiple) {
-            if (pairs.size() == 0) {
-                throw new ElementNotFoundException();
-            }
-            selectors.add(pairs.get(0).getSelector());
-        } else {
-            for (final ClassInstancePair pair : pairs) {
-                selectors.add(pair.getSelector());
-            }
+        final NodeInfoList nodeList = XPathFinder.getNodesList(expression);
+        if (nodeList.size() == 0) {
+            throw new ElementNotFoundException();
         }
-        return getInstance().findObjects(selectors.get(0));
+        return getInstance().findObjects(nodeList);
     }
 
     @Override
@@ -123,7 +112,7 @@ public class FindElements extends SafeRequestHandler {
 
     private List<Object> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException, UiAutomator2Exception {
         if (by instanceof By.ById) {
-            String locator = getElementLocator((ById)by);
+            String locator = getElementLocator((ById) by);
             return getInstance().findObjects(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObjects(android.support.test.uiautomator.By.desc(by.getElementLocator()));
@@ -188,6 +177,7 @@ public class FindElements extends SafeRequestHandler {
      *
      * @param sel
      * @param key
+     *
      * @return
      */
     private List<Object> fetchElements(UiSelector sel, String key) throws UiObjectNotFoundException {

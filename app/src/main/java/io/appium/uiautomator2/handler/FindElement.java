@@ -1,7 +1,6 @@
 package io.appium.uiautomator2.handler;
 
 
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiSelector;
 
 import org.json.JSONException;
@@ -29,10 +28,10 @@ import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
-import io.appium.uiautomator2.utils.ClassInstancePair;
 import io.appium.uiautomator2.utils.Logger;
+import io.appium.uiautomator2.utils.NodeInfoList;
 import io.appium.uiautomator2.utils.UiAutomatorParser;
-import io.appium.uiautomator2.utils.XMLHierarchy;
+import io.appium.uiautomator2.model.XPathFinder;
 
 import static io.appium.uiautomator2.model.internal.CustomUiDevice.getInstance;
 import static io.appium.uiautomator2.utils.Device.getAndroidElement;
@@ -66,23 +65,14 @@ public class FindElement extends SafeRequestHandler {
 
     /**
      * returns  UiObject2 for an xpath expression
+     * TODO: Need to handle contextId based finding
      */
-    private static Object getXPathUiObject(final String expression, final boolean multiple, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception {
-        final List<BySelector> selectors = new ArrayList<BySelector>();
-
-        final ArrayList<ClassInstancePair> pairs = contextId.equals("") ? XMLHierarchy.getClassInstancePairs(expression) : XMLHierarchy.getClassInstancePairs(expression, contextId);
-
-        if (!multiple) {
-            if (pairs.size() == 0) {
+    private static Object getXPathUiObject(final String expression, String contextId) throws ElementNotFoundException, ParserConfigurationException, InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception {
+        final NodeInfoList nodeList = XPathFinder.getNodesList(expression);
+        if (nodeList.size() == 0) {
                 throw new ElementNotFoundException();
-            }
-            selectors.add(pairs.get(0).getSelector());
-        } else {
-            for (final ClassInstancePair pair : pairs) {
-                selectors.add(pair.getSelector());
-            }
         }
-        return getInstance().findObjects(selectors.get(0)).get((Integer.parseInt(pairs.get(0).getInstance())));
+        return getInstance().findObject(nodeList);
     }
 
     @Override
@@ -144,7 +134,7 @@ public class FindElement extends SafeRequestHandler {
         } else if (by instanceof ByClass) {
             return getInstance().findObject(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
         } else if (by instanceof By.ByXPath) {
-            return getXPathUiObject(by.getElementLocator(), false, "");
+            return getXPathUiObject(by.getElementLocator(), "");
         } else if (by instanceof By.ByAndroidUiAutomator) {
             return getInstance().findObject(findByUiAutomator(by.getElementLocator()));
         }
