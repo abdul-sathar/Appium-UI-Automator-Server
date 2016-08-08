@@ -616,7 +616,7 @@ public class HandlersTest {
         Response response = null;
         String responseBody = null;
         int responseCode;
-        response = findElement(By.id("invalid_ID"), response);
+        response = findElement(By.accessibilityId("invalid_ID"), response);
 
         responseBody = response.body().string();
         responseCode = response.code();

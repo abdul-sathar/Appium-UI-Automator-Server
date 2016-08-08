@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -25,6 +26,7 @@ import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.By.ByClass;
 import io.appium.uiautomator2.model.By.ById;
 import io.appium.uiautomator2.model.KnownElements;
+import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.ClassInstancePair;
@@ -37,6 +39,21 @@ import static io.appium.uiautomator2.utils.Device.getAndroidElement;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class FindElement extends SafeRequestHandler {
+
+    /**
+     * java_package : type / name
+     *
+     * com.example.Test:id/enter
+     *
+     * ^[a-zA-Z_] - Java package must start with letter or underscore
+     * [a-zA-Z0-9\._]* - Java package may contain letters, numbers, periods and
+     * underscores : - : ends the package and starts the type [^\/]+ - type is
+     * made up of at least one non-/ characters \\/ - / ends the type and starts
+     * the name [\S]+$ - the name contains at least one non-space character and
+     * then the line is ended
+     */
+    static final Pattern resourceIdRegex   = Pattern
+            .compile("^[a-zA-Z_][a-zA-Z0-9\\._]*:[^\\/]+\\/[\\S]+$");
 
     public FindElement(String mappedUri) {
         super(mappedUri);
@@ -116,7 +133,18 @@ public class FindElement extends SafeRequestHandler {
 
     private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException, UiAutomator2Exception {
         if (by instanceof ById) {
-            return getInstance().findObject(android.support.test.uiautomator.By.res(by.getElementLocator()));
+            String locator = by.getElementLocator();
+
+            if(!resourceIdRegex.matcher(by.getElementLocator()).matches()) {
+                // not a fully qualified resource id
+                // transform "textToBeChanged" into:
+                // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
+                // it's prefixed with the app package.
+                locator = (String) Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
+                Logger.debug("Updated findElement locator strategy: " + locator);
+            }
+
+            return getInstance().findObject(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObject(android.support.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof ByClass) {

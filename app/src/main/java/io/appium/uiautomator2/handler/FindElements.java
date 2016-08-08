@@ -26,6 +26,7 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.KnownElements;
+import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.ClassInstancePair;
@@ -121,6 +122,16 @@ public class FindElements extends SafeRequestHandler {
 
     private List<Object> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException, UiAutomator2Exception {
         if (by instanceof By.ById) {
+            String locator = by.getElementLocator();
+
+            if(!FindElement.resourceIdRegex.matcher(by.getElementLocator()).matches()) {
+                // not a fully qualified resource id
+                // transform "textToBeChanged" into:
+                // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
+                // it's prefixed with the app package.
+                locator = (String) Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
+                Logger.debug("Updated findElement locator strategy: " + locator);
+            }
             return getInstance().findObjects(android.support.test.uiautomator.By.res(by.getElementLocator()));
         } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObjects(android.support.test.uiautomator.By.desc(by.getElementLocator()));

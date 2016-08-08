@@ -2,6 +2,8 @@ package io.appium.uiautomator2.model;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -10,6 +12,7 @@ public class Session {
     private String sessionId;
     private ConcurrentMap<String, JSONObject> commandConfiguration;
     private KnownElements knownElements;
+    public static Map<String, Object> capabilities = new HashMap<String, Object>();
 
     public Session(String sessionId) {
         this.sessionId = sessionId;
