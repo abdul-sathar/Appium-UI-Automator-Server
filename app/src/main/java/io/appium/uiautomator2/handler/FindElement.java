@@ -51,6 +51,10 @@ public class FindElement extends SafeRequestHandler {
      * made up of at least one non-/ characters \\/ - / ends the type and starts
      * the name [\S]+$ - the name contains at least one non-space character and
      * then the line is ended
+     *
+     * Example:
+     * http://java-regex-tester.appspot.com/regex/5f04ac92-f9aa-45a6-b1dc-e2c25fd3cc6b
+     *
      */
     static final Pattern resourceIdRegex   = Pattern
             .compile("^[a-zA-Z_][a-zA-Z0-9\\._]*:[^\\/]+\\/[\\S]+$");
@@ -133,17 +137,7 @@ public class FindElement extends SafeRequestHandler {
 
     private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException, UiAutomator2Exception {
         if (by instanceof ById) {
-            String locator = by.getElementLocator();
-
-            if(!resourceIdRegex.matcher(by.getElementLocator()).matches()) {
-                // not a fully qualified resource id
-                // transform "textToBeChanged" into:
-                // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
-                // it's prefixed with the app package.
-                locator = (String) Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
-                Logger.debug("Updated findElement locator strategy: " + locator);
-            }
-
+            String locator = getElementLocator((ById)by);
             return getInstance().findObject(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObject(android.support.test.uiautomator.By.desc(by.getElementLocator()));
@@ -178,4 +172,17 @@ public class FindElement extends SafeRequestHandler {
         return selectors.get(0);
     }
 
+    public static String getElementLocator(ById by){
+        String locator = by.getElementLocator();
+
+        if(!resourceIdRegex.matcher(by.getElementLocator()).matches()) {
+            // not a fully qualified resource id
+            // transform "textToBeChanged" into:
+            // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
+            // it's prefixed with the app package.
+            locator = (String) Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
+            Logger.debug("Updated findElement locator strategy: " + locator);
+        }
+        return locator;
+    }
 }
