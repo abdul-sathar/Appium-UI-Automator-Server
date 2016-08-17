@@ -19,7 +19,6 @@ import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
 
 public class Swipe extends SafeRequestHandler {
-    UiDevice device;
 
     public Swipe(String mappedUri) {
         super(mappedUri);
@@ -34,7 +33,7 @@ public class Swipe extends SafeRequestHandler {
             JSONObject payload = getPayload(request);
             Logger.info("JSON Payload : ", payload.toString());
             swipeArgs = new SwipeArguments(request);
-            device = Device.getUiDevice();
+            UiDevice device = Device.getUiDevice();
 
             if (payload.has("elementId")) {
                 absStartPos = swipeArgs.element.getAbsolutePosition(swipeArgs.start);

@@ -23,7 +23,7 @@ public class AppStrings extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         String msg;
         final String filePath = "/data/local/tmp/strings.json";
-        JSONObject appStrings = new JSONObject();
+        JSONObject appStrings;
         try {
             final File jsonFile = new File(filePath);
             Logger.debug("Loading strings.json from file location: " + filePath);

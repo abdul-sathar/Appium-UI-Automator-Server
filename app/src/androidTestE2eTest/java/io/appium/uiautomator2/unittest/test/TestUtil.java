@@ -215,7 +215,6 @@ public class TestUtil {
      */
     public static String getAttribute(String element, String attribute) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-
         return get(baseUrl + "/element/" + elementId + "/attribute/" + attribute);
     }
 
@@ -228,7 +227,6 @@ public class TestUtil {
      */
     public static String getName(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-
         String response = get(baseUrl + "/element/" + elementId + "/name");
         Logger.info("Element name response:" + response);
         return response;

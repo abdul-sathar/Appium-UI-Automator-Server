@@ -44,7 +44,6 @@ public class Click extends SafeRequestHandler {
                 return new AppiumResponse(getSessionId(request), res);
             }
             getUiDevice().waitForIdle();
-
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);

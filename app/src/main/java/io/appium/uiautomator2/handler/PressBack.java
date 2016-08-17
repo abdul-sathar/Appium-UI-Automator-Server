@@ -16,8 +16,13 @@ public class PressBack extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        Logger.info("Go Back");
         boolean status = back();
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, status);
+        if (status) {
+            Logger.info("Pressed Back");
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, status);
+        } else {
+            Logger.info("Unable to Press Back");
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, status);
+        }
     }
 }

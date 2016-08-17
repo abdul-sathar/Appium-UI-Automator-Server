@@ -42,8 +42,8 @@ public class Drag extends SafeRequestHandler {
     }
 
     private AppiumResponse drag(final DragArguments dragArgs, final IHttpRequest request) {
-        Point absStartPos = new Point();
-        Point absEndPos = new Point();
+        Point absStartPos;
+        Point absEndPos;
         final UiDevice device = Device.getUiDevice();
 
         try {
@@ -69,7 +69,7 @@ public class Drag extends SafeRequestHandler {
     }
 
     private AppiumResponse dragElement(final DragArguments dragArgs, final IHttpRequest request) {
-        Point absEndPos = new Point();
+        Point absEndPos;
 
         if (dragArgs.destEl == null) {
             try {
