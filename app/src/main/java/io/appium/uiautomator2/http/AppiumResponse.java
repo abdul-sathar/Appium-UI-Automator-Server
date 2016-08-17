@@ -1,6 +1,8 @@
 package io.appium.uiautomator2.http;
 
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +18,12 @@ public class AppiumResponse {
         this.sessionId = sessionId;
         this.status = status.code();
         this.value = value;
+    }
+
+    public AppiumResponse(String sessionId, WDStatus status, Throwable throwable) {
+        this.sessionId = sessionId;
+        this.status = status.code();
+        this.value = Log.getStackTraceString(throwable);
     }
 
     public AppiumResponse(String sessionId, Object value) {

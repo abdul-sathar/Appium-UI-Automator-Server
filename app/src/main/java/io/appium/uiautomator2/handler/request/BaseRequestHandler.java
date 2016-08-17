@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.AppiumServlet;
+import io.appium.uiautomator2.utils.Logger;
 
 public abstract class BaseRequestHandler {
 
@@ -31,6 +32,7 @@ public abstract class BaseRequestHandler {
 
     public JSONObject getPayload(IHttpRequest request) throws JSONException {
         String json = request.body();
+        Logger.debug("payload: " + json);
         if (json != null && !json.isEmpty()) {
             return new JSONObject(json);
         }
