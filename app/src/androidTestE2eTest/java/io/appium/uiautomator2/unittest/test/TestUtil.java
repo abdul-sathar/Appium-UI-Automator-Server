@@ -39,6 +39,21 @@ public class TestUtil {
      * finds the element using By selector
      *
      * @param by
+     * @return
+     */
+    public static String findElement(By by, String contextId) {
+        JSONObject json = new JSONObject();
+        json = getJSon(by, contextId, json);
+        String result = post(baseUrl + "/element", json.toString());
+
+        Logger.info("findElement: " + result);
+        return result;
+    }
+
+    /**
+     * finds the element using By selector
+     *
+     * @param by
      * @param response
      *
      * @return
@@ -303,6 +318,7 @@ public class TestUtil {
      */
     public static JSONObject getJSon(By by, JSONObject jsonObject) {
         try {
+            jsonObject.put("context", "");
             if (by instanceof By.ByAccessibilityId) {
                 jsonObject.put("strategy", "accessibility id");
                 jsonObject.put("selector", ((By.ByAccessibilityId) by).getElementLocator());
@@ -321,6 +337,25 @@ public class TestUtil {
             } else {
                 throw new JSONException("Unable to create json object: " + by);
             }
+        } catch (JSONException e) {
+            Logger.error("Unable to form JSON Object: " + e);
+        }
+        return jsonObject;
+    }
+
+    /**
+     * prepares the JSON Object
+     * 
+     * @param by
+     * @param contextId
+     * @param jsonObject
+     * @return
+     */
+    public static JSONObject getJSon(By by, String contextId, JSONObject jsonObject) {
+        try {
+            jsonObject = getJSon(by, jsonObject);
+            jsonObject.put("context", contextId);
+            return jsonObject;
         } catch (JSONException e) {
             Logger.error("Unable to form JSON Object: " + e);
         }

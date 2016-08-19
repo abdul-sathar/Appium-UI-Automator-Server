@@ -110,8 +110,12 @@ public class XPathFinder implements Finder {
     }
   }
 
-  public static NodeInfoList getNodesList(String xpathExpression) throws ElementNotFoundException, InvalidSelectorException, ParserConfigurationException, UiAutomator2Exception {
-    XPathFinder.refreshUiElementTree();
+  public static NodeInfoList getNodesList(String xpathExpression,  AccessibilityNodeInfo nodeInfo) throws InvalidSelectorException, ParserConfigurationException, UiAutomator2Exception {
+    if(nodeInfo == null) {
+      XPathFinder.refreshUiElementTree();
+    } else {
+      XPathFinder.refreshUiElementTree(nodeInfo);
+    }
     XPathFinder finder = new XPathFinder(xpathExpression);
     return finder.find(finder.getRootElement());
   }
@@ -198,6 +202,10 @@ public class XPathFinder implements Finder {
 
   public static void refreshUiElementTree() {
     rootElement =UiAutomationElement.newRootElement(getRootAccessibilityNode());
+  }
+
+  public static void refreshUiElementTree(AccessibilityNodeInfo nodeInfo) {
+    rootElement =UiAutomationElement.newRootElement(nodeInfo);
   }
 
   public static AccessibilityNodeInfo getRootAccessibilityNode() throws UiAutomator2Exception {

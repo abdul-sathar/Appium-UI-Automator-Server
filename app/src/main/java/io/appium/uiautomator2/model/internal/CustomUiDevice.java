@@ -83,7 +83,10 @@ public class CustomUiDevice {
         } else if (selector instanceof NodeInfoList) {
             node = ((NodeInfoList) selector).getNodeList().size()>0 ? ((NodeInfoList) selector).getNodeList().get(0) : null;
             selector = By.clazz(node.getClassName().toString());
-        } else if (selector instanceof UiSelector) {
+        }  else if (selector instanceof AccessibilityNodeInfo) {
+            node = (AccessibilityNodeInfo) selector;
+            selector = By.clazz(node.getClassName().toString());
+        }else if (selector instanceof UiSelector) {
             return getUiDevice().findObject((UiSelector) selector);
         } else {
             throw new InvalidSelectorException("Selector of type " + selector.getClass().getName() + " not supported");
@@ -97,6 +100,7 @@ public class CustomUiDevice {
             cons.setAccessible(true);
             Object[] constructorParams = {device, selector, node};
             return (UiObject2) cons.newInstance(constructorParams);
+
         } catch (InvocationTargetException e) {
             final String msg = String.format("error while creating  UiObject2 object");
             Logger.error(msg + " " + e);

@@ -5,6 +5,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiSelector;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
@@ -87,6 +88,16 @@ public class UiObject2Element implements AndroidElement {
     }
 
     public UiObject2 getChild(final Object selector) throws UiObjectNotFoundException {
+        if (selector instanceof UiSelector) {
+            /**
+             * We can't find the child element with UiSelector on UiObject2,
+             * as an alternative creating UiObject with UiObject2's AccessibilityNodeInfo
+             * and finding the child element on UiObject.
+             */
+
+            //TODO: Yet to implement
+
+        }
         return element.findObject((BySelector) selector);
     }
 
@@ -109,12 +120,12 @@ public class UiObject2Element implements AndroidElement {
 
     @Override
     public boolean dragTo(Object destObj, int steps) throws UiObjectNotFoundException {
-        if (destObj instanceof UiObject){
+        if (destObj instanceof UiObject) {
             int destX = ((UiObject) destObj).getBounds().centerX();
             int destY = ((UiObject) destObj).getBounds().centerY();
             element.drag(new android.graphics.Point(destX, destY), steps);
             return true;
-        }else if (destObj instanceof UiObject2) {
+        } else if (destObj instanceof UiObject2) {
             android.graphics.Point coord = ((UiObject2) destObj).getVisibleCenter();
             element.drag(coord, steps);
             return true;
