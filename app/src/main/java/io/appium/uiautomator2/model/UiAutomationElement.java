@@ -42,7 +42,7 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
   private final Rect visibleBounds;
   private final UiAutomationElement parent;
   private final List<UiAutomationElement> children;
-  private final static Map<AccessibilityNodeInfo, UiAutomationElement>  map = new WeakHashMap<AccessibilityNodeInfo, UiAutomationElement>();
+  public final static Map<AccessibilityNodeInfo, UiAutomationElement>  map = new WeakHashMap<AccessibilityNodeInfo, UiAutomationElement>();
   /**
    * A snapshot of all attributes is taken at construction. The attributes of a
    * {@code UiAutomationElement} instance are immutable. If the underlying
@@ -50,11 +50,13 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
    * instance will be created in
    */
   protected UiAutomationElement( AccessibilityNodeInfo node,
-                                UiAutomationElement parent) {
+                                UiAutomationElement parent, int index) {
     this.node = Preconditions.checkNotNull(node);
     this.parent = parent;
 
     Map<Attribute, Object> attribs = new EnumMap<Attribute, Object>(Attribute.class);
+
+    put(attribs, Attribute.INDEX, index);
     put(attribs, Attribute.PACKAGE, charSequenceToString(node.getPackageName()));
     put(attribs, Attribute.CLASS, charSequenceToString(node.getClassName()));
     put(attribs, Attribute.TEXT, charSequenceToString(node.getText()));
@@ -101,7 +103,7 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
       for (int i = 0; i < childCount; i++) {
         AccessibilityNodeInfo child = node.getChild(i);
         if (child != null) {
-          children.add(this.getElement(child, this));
+          children.add(this.getElement(child, this, i));
         }
       }
     }
@@ -110,7 +112,7 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
 
   public static UiAutomationElement newRootElement(AccessibilityNodeInfo rawRoot) {
     clearData();
-    return getElement(rawRoot, null /* parent */);
+    return getElement(rawRoot, null /* parent */, 0 /* index */);
   }
 
   private static void clearData() {
@@ -118,10 +120,10 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
     XPathFinder.clearData();
   }
 
-  public static UiAutomationElement getElement(AccessibilityNodeInfo rawElement, UiAutomationElement parent) {
+  public static UiAutomationElement getElement(AccessibilityNodeInfo rawElement, UiAutomationElement parent, int index) {
     UiAutomationElement element = map.get(rawElement);
     if (element == null) {
-      element = new UiAutomationElement(rawElement, parent);
+      element = new UiAutomationElement(rawElement, parent, index);
       map.put(rawElement, element);
     }
     return element;

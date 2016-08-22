@@ -2,6 +2,7 @@ package io.appium.uiautomator2.model.internal;
 
 import android.app.Instrumentation;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
@@ -24,10 +25,10 @@ import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.NodeInfoList;
 import io.appium.uiautomator2.utils.ReflectionUtils;
 
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
-import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class CustomUiDevice {
 
@@ -78,6 +79,7 @@ public class CustomUiDevice {
     public Object findObject(Object selector) throws ClassNotFoundException, ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception {
 
         AccessibilityNodeInfo node ;
+        device.waitForIdle();
         if (selector instanceof BySelector) {
             node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots(false));
         } else if (selector instanceof NodeInfoList) {
@@ -99,7 +101,21 @@ public class CustomUiDevice {
             Constructor cons = uiObject2.getDeclaredConstructors()[0];
             cons.setAccessible(true);
             Object[] constructorParams = {device, selector, node};
-            return (UiObject2) cons.newInstance(constructorParams);
+
+            final long timeoutMillis = 1000;
+            long end = SystemClock.uptimeMillis() + timeoutMillis;
+            while (true) {
+                UiObject2 object2 = (UiObject2) cons.newInstance(constructorParams);
+
+                if (object2 != null) {
+                    return object2;
+                }
+                long remainingMillis = end - SystemClock.uptimeMillis();
+                if (remainingMillis < 0) {
+                    return null;
+                }
+                SystemClock.sleep(Math.min(200, remainingMillis));
+            }
 
         } catch (InvocationTargetException e) {
             final String msg = String.format("error while creating  UiObject2 object");

@@ -34,7 +34,8 @@ public enum Attribute {
   SELECTION_END("selection-end"),
   SELECTED("selected"),
   TEXT("text"),
-  BOUNDS("bounds");
+  BOUNDS("bounds"),
+  INDEX("index");
 
   private final String name;
 

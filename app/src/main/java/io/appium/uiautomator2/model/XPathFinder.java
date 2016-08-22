@@ -69,6 +69,11 @@ public class XPathFinder implements Finder {
   private final XPathExpression xPathExpression;
   private static UiAutomationElement rootElement;
 
+  @Override
+  public String toString() {
+    return xPathString;
+  }
+
   public XPathFinder(String xPathString) {
     this.xPathString = Preconditions.checkNotNull(xPathString);
     try {
@@ -76,11 +81,6 @@ public class XPathFinder implements Finder {
     } catch (XPathExpressionException e) {
       throw new UiAutomator2Exception("xPathString=" + xPathString, e);
     }
-  }
-
-  @Override
-  public String toString() {
-    return xPathString;
   }
 
   @Override

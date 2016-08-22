@@ -345,7 +345,7 @@ public class TestUtil {
 
     /**
      * prepares the JSON Object
-     * 
+     *
      * @param by
      * @param contextId
      * @param jsonObject
@@ -527,6 +527,10 @@ public class TestUtil {
 
     public static String drag(String dragBody) throws JSONException {
         return post(baseUrl + "/touch/drag", dragBody);
+    }
+
+    public static String source() {
+        return  get(baseUrl + "/source");
     }
 
 }

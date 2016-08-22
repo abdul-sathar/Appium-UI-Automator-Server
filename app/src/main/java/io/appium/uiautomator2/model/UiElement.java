@@ -104,6 +104,7 @@ public abstract class UiElement<R, E extends UiElement<R, E>> {
     return (Boolean) get(Attribute.SELECTED);
   }
 
+  public int getIndex() { return  (Integer)get(Attribute.INDEX); }
 
   protected abstract List<E> getChildren();
 

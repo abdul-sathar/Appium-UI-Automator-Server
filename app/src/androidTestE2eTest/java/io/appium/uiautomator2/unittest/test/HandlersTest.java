@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.Configurator;
+import android.support.test.uiautomator.UiObject;
 
 import com.jayway.jsonpath.JsonPath;
 import com.squareup.okhttp.MediaType;
@@ -641,49 +642,67 @@ public class HandlersTest {
     public void findElementWithContextId() throws JSONException {
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
 
-        //parent element - By.androidUiAutomator
+        //parent element - By.androidUiAutomator (UiObject)
         response = findElement(By.androidUiAutomator("new UiSelector().resourceId(\"android:id/list\")"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + response);
         String contextId = JsonPath.compile("$value.ELEMENT").read(response);
-
+        //child  element - By.className (UiObject2)
         element = findElement(By.className("android.widget.TextView"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
         assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
 
-        //parent element - By.className
+        //parent element - By.className  (UiObject2)
         response = findElement(By.className("android.widget.ListView"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + response);
         contextId = JsonPath.compile("$value.ELEMENT").read(response);
-
+        //child  element - By.className (UiObject2)
         element = findElement(By.className("android.widget.TextView"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         elementTxt = getText(element);
         assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
 
-
+        //parent element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
         assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
-
+        //child  element - By.androidUiAutomator (UiObject)
         element = findElement(By.androidUiAutomator("new UiSelector().text(\"Animation\");"), contextId);
+        elementTxt = getText(element);
+        assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
 
         //parent element - By.xpath
         response = findElement(By.xpath("//*[@class='android.widget.FrameLayout'][2]"));
         contextId = JsonPath.compile("$value.ELEMENT").read(response);
+        //child element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
         assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
 
-        //parent element - By.androidUiAutomator
-        response = findElement(By.androidUiAutomator("new UiScrollable(new UiSelector()"
-                + ".resourceId(\"android:id/list\"));"));
+        //parent element - By.androidUiAutomator (UiObject)
+        response = findElement(By.androidUiAutomator("new UiSelector()"
+                + ".resourceId(\"android:id/list\");"));
         contextId = JsonPath.compile("$value.ELEMENT").read(response);
+        //child element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
         assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
+
+        click(findElement(By.accessibilityId("Animation")));
+        getUiDevice().waitForIdle();
+        waitForElement(By.accessibilityId("Events"), 5 * SECOND);
+        click(findElement(By.accessibilityId("Events")));
+        waitForElement(By.xpath("//*[@class='android.widget.LinearLayout'][3]"), 5 * SECOND);
+        //parent element - By.xpath (UiObject2)
+        response = findElement(By.xpath("//*[@class='android.widget.LinearLayout'][3]"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
+        contextId = JsonPath.compile("$value.ELEMENT").read(response);
+        //child  element - By.androidUiAutomator (UiObject)
+        element = findElement(By.androidUiAutomator("new UiSelector().className(\"android.widget.TextView\")"), contextId);
+        elementTxt = getText(element);
+        assertEquals("Animator Events:   ", getStringValueInJsonObject(elementTxt, "value"));
     }
 }

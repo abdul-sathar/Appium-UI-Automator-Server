@@ -6,9 +6,13 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
+import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
+import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
@@ -87,16 +91,21 @@ public class UiObject2Element implements AndroidElement {
         return rectangle;
     }
 
-    public UiObject2 getChild(final Object selector) throws UiObjectNotFoundException {
+    public Object getChild(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof UiSelector) {
             /**
              * We can't find the child element with UiSelector on UiObject2,
              * as an alternative creating UiObject with UiObject2's AccessibilityNodeInfo
              * and finding the child element on UiObject.
              */
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
 
-            //TODO: Yet to implement
-
+            UiSelector uiSelector = new UiSelector();
+            CustomUiSelector customUiSelector = new CustomUiSelector(uiSelector);
+            uiSelector = customUiSelector.getUiSelector(nodeInfo);
+            UiObject uiObject = (UiObject)  CustomUiDevice.getInstance().findObject(uiSelector);
+            AccessibilityNodeInfo uiObject_nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+            return uiObject.getChild((UiSelector) selector);
         }
         return element.findObject((BySelector) selector);
     }
