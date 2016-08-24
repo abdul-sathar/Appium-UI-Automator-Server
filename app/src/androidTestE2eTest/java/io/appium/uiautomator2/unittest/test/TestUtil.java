@@ -147,7 +147,7 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("x", x);
         jsonObject.put("y", y);
-        return post(baseUrl + "/element/elementId/click", jsonObject.toString());
+        return post(baseUrl + "/appium/tap", jsonObject.toString());
     }
 
     /**
