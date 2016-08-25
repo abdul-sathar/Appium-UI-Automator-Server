@@ -45,6 +45,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getValueInJsonObject;
+import static io.appium.uiautomator2.unittest.test.TestUtil.isElementPresent;
 import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
 import static io.appium.uiautomator2.unittest.test.TestUtil.multiPointerGesture;
 import static io.appium.uiautomator2.unittest.test.TestUtil.rotateScreen;
@@ -53,11 +54,15 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.tap;
+import static io.appium.uiautomator2.unittest.test.TestUtil.touchDown;
+import static io.appium.uiautomator2.unittest.test.TestUtil.touchMove;
+import static io.appium.uiautomator2.unittest.test.TestUtil.touchUp;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElement;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForElementInvisible;
 import static io.appium.uiautomator2.unittest.test.TestUtil.waitForSeconds;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -243,6 +248,7 @@ public class HandlersTest {
         element = findElement(By.androidUiAutomator("new UiScrollable(new UiSelector()"
                 + ".resourceId(\"android:id/list\")).scrollIntoView("
                 + "new UiSelector().text(\"Radio Group\"));"));
+
 
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
         result = getStringValueInJsonObject(element, "status");
@@ -625,5 +631,22 @@ public class HandlersTest {
 
         assertEquals("HTTP Status code for unsuccessful request should be '500'.", 500, responseCode);
         assertEquals("AppiumResponse status code for element not found should be '7'.", WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(getStringValueInJsonObject(responseBody, "status")));
+    }
+
+    @Test
+    public void touchActionsTest() throws JSONException {
+        getUiDevice().waitForIdle();
+
+        scrollTo("Views"); // Due to 'Views' option not visible on small screen
+        waitForElement(By.accessibilityId("Views"), 10 * SECOND);
+        click(findElement(By.accessibilityId("Views")));
+        waitForElement(By.accessibilityId("Auto Complete"), 10 * SECOND);
+        String downElement = findElement(By.accessibilityId("Controls"));
+        String upElement = findElement(By.accessibilityId("Auto Complete"));
+
+        touchDown(downElement);
+        touchMove(upElement);
+        touchUp(downElement);
+        assertFalse(isElementPresent(findElement(By.accessibilityId("Auto Complete"))));
     }
 }

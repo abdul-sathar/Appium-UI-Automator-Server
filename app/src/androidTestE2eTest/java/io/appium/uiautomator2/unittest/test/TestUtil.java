@@ -378,6 +378,35 @@ public class TestUtil {
         return post(baseUrl + "/touch/perform", swipeOpts.toString());
     }
 
+    public static String touchDown(String element) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("params", getJsonForElement(element).toString());
+        return post(baseUrl + "/touch/down", jsonObject.toString());
+    }
+
+    public static String touchUp(String element) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("params", getJsonForElement(element).toString());
+        return post(baseUrl + "/touch/up", jsonObject.toString());
+    }
+
+    public static String touchMove(String element) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("params", getJsonForElement(element).toString());
+        return post(baseUrl + "/touch/move", jsonObject.toString());
+    }
+
+    public static JSONObject getJsonForElement(String elementResponse) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        String elementId = new JSONObject(elementResponse).getJSONObject("value").getString("ELEMENT");
+        jsonObject.put("elementId", elementId);
+        return jsonObject;
+    }
+
+    public static boolean isElementPresent(String elementResponse) throws JSONException {
+       int status = new JSONObject(elementResponse).getInt("status");
+        return status == 0;
+    }
     /**
      * performs long click on the given element
      *
