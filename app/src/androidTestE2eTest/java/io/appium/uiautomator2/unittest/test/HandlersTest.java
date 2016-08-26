@@ -90,7 +90,7 @@ public class HandlersTest {
      * @throws InterruptedException
      */
     @BeforeClass
-    public static void beforeStartServer() throws InterruptedException {
+    public static void beforeStartServer() throws InterruptedException, IOException, SessionRemovedException {
         if (serverInstrumentation == null) {
             assertNotNull(getUiDevice());
             ctx = InstrumentationRegistry.getInstrumentation().getContext();
@@ -123,8 +123,7 @@ public class HandlersTest {
         getUiDevice().waitForIdle();
         Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
         element = findElement(By.accessibilityId("Accessibility"));
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.accessibilityId("Accessibility") + "not found", isElementPresent(element));
     }
 
     /**
@@ -136,14 +135,12 @@ public class HandlersTest {
         waitForElement(By.accessibilityId("Accessibility"), 5 * SECOND);
         element = findElement(By.accessibilityId("Accessibility"));
         Logger.info("[AppiumUiAutomator2Server]", " click element:" + element);
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.accessibilityId("Accessibility") + "not found", isElementPresent(element));
         click(element);
         getUiDevice().waitForIdle();
         waitForElementInvisible(By.accessibilityId("Accessibility"), 5 * SECOND);
         element = findElement(By.accessibilityId("Accessibility"));
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+        assertFalse(By.accessibilityId("Accessibility") + " found", isElementPresent(element));
     }
 
     /**
@@ -193,8 +190,7 @@ public class HandlersTest {
     public void tapOnElement() throws JSONException {
         waitForElement(By.accessibilityId("Accessibility"), 5 * SECOND);
         element = findElement(By.accessibilityId("Accessibility"));
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.accessibilityId("Accessibility") + "not found", isElementPresent(element));
         String response = getLocation(element);
         JSONObject json = new JSONObject(new JSONObject(response).get("value").toString());
 
@@ -205,8 +201,7 @@ public class HandlersTest {
         Boolean tapStatus = (Boolean) getValueInJsonObject(tapResponse, "value");
         assertTrue("Unable to tap on location: " + x + " " + y, tapStatus);
         element = findElement(By.accessibilityId("Accessibility"));
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+        assertFalse(By.accessibilityId("Accessibility") + " found, which not expected", isElementPresent(element));
     }
 
     /**
@@ -217,8 +212,7 @@ public class HandlersTest {
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
         response = findElement(By.xpath("//*[@text='API Demos']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
-        result = getStringValueInJsonObject(response, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.xpath("//*[@text='API Demos']") + "not found", isElementPresent(response));
 
         response = findElement(By.xpath("//*[@resource-id='android:id/action_bar']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + response);
@@ -245,21 +239,19 @@ public class HandlersTest {
         scrollTo("Views"); // Due to 'Views' option not visible on small screen
         click(findElement(By.accessibilityId("Views")));
 
-        element = findElement(By.androidUiAutomator("new UiScrollable(new UiSelector()"
+        By androidUiAutomator = By.androidUiAutomator("new UiScrollable(new UiSelector()"
                 + ".resourceId(\"android:id/list\")).scrollIntoView("
-                + "new UiSelector().text(\"Radio Group\"));"));
+                + "new UiSelector().text(\"Radio Group\"));");
+        element = findElement(androidUiAutomator);
 
 
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(androidUiAutomator + "not found", isElementPresent(element));
 
         click(element);
-
         element = findElement(By.accessibilityId("Radio Group"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.accessibilityId: " + element);
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+        assertFalse(By.accessibilityId("Radio Group") + "not found", isElementPresent(element));
     }
 
 
@@ -274,8 +266,7 @@ public class HandlersTest {
 
         response = findElements(By.androidUiAutomator("resourceId(\"android:id/text1\")"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + response);
-        result = getStringValueInJsonObject(response, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.accessibilityId("Radio Group") + "not found", isElementPresent(response));
 
         JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
         int elementCount = getJsonObjectCountInJsonArray(elements);
@@ -292,9 +283,7 @@ public class HandlersTest {
 
         response = findElements(By.className("android.widget.TextView"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + response);
-        result = getStringValueInJsonObject(response, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
-
+        assertTrue(By.className("android.widget.TextView") + "not found", isElementPresent(response));
         JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
         int elementCount = getJsonObjectCountInJsonArray(elements);
         assertTrue("Elements Count in Home launch screen should at least > 5, " +
@@ -551,14 +540,12 @@ public class HandlersTest {
         waitForElement(By.accessibilityId("Accessibility"), 5 * SECOND);
         element = findElement(By.accessibilityId("Accessibility"));
         Logger.info("[AppiumUiAutomator2Server]", "long click element:" + element);
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(result));
+        assertTrue(By.accessibilityId("Accessibility") + " not found", isElementPresent(element));
         longClick(element);
         getUiDevice().waitForIdle();
         waitForElementInvisible(By.accessibilityId("Accessibility"), 5 * SECOND);
         element = findElement(By.accessibilityId("Accessibility"));
-        result = getStringValueInJsonObject(element, "status");
-        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(result));
+        assertFalse(By.accessibilityId("Accessibility") + " found", isElementPresent(element));
     }
 
     /**
@@ -575,14 +562,12 @@ public class HandlersTest {
         click(findElement(By.accessibilityId("Views")));
         String scrollToText = "Radio Group";
         element = findElement(By.accessibilityId(scrollToText));
-        String status = getStringValueInJsonObject(element, "status");
         // Before Scroll 'Radio Group' Element was not found
-        assertEquals(WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(status));
+        assertFalse(By.accessibilityId(scrollToText) + " found", isElementPresent(element));
         scrollTo(scrollToText);
         element = findElement(By.accessibilityId(scrollToText));
-        status = getStringValueInJsonObject(element, "status");
         // After Scroll Element was found
-        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
+        assertTrue(By.accessibilityId(scrollToText) + " not found", isElementPresent(element));
     }
 
     /**
