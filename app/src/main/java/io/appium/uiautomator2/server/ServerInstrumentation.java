@@ -3,8 +3,12 @@ package io.appium.uiautomator2.server;
 import android.content.Context;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.RemoteException;
 
+import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
 import io.appium.uiautomator2.utils.Logger;
+
+import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class ServerInstrumentation {
     private static ServerInstrumentation instance;
@@ -12,6 +16,7 @@ public class ServerInstrumentation {
     private HttpdThread serverThread;
     private PowerManager.WakeLock wakeLock;
     private int serverPort = 8080;
+    private static boolean isStopServer;
 
     private ServerInstrumentation(int serverPort) {
         this.serverPort = serverPort;
@@ -21,6 +26,9 @@ public class ServerInstrumentation {
         }
     }
 
+    public static boolean isStopServer(){
+        return isStopServer;
+    }
     private static boolean isValidPort(int port) {
         return port >= 1024 && port <= 65535;
     }
@@ -37,19 +45,26 @@ public class ServerInstrumentation {
     public void stopServer() {
         try {
             if (wakeLock != null) {
-                wakeLock.release();
+                try {
+                    wakeLock.release();
+                }catch(Exception e){/* ignore */}
                 wakeLock = null;
             }
             stopServerThread();
+
         } finally {
             instance = null;
         }
     }
 
 
-    public void startServer() throws InterruptedException {
+    public void startServer() throws InterruptedException, SessionRemovedException {
         if (serverThread != null && serverThread.isAlive()) {
             return;
+        }
+
+        if(serverThread == null && isStopServer){
+            throw new SessionRemovedException("Delete Session has been invoked");
         }
 
         if (serverThread != null) {
@@ -80,6 +95,7 @@ public class ServerInstrumentation {
         } catch (InterruptedException ignored) {
         }
         serverThread = null;
+        isStopServer = true;
     }
 
     private class HttpdThread extends Thread {
@@ -112,8 +128,11 @@ public class ServerInstrumentation {
             wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "UiAutomator2");
             try {
                 wakeLock.acquire();
+                getUiDevice().wakeUp();
             } catch (SecurityException e) {
                 Logger.error("Security Exception", e);
+            } catch (RemoteException e) {
+                Logger.error("Remote Exception while waking up", e);
             }
 
             server.start();
