@@ -16,7 +16,7 @@ public class ServerInstrumentation {
     private HttpdThread serverThread;
     private PowerManager.WakeLock wakeLock;
     private int serverPort = 8080;
-    private static boolean isStopServer;
+    private  boolean isStopServer;
 
     private ServerInstrumentation(int serverPort) {
         this.serverPort = serverPort;
@@ -26,7 +26,7 @@ public class ServerInstrumentation {
         }
     }
 
-    public static boolean isStopServer(){
+    public boolean isStopServer(){
         return isStopServer;
     }
     private static boolean isValidPort(int port) {

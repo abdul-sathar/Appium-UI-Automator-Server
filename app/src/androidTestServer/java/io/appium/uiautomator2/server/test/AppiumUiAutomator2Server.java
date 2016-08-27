@@ -12,8 +12,6 @@ import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
 import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.utils.Logger;
 
-import static io.appium.uiautomator2.server.ServerInstrumentation.isStopServer;
-
 @RunWith(AndroidJUnit4.class)
 public class AppiumUiAutomator2Server {
     private static final int port = 8080;
@@ -31,7 +29,7 @@ public class AppiumUiAutomator2Server {
             serverInstrumentation = ServerInstrumentation.getInstance(ctx, port);
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server");
             try {
-                while (!isStopServer()) {
+                while (!serverInstrumentation.isStopServer()) {
                     SystemClock.sleep(1000);
                     serverInstrumentation.startServer();
                 }
