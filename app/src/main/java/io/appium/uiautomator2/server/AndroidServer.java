@@ -25,8 +25,7 @@ public class AndroidServer {
 
 
     public void stop() {
-        // TODO: Stop needs to be implemented
-        // webServer.stop();
+        webServer.stop();
     }
 
     public int getPort() {
