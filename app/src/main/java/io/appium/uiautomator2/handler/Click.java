@@ -27,9 +27,10 @@ public class Click extends SafeRequestHandler {
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
         try {
-            Logger.info("Click element command");
+
             JSONObject payload = getPayload(request);
             if (payload.has("elementId")) {
+                Logger.info("Click element command");
                 String id = payload.getString("elementId");
                 AndroidElement element = KnownElements.getElementFromCache(id);
                 if (element == null) {
@@ -37,6 +38,7 @@ public class Click extends SafeRequestHandler {
                 }
                 element.click();
             } else {
+                Logger.info("tap command");
                 Point coords = new Point(Double.parseDouble(payload.get("x").toString()),
                         Double.parseDouble(payload.get("y").toString()));
                 coords = PositionHelper.getDeviceAbsPos(coords);

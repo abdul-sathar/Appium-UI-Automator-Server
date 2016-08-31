@@ -1,5 +1,7 @@
 package io.appium.uiautomator2.handler;
 
+import android.support.test.InstrumentationRegistry;
+
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -18,7 +20,8 @@ public class DeleteSession extends SafeRequestHandler {
 
     public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Delete session command");
-        ServerInstrumentation.getInstance(null, PORT).stopServer();
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, "Session deleted");
+        String sessionId = getSessionId(request);
+        ServerInstrumentation.getInstance(InstrumentationRegistry.getInstrumentation().getContext(), PORT).stopServer();
+        return new AppiumResponse(sessionId, WDStatus.SUCCESS, "Session deleted");
     }
 }
