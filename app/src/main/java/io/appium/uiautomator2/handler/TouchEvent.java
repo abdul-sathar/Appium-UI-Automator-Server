@@ -3,8 +3,6 @@ package io.appium.uiautomator2.handler;
 import android.graphics.Rect;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
-import com.jayway.jsonpath.JsonPath;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +25,6 @@ public abstract class TouchEvent extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        String path = "$.params.";
         try {
             JSONObject json = new JSONObject(getPayload(request).getString("params"));
             if (json.has("elementId") && !(json.has("x") && json.has("y"))) {
@@ -43,8 +40,8 @@ public abstract class TouchEvent extends SafeRequestHandler {
                 clickX = bounds.centerX();
                 clickY = bounds.centerY();
             } else { // no element so extract x and y from params
-                clickX = JsonPath.compile(path + "x").read(json.toString());
-                clickY = JsonPath.compile(path + "y").read(json.toString());
+                clickX = json.getInt("x");
+                clickY = json.getInt("y");
             }
 
             if (executeTouchEvent())

@@ -10,13 +10,17 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
-import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.model.internal.CustomUiDevice;
+import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
 import io.appium.uiautomator2.utils.UnicodeEncoder;
+
+import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
+import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
 public class UiObject2Element implements AndroidElement {
 
@@ -45,13 +49,10 @@ public class UiObject2Element implements AndroidElement {
         return element.getContentDescription();
     }
 
-    public String getStringAttribute(final String attr) throws UiObjectNotFoundException {
+    public String getStringAttribute(final String attr) throws UiObjectNotFoundException, NoAttributeFoundException {
         String res;
         if (attr.equalsIgnoreCase("name")) {
-            res = element.getText();
-            if (res.equals("")) {
-                res = getText();
-            }
+            res = getText();
         } else if (attr.equalsIgnoreCase("contentDescription")) {
             res = element.getContentDescription();
         } else if (attr.equalsIgnoreCase("text")) {
@@ -61,7 +62,36 @@ public class UiObject2Element implements AndroidElement {
         } else if (attr.equalsIgnoreCase("resourceId") || attr.equalsIgnoreCase("resource-id")) {
             res = element.getResourceName();
         } else {
-            throw new NoSuchElementAttributeException("The attribute with name '" + attr + "' was not found.");
+            throw new NoAttributeFoundException(attr);
+        }
+        return res;
+    }
+
+    public boolean getBoolAttribute(final String attr)
+            throws UiObjectNotFoundException, NoAttributeFoundException, UiAutomator2Exception {
+        boolean res;
+        if (attr.equals("enabled")) {
+            res = element.isEnabled();
+        } else if (attr.equals("checkable")) {
+            res = element.isCheckable();
+        } else if (attr.equals("checked")) {
+            res = element.isChecked();
+        } else if (attr.equals("clickable")) {
+            res = element.isClickable();
+        } else if (attr.equals("focusable")) {
+            res = element.isFocusable();
+        } else if (attr.equals("focused")) {
+            res = element.isFocused();
+        } else if (attr.equals("longClickable")) {
+            res = element.isLongClickable();
+        } else if (attr.equals("scrollable")) {
+            res = element.isScrollable();
+        } else if (attr.equals("selected")) {
+            res = element.isSelected();
+        } else if (attr.equals("displayed")) {
+            res = invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), element) != null ? true : false;
+        } else {
+            throw new NoAttributeFoundException(attr);
         }
         return res;
     }

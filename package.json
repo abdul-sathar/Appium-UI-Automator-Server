@@ -1,13 +1,10 @@
 {
   "name": "appium-uiautomator2-server-test-1",
-  "version": "0.0.50",
+  "version": "0.0.52",
   "description": "A netty server with uiautomator2 handlers",
   "main": "index.js",
   "windowsBuildDir":"c:/tmp",
-  "scripts": {
-    "postinstall": "gradle clean assembleServerDebug assembleServerDebugAndroidTest && gulp copyServerApks"
-  },
-  "repository": {
+   "repository": {
     "type": "git",
     "url": "https://github.com/appium/appium-uiautomator2-server"
   },
