@@ -51,15 +51,15 @@ public class UiObject2Element implements AndroidElement {
 
     public String getStringAttribute(final String attr) throws UiObjectNotFoundException, NoAttributeFoundException {
         String res;
-        if (attr.equalsIgnoreCase("name")) {
+        if ("name".equalsIgnoreCase(attr)) {
             res = getText();
-        } else if (attr.equalsIgnoreCase("contentDescription")) {
+        } else if ("contentDescription".equalsIgnoreCase(attr)) {
             res = element.getContentDescription();
-        } else if (attr.equalsIgnoreCase("text")) {
+        } else if ("text".equalsIgnoreCase(attr)) {
             res = getText();
-        } else if (attr.equalsIgnoreCase("className")) {
+        } else if ("className".equalsIgnoreCase(attr)) {
             res = element.getClassName();
-        } else if (attr.equalsIgnoreCase("resourceId") || attr.equalsIgnoreCase("resource-id")) {
+        } else if ("resourceId".equalsIgnoreCase(attr) || "resource-id".equalsIgnoreCase(attr)) {
             res = element.getResourceName();
         } else {
             throw new NoAttributeFoundException(attr);
@@ -70,25 +70,25 @@ public class UiObject2Element implements AndroidElement {
     public boolean getBoolAttribute(final String attr)
             throws UiObjectNotFoundException, NoAttributeFoundException, UiAutomator2Exception {
         boolean res;
-        if (attr.equals("enabled")) {
+        if ("enabled".equals(attr)) {
             res = element.isEnabled();
-        } else if (attr.equals("checkable")) {
+        } else if ("checkable".equals(attr)) {
             res = element.isCheckable();
-        } else if (attr.equals("checked")) {
+        } else if ("checked".equals(attr)) {
             res = element.isChecked();
-        } else if (attr.equals("clickable")) {
+        } else if ("clickable".equals(attr)) {
             res = element.isClickable();
-        } else if (attr.equals("focusable")) {
+        } else if ("focusable".equals(attr)) {
             res = element.isFocusable();
-        } else if (attr.equals("focused")) {
+        } else if ("focused".equals(attr)) {
             res = element.isFocused();
-        } else if (attr.equals("longClickable")) {
+        } else if ("longClickable".equals(attr)) {
             res = element.isLongClickable();
-        } else if (attr.equals("scrollable")) {
+        } else if ("scrollable".equals(attr)) {
             res = element.isScrollable();
-        } else if (attr.equals("selected")) {
+        } else if ("selected".equals(attr)) {
             res = element.isSelected();
-        } else if (attr.equals("displayed")) {
+        } else if ("displayed".equals(attr)) {
             res = invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), element) != null ? true : false;
         } else {
             throw new NoAttributeFoundException(attr);

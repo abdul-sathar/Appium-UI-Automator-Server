@@ -31,9 +31,9 @@ public class GetElementAttribute extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
         }
         try {
-            if (attributeName.equals("name") || attributeName.equals("contentDescription")
-                    || attributeName.equals("text") || attributeName.equals("className")
-                    || attributeName.equals("resourceId")) {
+            if ("name".equals(attributeName) || "contentDescription".equals(attributeName)
+                    || "text".equals(attributeName) || "className".equals(attributeName)
+                    || "resourceId".equals(attributeName)) {
                 String attribute = element.getStringAttribute(attributeName);
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, attribute);
             } else {
