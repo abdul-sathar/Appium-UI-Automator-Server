@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.utils.Point;
 
 public interface AndroidElement {
@@ -26,7 +27,7 @@ public interface AndroidElement {
 
     public Rect getBounds() throws UiObjectNotFoundException;
 
-    public Object getChild(final Object sel) throws UiObjectNotFoundException;
+    public Object getChild(final Object sel) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
     public String getContentDesc() throws UiObjectNotFoundException;
 

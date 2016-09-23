@@ -39,19 +39,6 @@ public abstract class By {
         return new ByAccessibilityId(text);
     }
 
-    public static By partialLinkText(final String text) {
-        if (text == null)
-            throw new IllegalArgumentException("Cannot find elements when text is null.");
-
-        return new ByPartialLinkText(text);
-    }
-
-    public static By name(String name) {
-        if (name == null)
-            throw new IllegalArgumentException("Cannot find elements when name is null.");
-        return new ByName(name);
-    }
-
     public static By xpath(String xpathExpression) {
         if (xpathExpression == null)
             throw new IllegalArgumentException("Cannot find elements when xpath is null.");

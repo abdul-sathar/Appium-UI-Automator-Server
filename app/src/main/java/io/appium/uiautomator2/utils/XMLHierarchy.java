@@ -25,78 +25,22 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
-import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
-import io.appium.uiautomator2.common.exceptions.PairCreationException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoDumper;
-import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
-import io.appium.uiautomator2.core.UiAutomatorBridge;
-import io.appium.uiautomator2.model.AndroidElement;
-import io.appium.uiautomator2.model.internal.AndroidElementsHash;
-//import io.appium.uiautomator2.model.internal.AndroidElementsHash;
+import io.appium.uiautomator2.model.XPathFinder;
 
 
 public abstract class XMLHierarchy {
 
-    public static ArrayList<ClassInstancePair> getClassInstancePairs(String xpathExpression) throws ElementNotFoundException, InvalidSelectorException, ParserConfigurationException, UiAutomator2Exception {
-
-        return getClassInstancePairs(compileXpath(xpathExpression), getFormattedXMLDoc());
-    }
-
-    public static ArrayList<ClassInstancePair> getClassInstancePairs(final String xpathExpression, final String contextId) throws InvalidSelectorException, ElementNotFoundException, UiAutomator2Exception {
-        AndroidElement contextElement = AndroidElementsHash.getInstance().getElement(contextId);
-        AccessibilityNodeInfo contextNode = AccessibilityNodeInfoGetter.fromUiObject(contextElement.getUiObject());
-
-        return getClassInstancePairs(compileXpath(xpathExpression), getFormattedXMLDoc(contextNode));
-    }
-
-    private static XPathExpression compileXpath(String xpathExpression) throws InvalidSelectorException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        XPathExpression exp = null;
-        try {
-            exp = xpath.compile(xpathExpression);
-        } catch (XPathExpressionException e) {
-            throw new InvalidSelectorException("Invalid XPath expression: ", e);
-        }
-        return exp;
-    }
-
-    public static ArrayList<ClassInstancePair> getClassInstancePairs(XPathExpression xpathExpression, Node root) throws ElementNotFoundException {
-
-        NodeList nodes;
-        try {
-            nodes = (NodeList) xpathExpression.evaluate(root, XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-            throw new ElementNotFoundException("XMLWindowHierarchy could not be parsed:" + e);
-        }
-
-        ArrayList<ClassInstancePair> pairs = new ArrayList<ClassInstancePair>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                try {
-                    pairs.add(getPairFromNode(nodes.item(i)));
-                } catch (PairCreationException e) {
-                }
-            }
-        }
-
-        return pairs;
-    }
-
     public static InputSource getRawXMLHierarchy() throws UiAutomator2Exception {
-        AccessibilityNodeInfo root = getRootAccessibilityNode();
+        AccessibilityNodeInfo root = XPathFinder.getRootAccessibilityNode();
         return getRawXMLHierarchy(root);
     }
 
@@ -105,22 +49,11 @@ public abstract class XMLHierarchy {
         return new InputSource(new StringReader(xmlDump));
     }
 
-    private static AccessibilityNodeInfo getRootAccessibilityNode() throws UiAutomator2Exception {
-        while (true) {
-            AccessibilityNodeInfo root = UiAutomatorBridge.getInstance().getQueryController().getAccessibilityRootNode();
-            if (root != null) {
-                return root;
-            }
-        }
-    }
 
     public static Node getFormattedXMLDoc() throws UiAutomator2Exception {
         return formatXMLInput(getRawXMLHierarchy());
     }
 
-    public static Node getFormattedXMLDoc(AccessibilityNodeInfo root) throws UiAutomator2Exception {
-        return formatXMLInput(getRawXMLHierarchy(root));
-    }
 
     public static Node formatXMLInput(InputSource input) {
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -141,16 +74,6 @@ public abstract class XMLHierarchy {
         return root;
     }
 
-    private static ClassInstancePair getPairFromNode(Node node) throws PairCreationException {
-
-        NamedNodeMap attrElements = node.getAttributes();
-        String androidClass;
-        String instance;
-        androidClass = attrElements.getNamedItem("class").getNodeValue();
-        instance = attrElements.getNamedItem("instance").getNodeValue();
-
-        return new ClassInstancePair(androidClass, instance);
-    }
 
     private static void annotateNodes(Node node, HashMap<String, Integer> instances) {
         NodeList children = node.getChildNodes();

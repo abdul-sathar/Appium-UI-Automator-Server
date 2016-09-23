@@ -16,6 +16,7 @@ import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 public abstract class AccessibilityNodeInfoGetter {
 
     private static Configurator configurator = Configurator.getInstance();
+    private static long TIME_IN_MS = 10000;
 
     /**
      * Gets the {@link AccessibilityNodeInfo} associated with the given {@link UiObject2}
@@ -24,7 +25,7 @@ public abstract class AccessibilityNodeInfoGetter {
         if (object instanceof UiObject2) {
             return (AccessibilityNodeInfo) invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), object);
         } else if (object instanceof UiObject) {
-            return (AccessibilityNodeInfo) invoke(method(UiObject.class, "findAccessibilityNodeInfo"), object);
+            return (AccessibilityNodeInfo) invoke(method(UiObject.class, "findAccessibilityNodeInfo", long.class), object, TIME_IN_MS);
         } else {
             throw new UiAutomator2Exception("Unknown object type: " + object.getClass().getName());
         }

@@ -1,6 +1,7 @@
 package io.appium.uiautomator2.model;
 
 import android.graphics.Rect;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.Configurator;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -9,7 +10,10 @@ import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
+import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
+import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.utils.API;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
@@ -92,7 +96,17 @@ public class UiObjectElement implements AndroidElement {
         return rectangle;
     }
 
-    public UiObject getChild(final Object selector) throws UiObjectNotFoundException {
+    public Object getChild(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+        if (selector instanceof BySelector) {
+            /**
+             * We can't find the child element with BySelector on UiObject,
+             * as an alternative creating UiObject2 with UiObject's AccessibilityNodeInfo
+             * and finding the child element on UiObject2.
+             */
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+            UiObject2 uiObject2 = (UiObject2) CustomUiDevice.getInstance().findObject(nodeInfo);
+            return uiObject2.findObject((BySelector) selector);
+        }
         return element.getChild((UiSelector) selector);
     }
 
@@ -161,10 +175,10 @@ public class UiObjectElement implements AndroidElement {
     public boolean dragTo(final Object destObj, final int steps)
             throws UiObjectNotFoundException, InvalidCoordinatesException {
         if (API.API_18) {
-            if(destObj instanceof UiObject) {
+            if (destObj instanceof UiObject) {
                 return element.dragTo((UiObject) destObj, steps);
-            } else if(destObj instanceof UiObject2) {
-                android.graphics.Point coords = ((UiObject2)destObj).getVisibleCenter();
+            } else if (destObj instanceof UiObject2) {
+                android.graphics.Point coords = ((UiObject2) destObj).getVisibleCenter();
                 return dragTo(coords.x, coords.y, steps);
             } else {
                 Logger.error("Destination should be either UiObject or UiObject2");

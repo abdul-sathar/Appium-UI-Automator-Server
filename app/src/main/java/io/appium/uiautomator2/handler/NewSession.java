@@ -50,6 +50,4 @@ public class NewSession extends SafeRequestHandler {
         }
         return map;
     }
-
-
 }
