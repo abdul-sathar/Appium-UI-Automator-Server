@@ -9,12 +9,17 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
+import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.model.internal.CustomUiDevice;
-import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
 import io.appium.uiautomator2.utils.API;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
@@ -25,6 +30,7 @@ import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
 public class UiObjectElement implements AndroidElement {
 
+    private static final Pattern endsWithInstancePattern = Pattern.compile(".*INSTANCE=\\d+]$");
     private final UiObject element;
     private final String id;
 
@@ -138,6 +144,77 @@ public class UiObjectElement implements AndroidElement {
             return uiObject2.findObject((BySelector) selector);
         }
         return element.getChild((UiSelector) selector);
+    }
+
+    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+        if (selector instanceof BySelector) {
+            /**
+             * We can't find the child elements with BySelector on UiObject,
+             * as an alternative creating UiObject2 with UiObject's AccessibilityNodeInfo
+             * and finding the child elements on UiObject2.
+             */
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+            UiObject2 uiObject2 = (UiObject2) CustomUiDevice.getInstance().findObject(nodeInfo);
+            return (List)uiObject2.findObjects((BySelector) selector);
+        }
+        return (List)this.getChildElements((UiSelector) selector);
+    }
+
+
+    public ArrayList<UiObject> getChildElements(final UiSelector sel) throws UiObjectNotFoundException {
+        boolean keepSearching = true;
+        final String selectorString = sel.toString();
+        final boolean useIndex = selectorString.contains("CLASS_REGEX=");
+        final boolean endsWithInstance = endsWithInstancePattern.matcher(selectorString).matches();
+        Logger.debug("getElements selector:" + selectorString);
+        final ArrayList<UiObject> elements = new ArrayList<UiObject>();
+
+        // If sel is UiSelector[CLASS=android.widget.Button, INSTANCE=0]
+        // then invoking instance with a non-0 argument will corrupt the selector.
+        //
+        // sel.instance(1) will transform the selector into:
+        // UiSelector[CLASS=android.widget.Button, INSTANCE=1]
+        //
+        // The selector now points to an entirely different element.
+        if (endsWithInstance) {
+            Logger.debug("Selector ends with instance.");
+            // There's exactly one element when using instance.
+            UiObject instanceObj = Device.getUiDevice().findObject(sel);
+            if (instanceObj != null && instanceObj.exists()) {
+                elements.add(instanceObj);
+            }
+            return elements;
+        }
+
+        UiObject lastFoundObj;
+
+        UiSelector tmp;
+        int counter = 0;
+        while (keepSearching) {
+            if (element == null) {
+                Logger.debug("Element] is null: (" + counter + ")");
+
+                if (useIndex) {
+                    Logger.debug("  using index...");
+                    tmp = sel.index(counter);
+                } else {
+                    tmp = sel.instance(counter);
+                }
+
+                Logger.debug("getElements tmp selector:" + tmp.toString());
+                lastFoundObj = Device.getUiDevice().findObject(tmp);
+            } else {
+                Logger.debug("Element is " + getId() + ", counter: " + counter);
+                lastFoundObj = element.getChild(sel.instance(counter));
+            }
+            counter++;
+            if (lastFoundObj != null && lastFoundObj.exists()) {
+                elements.add(lastFoundObj);
+            } else {
+                keepSearching = false;
+            }
+        }
+        return elements;
     }
 
     public String getContentDesc() throws UiObjectNotFoundException {

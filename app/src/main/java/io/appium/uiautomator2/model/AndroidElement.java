@@ -3,6 +3,8 @@ package io.appium.uiautomator2.model;
 import android.graphics.Rect;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
+import java.util.List;
+
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
@@ -33,6 +35,8 @@ public interface AndroidElement {
     public Rect getBounds() throws UiObjectNotFoundException;
 
     public Object getChild(final Object sel) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
+
+    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
     public String getContentDesc() throws UiObjectNotFoundException;
 

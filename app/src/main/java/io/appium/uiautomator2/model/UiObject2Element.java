@@ -8,17 +8,21 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.util.List;
+import java.util.UUID;
+
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
-import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
-import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
+import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
 import io.appium.uiautomator2.utils.UnicodeEncoder;
 
+import static io.appium.uiautomator2.utils.Device.getAndroidElement;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
@@ -138,6 +142,26 @@ public class UiObject2Element implements AndroidElement {
             return uiObject.getChild((UiSelector) selector);
         }
         return element.findObject((BySelector) selector);
+    }
+
+    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+        if (selector instanceof UiSelector) {
+            /**
+             * We can't find the child elements with UiSelector on UiObject2,
+             * as an alternative creating UiObject with UiObject2's AccessibilityNodeInfo
+             * and finding the child elements on UiObject.
+             */
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+
+            UiSelector uiSelector = new UiSelector();
+            CustomUiSelector customUiSelector = new CustomUiSelector(uiSelector);
+            uiSelector = customUiSelector.getUiSelector(nodeInfo);
+            UiObject uiObject = (UiObject)  CustomUiDevice.getInstance().findObject(uiSelector);
+            String id = UUID.randomUUID().toString();
+            AndroidElement androidElement = getAndroidElement(id, uiObject);
+            return androidElement.getChilds(selector);
+        }
+        return (List)element.findObjects((BySelector) selector);
     }
 
     public String getContentDesc() throws UiObjectNotFoundException {

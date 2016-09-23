@@ -157,26 +157,19 @@ public class FindElements extends SafeRequestHandler {
         if (element == null) {
             throw new ElementNotFoundException();
         }
-        if (by instanceof By.ById) {
-            String locator = getElementLocator((ById) by);
-            return getInstance().findObjects(android.support.test.uiautomator.By.res(locator));
+        if (by instanceof ById) {
+            String locator = getElementLocator((ById)by);
+            return element.getChilds(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.desc(by.getElementLocator()));
-        } else if (by instanceof By.ByPartialLinkText) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.descContains(by.getElementLocator()));
+            return element.getChilds(android.support.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
-        } else if (by instanceof By.ByName) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.text(by.getElementLocator()));
+            return element.getChilds(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
         } else if (by instanceof By.ByXPath) {
-            //TODO: need to handle the context parameter in a smart way
             return getXPathUiObjects(by.getElementLocator(), element);
         } else if (by instanceof By.ByAndroidUiAutomator) {
-            //TODO: need to handle the context parameter in a smart way
-            return getUiObjectsUsingAutomator(findByUiAutomator(by.getElementLocator()), "");
+            return getUiObjectsUsingAutomator(findByUiAutomator(by.getElementLocator()), contextId);
         }
-
-        String msg = String.format("By locator %s is curently not supported!", by.getClass().getSimpleName());
+        String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());
         throw new UnsupportedOperationException(msg);
     }
 
