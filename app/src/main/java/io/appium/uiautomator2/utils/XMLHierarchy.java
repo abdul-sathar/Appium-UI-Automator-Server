@@ -29,15 +29,54 @@ import java.util.HashMap;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoDumper;
 import io.appium.uiautomator2.model.XPathFinder;
 
 
 public abstract class XMLHierarchy {
+
+
+    private static XPathExpression compileXpath(String xpathExpression) throws InvalidSelectorException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression exp = null;
+        try {
+            exp = xpath.compile(xpathExpression);
+        } catch (XPathExpressionException e) {
+            throw new InvalidSelectorException("Invalid XPath expression: ", e);
+        }
+        return exp;
+    }
+
+   /* public static ArrayList<ClassInstancePair> getClassInstancePairs(XPathExpression xpathExpression, Node root) throws ElementNotFoundException {
+
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpathExpression.evaluate(root, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+            throw new ElementNotFoundException("XMLWindowHierarchy could not be parsed:" + e);
+        }
+
+        ArrayList<ClassInstancePair> pairs = new ArrayList<ClassInstancePair>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE
+                    && nodes.item(i).getAttributes().getNamedItem("class") != null
+                    &&  nodes.item(i).getAttributes().getNamedItem("instance") != null) {
+                try {
+                    pairs.add(getPairFromNode(nodes.item(i)));
+                } catch (PairCreationException e) {
+                }
+            }
+        }
+
+        return pairs;
+    }*/
 
     public static InputSource getRawXMLHierarchy() throws UiAutomator2Exception {
         AccessibilityNodeInfo root = XPathFinder.getRootAccessibilityNode();

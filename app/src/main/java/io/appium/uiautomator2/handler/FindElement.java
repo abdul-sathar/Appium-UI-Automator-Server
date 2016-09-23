@@ -130,7 +130,7 @@ public class FindElement extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         } catch (UiSelectorSyntaxException e) {
             Logger.error("Unable to parse UiSelector: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
         } catch (UiAutomator2Exception e) {
             Logger.error("Exception while finding element: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
