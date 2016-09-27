@@ -146,7 +146,7 @@ public class UiObjectElement implements AndroidElement {
         return element.getChild((UiSelector) selector);
     }
 
-    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof BySelector) {
             /**
              * We can't find the child elements with BySelector on UiObject,

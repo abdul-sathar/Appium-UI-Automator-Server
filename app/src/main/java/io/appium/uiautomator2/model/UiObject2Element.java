@@ -144,7 +144,7 @@ public class UiObject2Element implements AndroidElement {
         return element.findObject((BySelector) selector);
     }
 
-    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof UiSelector) {
             /**
              * We can't find the child elements with UiSelector on UiObject2,
@@ -159,7 +159,7 @@ public class UiObject2Element implements AndroidElement {
             UiObject uiObject = (UiObject)  CustomUiDevice.getInstance().findObject(uiSelector);
             String id = UUID.randomUUID().toString();
             AndroidElement androidElement = getAndroidElement(id, uiObject);
-            return androidElement.getChilds(selector);
+            return androidElement.getChildren(selector);
         }
         return (List)element.findObjects((BySelector) selector);
     }

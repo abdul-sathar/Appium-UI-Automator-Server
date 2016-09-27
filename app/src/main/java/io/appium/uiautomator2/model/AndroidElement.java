@@ -36,7 +36,7 @@ public interface AndroidElement {
 
     public Object getChild(final Object sel) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
-    public List<Object> getChilds(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
+    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
     public String getContentDesc() throws UiObjectNotFoundException;
 

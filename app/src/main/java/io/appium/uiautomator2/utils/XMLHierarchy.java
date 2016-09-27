@@ -53,31 +53,6 @@ public abstract class XMLHierarchy {
         return exp;
     }
 
-   /* public static ArrayList<ClassInstancePair> getClassInstancePairs(XPathExpression xpathExpression, Node root) throws ElementNotFoundException {
-
-        NodeList nodes;
-        try {
-            nodes = (NodeList) xpathExpression.evaluate(root, XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-            throw new ElementNotFoundException("XMLWindowHierarchy could not be parsed:" + e);
-        }
-
-        ArrayList<ClassInstancePair> pairs = new ArrayList<ClassInstancePair>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE
-                    && nodes.item(i).getAttributes().getNamedItem("class") != null
-                    &&  nodes.item(i).getAttributes().getNamedItem("instance") != null) {
-                try {
-                    pairs.add(getPairFromNode(nodes.item(i)));
-                } catch (PairCreationException e) {
-                }
-            }
-        }
-
-        return pairs;
-    }*/
-
     public static InputSource getRawXMLHierarchy() throws UiAutomator2Exception {
         AccessibilityNodeInfo root = XPathFinder.getRootAccessibilityNode();
         return getRawXMLHierarchy(root);

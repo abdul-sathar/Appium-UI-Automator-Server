@@ -159,11 +159,11 @@ public class FindElements extends SafeRequestHandler {
         }
         if (by instanceof ById) {
             String locator = getElementLocator((ById)by);
-            return element.getChilds(android.support.test.uiautomator.By.res(locator));
+            return element.getChildren(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
-            return element.getChilds(android.support.test.uiautomator.By.desc(by.getElementLocator()));
+            return element.getChildren(android.support.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
-            return element.getChilds(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
+            return element.getChildren(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObjects(by.getElementLocator(), element);
         } else if (by instanceof By.ByAndroidUiAutomator) {
