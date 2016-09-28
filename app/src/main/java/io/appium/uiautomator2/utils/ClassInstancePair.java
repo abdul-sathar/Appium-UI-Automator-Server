@@ -43,7 +43,6 @@ public class ClassInstancePair {
 
     public BySelector getSelector() {
         String androidClass = getAndroidClass();
-        String instance = getInstance();
 
         //TODO: remove below comments once code get reviewed
         //below commented line related to UiAutomator V1(bootstrap) version, as we don't have possibility

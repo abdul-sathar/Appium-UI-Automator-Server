@@ -50,13 +50,12 @@ public class HttpServer {
         serverThread.start();
     }
 
-   /* public void stop() {
-        AppiumUiAutomator2Server.isStopServer(true);
+    public void stop() {
         if (serverThread == null) {
             throw new IllegalStateException("Server is not running");
         }
         serverThread.interrupt();
-    }*/
+    }
 
     public int getPort() {
         return port;

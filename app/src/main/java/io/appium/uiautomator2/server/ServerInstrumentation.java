@@ -118,6 +118,12 @@ public class ServerInstrumentation {
             Looper.loop();
         }
 
+        @Override
+        public void interrupt() {
+            server.stop();
+            super.interrupt();
+        }
+
         public AndroidServer getServer() {
             return server;
         }

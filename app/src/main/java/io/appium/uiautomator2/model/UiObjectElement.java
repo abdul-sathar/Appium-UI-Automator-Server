@@ -9,12 +9,17 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
-import io.appium.uiautomator2.common.exceptions.NoSuchElementAttributeException;
+import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.utils.API;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
@@ -25,6 +30,7 @@ import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
 public class UiObjectElement implements AndroidElement {
 
+    private static final Pattern endsWithInstancePattern = Pattern.compile(".*INSTANCE=\\d+]$");
     private final UiObject element;
     private final String id;
 
@@ -50,23 +56,53 @@ public class UiObjectElement implements AndroidElement {
         return element.getContentDescription();
     }
 
-    public String getStringAttribute(final String attr) throws UiObjectNotFoundException {
+    public String getClassName() throws UiObjectNotFoundException {
+            return element.getClassName();
+    }
+
+    public String getStringAttribute(final String attr) throws UiObjectNotFoundException, NoAttributeFoundException {
         String res;
-        if (attr.equalsIgnoreCase("name")) {
-            res = element.getText();
-            if (res.equals("")) {
-                res = getText();
-            }
-        } else if (attr.equalsIgnoreCase("contentDescription")) {
-            res = element.getContentDescription();
-        } else if (attr.equalsIgnoreCase("text")) {
+        if ("name".equalsIgnoreCase(attr)) {
             res = getText();
-        } else if (attr.equalsIgnoreCase("className")) {
+        } else if ("contentDescription".equalsIgnoreCase(attr)) {
+            res = element.getContentDescription();
+        } else if ("text".equalsIgnoreCase(attr)) {
+            res = getText();
+        } else if ("className".equalsIgnoreCase(attr)) {
             res = element.getClassName();
-        } else if (attr.equalsIgnoreCase("resourceId") || attr.equalsIgnoreCase("resource-id")) {
+        } else if ("resourceId".equalsIgnoreCase(attr) || "resource-id".equalsIgnoreCase(attr)) {
             res = getResourceId();
         } else {
-            throw new NoSuchElementAttributeException("The attribute with name '" + attr + "' was not found.");
+            throw new NoAttributeFoundException(attr);
+        }
+        return res;
+    }
+
+    public boolean getBoolAttribute(final String attr)
+            throws UiObjectNotFoundException, NoAttributeFoundException {
+        boolean res;
+        if ("enabled".equals(attr)) {
+            res = element.isEnabled();
+        } else if ("checkable".equals(attr)) {
+            res = element.isCheckable();
+        } else if ("checked".equals(attr)) {
+            res = element.isChecked();
+        } else if ("clickable".equals(attr)) {
+            res = element.isClickable();
+        } else if ("focusable".equals(attr)) {
+            res = element.isFocusable();
+        } else if ("focused".equals(attr)) {
+            res = element.isFocused();
+        } else if ("longClickable".equals(attr)) {
+            res = element.isLongClickable();
+        } else if ("scrollable".equals(attr)) {
+            res = element.isScrollable();
+        } else if ("selected".equals(attr)) {
+            res = element.isSelected();
+        } else if ("displayed".equals(attr)) {
+            res = element.exists();
+        } else {
+            throw new NoAttributeFoundException(attr);
         }
         return res;
     }
@@ -108,6 +144,77 @@ public class UiObjectElement implements AndroidElement {
             return uiObject2.findObject((BySelector) selector);
         }
         return element.getChild((UiSelector) selector);
+    }
+
+    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+        if (selector instanceof BySelector) {
+            /**
+             * We can't find the child elements with BySelector on UiObject,
+             * as an alternative creating UiObject2 with UiObject's AccessibilityNodeInfo
+             * and finding the child elements on UiObject2.
+             */
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+            UiObject2 uiObject2 = (UiObject2) CustomUiDevice.getInstance().findObject(nodeInfo);
+            return (List)uiObject2.findObjects((BySelector) selector);
+        }
+        return (List)this.getChildElements((UiSelector) selector);
+    }
+
+
+    public ArrayList<UiObject> getChildElements(final UiSelector sel) throws UiObjectNotFoundException {
+        boolean keepSearching = true;
+        final String selectorString = sel.toString();
+        final boolean useIndex = selectorString.contains("CLASS_REGEX=");
+        final boolean endsWithInstance = endsWithInstancePattern.matcher(selectorString).matches();
+        Logger.debug("getElements selector:" + selectorString);
+        final ArrayList<UiObject> elements = new ArrayList<UiObject>();
+
+        // If sel is UiSelector[CLASS=android.widget.Button, INSTANCE=0]
+        // then invoking instance with a non-0 argument will corrupt the selector.
+        //
+        // sel.instance(1) will transform the selector into:
+        // UiSelector[CLASS=android.widget.Button, INSTANCE=1]
+        //
+        // The selector now points to an entirely different element.
+        if (endsWithInstance) {
+            Logger.debug("Selector ends with instance.");
+            // There's exactly one element when using instance.
+            UiObject instanceObj = Device.getUiDevice().findObject(sel);
+            if (instanceObj != null && instanceObj.exists()) {
+                elements.add(instanceObj);
+            }
+            return elements;
+        }
+
+        UiObject lastFoundObj;
+
+        UiSelector tmp;
+        int counter = 0;
+        while (keepSearching) {
+            if (element == null) {
+                Logger.debug("Element] is null: (" + counter + ")");
+
+                if (useIndex) {
+                    Logger.debug("  using index...");
+                    tmp = sel.index(counter);
+                } else {
+                    tmp = sel.instance(counter);
+                }
+
+                Logger.debug("getElements tmp selector:" + tmp.toString());
+                lastFoundObj = Device.getUiDevice().findObject(tmp);
+            } else {
+                Logger.debug("Element is " + getId() + ", counter: " + counter);
+                lastFoundObj = element.getChild(sel.instance(counter));
+            }
+            counter++;
+            if (lastFoundObj != null && lastFoundObj.exists()) {
+                elements.add(lastFoundObj);
+            } else {
+                keepSearching = false;
+            }
+        }
+        return elements;
     }
 
     public String getContentDesc() throws UiObjectNotFoundException {

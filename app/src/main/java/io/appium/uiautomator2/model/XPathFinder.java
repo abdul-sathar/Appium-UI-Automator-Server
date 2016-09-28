@@ -237,15 +237,6 @@ public class XPathFinder implements Finder {
     // the nth anonymous class has a class name ending in "Outer$n"
     // and local inner classes have names ending in "Outer.$1Inner"
     className = className.replaceAll("\\$[0-9]+", "\\$");
-
-    // we want the name of the inner class all by its lonesome
-    int start = className.lastIndexOf('$');
-
-    // if this isn't an inner class, just find the start of the
-    // top level class name.
-    if (start == -1) {
-      start = className.lastIndexOf('.');
-    }
-    return className.substring(start + 1);
+    return className;
   }
 }

@@ -29,15 +29,29 @@ import java.util.HashMap;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.core.AccessibilityNodeInfoDumper;
 import io.appium.uiautomator2.model.XPathFinder;
 
 
 public abstract class XMLHierarchy {
+
+
+    private static XPathExpression compileXpath(String xpathExpression) throws InvalidSelectorException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression exp = null;
+        try {
+            exp = xpath.compile(xpathExpression);
+        } catch (XPathExpressionException e) {
+            throw new InvalidSelectorException("Invalid XPath expression: ", e);
+        }
+        return exp;
+    }
 
     public static InputSource getRawXMLHierarchy() throws UiAutomator2Exception {
         AccessibilityNodeInfo root = XPathFinder.getRootAccessibilityNode();

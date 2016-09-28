@@ -86,6 +86,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new RotateScreen("/wd/hub/session/:sessionId/orientation"));
         register(postHandler, new PressBack("/wd/hub/session/:sessionId/back"));
         register(postHandler, new SendKeysToElement("/wd/hub/session/:sessionId/element/:id/value"));
+        register(postHandler, new SendKeysToElement("/wd/hub/session/:sessionId/keys"));
         register(postHandler, new Swipe("/wd/hub/session/:sessionId/touch/perform"));
         register(postHandler, new TouchLongClick("/wd/hub/session/:sessionId/touch/longclick"));
         register(postHandler, new OpenNotification("/wd/hub/session/:sessionId/appium/device/open_notifications"));

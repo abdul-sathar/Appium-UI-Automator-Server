@@ -3,8 +3,12 @@ package io.appium.uiautomator2.model;
 import android.graphics.Rect;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 
+import java.util.List;
+
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
+import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.utils.Point;
 
 public interface AndroidElement {
@@ -19,7 +23,10 @@ public interface AndroidElement {
 
     public String getName() throws UiObjectNotFoundException;
 
-    public String getStringAttribute(final String attr) throws UiObjectNotFoundException;
+    public String getStringAttribute(final String attr) throws UiObjectNotFoundException, NoAttributeFoundException;
+
+    public boolean getBoolAttribute(final String attr)
+            throws UiObjectNotFoundException, NoAttributeFoundException, UiAutomator2Exception;
 
     public void setText(final String text, boolean unicodeKeyboard) throws UiObjectNotFoundException;
 
@@ -28,6 +35,8 @@ public interface AndroidElement {
     public Rect getBounds() throws UiObjectNotFoundException;
 
     public Object getChild(final Object sel) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
+
+    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
     public String getContentDesc() throws UiObjectNotFoundException;
 
