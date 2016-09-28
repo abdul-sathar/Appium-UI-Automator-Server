@@ -1,6 +1,6 @@
 {
   "name": "appium-uiautomator2-server-test-1",
-  "version": "0.0.52",
+  "version": "0.0.54",
   "description": "A netty server with uiautomator2 handlers",
   "main": "index.js",
   "windowsBuildDir":"c:/tmp",
@@ -13,9 +13,6 @@
     "android",
     "uiautomator2"
   ],
-  "dependencies": {
-    "ncp": "^2.0.0"
-  },
   "author": "https://github.com/appium",
   "license": "Apache-2.0",
   "bugs": {
