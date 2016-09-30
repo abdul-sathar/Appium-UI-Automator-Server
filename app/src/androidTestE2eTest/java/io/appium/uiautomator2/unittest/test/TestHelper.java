@@ -18,6 +18,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import io.appium.uiautomator2.server.ServerConfig;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -27,7 +28,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public abstract class TestHelper {
     public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String baseUrl = "http://localhost:8080";
+    private static final String baseUrl = "http://localhost:" + ServerConfig.getServerPort();
     private static final Instrumentation mInstrumentation = InstrumentationRegistry.getInstrumentation();
 
     static {

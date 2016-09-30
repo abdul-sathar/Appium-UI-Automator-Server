@@ -15,7 +15,7 @@ public class ServerInstrumentation {
     private static Context context;
     private HttpdThread serverThread;
     private PowerManager.WakeLock wakeLock;
-    private int serverPort = 8080;
+    private int serverPort;
     private  boolean isStopServer;
 
     private ServerInstrumentation(int serverPort) {
@@ -34,7 +34,6 @@ public class ServerInstrumentation {
     }
 
     public static synchronized ServerInstrumentation getInstance(Context activityContext, int serverPort) {
-        Logger.error("getInstance:" + instance);
         if (instance == null) {
             context = activityContext;
             instance = new ServerInstrumentation(serverPort);
