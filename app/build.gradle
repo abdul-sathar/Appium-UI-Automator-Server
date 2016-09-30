@@ -4,7 +4,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.1.0'
         classpath 'com.github.JakeWharton:sdk-manager-plugin:0ce4cdf08009d79223850a59959d9d6e774d0f77'
     }
 }
@@ -23,7 +23,7 @@ android {
     buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "io.appium.uiautomator2"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -61,15 +61,16 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'io.netty:netty-all:4.0.21.Final'
-    compile 'com.android.support.test:runner:0.4'
+    compile 'com.jayway.jsonpath:json-path:0.8.1'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.android.support.test:runner:0.5'
+    compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.1'
-    compile 'com.jayway.jsonpath:json-path:0.8.1'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
 }
 
 task installAUT(type: Exec) {
@@ -84,7 +85,6 @@ task installAUT(type: Exec) {
     }
     println ext.output.toString()
 }
-
 
 afterEvaluate {
     tasks.each { task ->
