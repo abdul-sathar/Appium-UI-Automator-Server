@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.Configurator;
-import android.support.test.uiautomator.UiObject;
 
 import com.jayway.jsonpath.JsonPath;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
@@ -26,6 +24,7 @@ import java.io.IOException;
 
 import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
 import io.appium.uiautomator2.model.By;
+import io.appium.uiautomator2.server.ServerConfig;
 import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
@@ -75,8 +74,6 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class HandlersTest {
-    public static final MediaType JSON = MediaType.parse("application/json; " + "charset=utf-8");
-    private static final int PORT = 8080;
     private static final String testAppPkg = "io.appium.android.apis";
     private static final int SECOND = 1000;
     private static ServerInstrumentation serverInstrumentation;
@@ -96,7 +93,7 @@ public class HandlersTest {
         if (serverInstrumentation == null) {
             assertNotNull(getUiDevice());
             ctx = InstrumentationRegistry.getInstrumentation().getContext();
-            serverInstrumentation = ServerInstrumentation.getInstance(ctx, PORT);
+            serverInstrumentation = ServerInstrumentation.getInstance(ctx, ServerConfig.getServerPort());
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server ");
             serverInstrumentation.startServer();
             TestHelper.waitForNetty();

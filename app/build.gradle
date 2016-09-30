@@ -61,7 +61,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'io.netty:netty-all:4.0.21.Final'
+    compile 'io.netty:netty-all:4.0.41.Final'
     compile 'com.jayway.jsonpath:json-path:0.8.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.android.support.test:runner:0.5'

@@ -9,12 +9,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
+import io.appium.uiautomator2.server.ServerConfig;
 import io.appium.uiautomator2.server.ServerInstrumentation;
 import io.appium.uiautomator2.utils.Logger;
 
 @RunWith(AndroidJUnit4.class)
 public class AppiumUiAutomator2Server {
-    private static final int port = 8080;
     private static ServerInstrumentation serverInstrumentation;
     private Context ctx;
 
@@ -26,7 +26,7 @@ public class AppiumUiAutomator2Server {
     public void startServer() throws InterruptedException {
         if (serverInstrumentation == null) {
             ctx = InstrumentationRegistry.getInstrumentation().getContext();
-            serverInstrumentation = ServerInstrumentation.getInstance(ctx, port);
+            serverInstrumentation = ServerInstrumentation.getInstance(ctx, ServerConfig.getServerPort());
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server");
             try {
                 while (!serverInstrumentation.isStopServer()) {
