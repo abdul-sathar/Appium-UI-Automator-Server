@@ -30,10 +30,12 @@ public class UiObject2Element implements AndroidElement {
 
     private final UiObject2 element;
     private final String id;
+    private final By bySelector;
 
-    public UiObject2Element(String id, UiObject2 element) {
+    public UiObject2Element(String id, UiObject2 element, By bySelector) {
         this.id = id;
         this.element = element;
+        this.bySelector = bySelector;
     }
 
     public void click() throws UiObjectNotFoundException {
@@ -112,6 +114,11 @@ public class UiObject2Element implements AndroidElement {
         }
     }
 
+    @Override
+    public By getBySelector() {
+        return bySelector;
+    }
+
     public void clear() throws UiObjectNotFoundException {
         element.clear();
     }
@@ -144,7 +151,7 @@ public class UiObject2Element implements AndroidElement {
         return element.findObject((BySelector) selector);
     }
 
-    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+    public List<Object> getChildren(final Object selector, final By bySelector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof UiSelector) {
             /**
              * We can't find the child elements with UiSelector on UiObject2,
@@ -158,8 +165,8 @@ public class UiObject2Element implements AndroidElement {
             uiSelector = customUiSelector.getUiSelector(nodeInfo);
             UiObject uiObject = (UiObject)  CustomUiDevice.getInstance().findObject(uiSelector);
             String id = UUID.randomUUID().toString();
-            AndroidElement androidElement = getAndroidElement(id, uiObject);
-            return androidElement.getChildren(selector);
+            AndroidElement androidElement = getAndroidElement(id, uiObject, bySelector);
+            return androidElement.getChildren(selector, bySelector);
         }
         return (List)element.findObjects((BySelector) selector);
     }

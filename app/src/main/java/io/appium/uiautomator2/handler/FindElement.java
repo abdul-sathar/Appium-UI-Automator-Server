@@ -104,7 +104,7 @@ public class FindElement extends SafeRequestHandler {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, false);
             } else {
                 String id = UUID.randomUUID().toString();
-                AndroidElement androidElement = getAndroidElement(id, element);
+                AndroidElement androidElement = getAndroidElement(id, element, by);
                 ke.add(androidElement);
                 JSONObject result = new JSONObject();
                 result.put("ELEMENT", id);

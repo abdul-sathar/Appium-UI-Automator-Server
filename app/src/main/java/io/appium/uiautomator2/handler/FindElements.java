@@ -87,7 +87,7 @@ public class FindElements extends SafeRequestHandler {
 
             for (Object element : elements) {
                 String id = UUID.randomUUID().toString();
-                AndroidElement androidElement = getAndroidElement(id, element);
+                AndroidElement androidElement = getAndroidElement(id, element, by);
                 ke.add(androidElement);
                 JSONObject jsonElement = new JSONObject();
                 jsonElement.put("ELEMENT", id);
@@ -133,12 +133,8 @@ public class FindElements extends SafeRequestHandler {
             return getInstance().findObjects(android.support.test.uiautomator.By.res(locator));
         } else if (by instanceof By.ByAccessibilityId) {
             return getInstance().findObjects(android.support.test.uiautomator.By.desc(by.getElementLocator()));
-        } else if (by instanceof By.ByPartialLinkText) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.descContains(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
             return getInstance().findObjects(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
-        } else if (by instanceof By.ByName) {
-            return getInstance().findObjects(android.support.test.uiautomator.By.text(by.getElementLocator()));
         } else if (by instanceof By.ByXPath) {
             //TODO: need to handle the context parameter in a smart way
             return getXPathUiObjects(by.getElementLocator(), null /* AndroidElement */);
@@ -159,11 +155,11 @@ public class FindElements extends SafeRequestHandler {
         }
         if (by instanceof ById) {
             String locator = getElementLocator((ById)by);
-            return element.getChildren(android.support.test.uiautomator.By.res(locator));
+            return element.getChildren(android.support.test.uiautomator.By.res(locator), by);
         } else if (by instanceof By.ByAccessibilityId) {
-            return element.getChildren(android.support.test.uiautomator.By.desc(by.getElementLocator()));
+            return element.getChildren(android.support.test.uiautomator.By.desc(by.getElementLocator()), by);
         } else if (by instanceof By.ByClass) {
-            return element.getChildren(android.support.test.uiautomator.By.clazz(by.getElementLocator()));
+            return element.getChildren(android.support.test.uiautomator.By.clazz(by.getElementLocator()), by);
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObjects(by.getElementLocator(), element);
         } else if (by instanceof By.ByAndroidUiAutomator) {

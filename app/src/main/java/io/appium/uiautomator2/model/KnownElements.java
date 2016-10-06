@@ -36,13 +36,13 @@ public class KnownElements {
         return cache.get(id);
     }
 
-    public static AndroidElement geElement(final BySelector bySelector) throws ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception, ClassNotFoundException {
-        Object element = getInstance().findObject(bySelector);
+    public static AndroidElement geElement(final BySelector ui2BySelector, By appiumBySelector) throws ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception, ClassNotFoundException {
+        Object element = getInstance().findObject(ui2BySelector);
         if (element == null) {
             throw new ElementNotFoundException();
         }
         String id = UUID.randomUUID().toString();
-        AndroidElement androidElement = getAndroidElement(id, element);
+        AndroidElement androidElement = getAndroidElement(id, element, appiumBySelector);
         cache.put(androidElement.getId(), androidElement);
         return androidElement;
     }
