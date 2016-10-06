@@ -81,7 +81,7 @@ public class CustomUiDevice {
         AccessibilityNodeInfo node ;
         device.waitForIdle();
         if (selector instanceof BySelector) {
-            node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots(false));
+            node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, device, selector, getWindowRoots());
         } else if (selector instanceof NodeInfoList) {
             node = ((NodeInfoList) selector).getNodeList().size()>0 ? ((NodeInfoList) selector).getNodeList().get(0) : null;
             selector = By.clazz(node.getClassName().toString());
@@ -142,7 +142,7 @@ public class CustomUiDevice {
         ArrayList<AccessibilityNodeInfo> list = new ArrayList<AccessibilityNodeInfo>();
         if (selector instanceof BySelector) {
             ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
-            Object nodes = invoke(METHOD_FIND_MATCHS, ByMatcher, device, selector, getWindowRoots(false));
+            Object nodes = invoke(METHOD_FIND_MATCHS, ByMatcher, device, selector, getWindowRoots());
             list = (ArrayList) nodes;
         } else if (selector instanceof NodeInfoList) {
             list = ((NodeInfoList) selector).getNodeList();
@@ -179,12 +179,11 @@ public class CustomUiDevice {
     /**
      * Returns a list containing the root {@link AccessibilityNodeInfo}s for each active window
      */
-    AccessibilityNodeInfo[] getWindowRoots(boolean multiWindow) throws UiAutomator2Exception {
+    AccessibilityNodeInfo[] getWindowRoots() throws UiAutomator2Exception {
         device.waitForIdle();
         ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
         // Support multi-window searches for API level 21 and up
-        //TODO: need to handle multiWindows param better way
-        if ((Integer) API_LEVEL_ACTUAL >= Build.VERSION_CODES.LOLLIPOP && multiWindow) {
+        if ((Integer) API_LEVEL_ACTUAL >= Build.VERSION_CODES.LOLLIPOP) {
             for (AccessibilityWindowInfo window : mInstrumentation.getUiAutomation().getWindows()) {
                 AccessibilityNodeInfo root = window.getRoot();
 
