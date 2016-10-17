@@ -59,7 +59,7 @@ public abstract class TestHelper {
                 get("/wd/hub/status");
                 unsuccessful = false;
             } catch (Exception e) {
-                Logger.error("Waiting for the server ..");
+                Logger.info("Waiting for the server ..");
             }
         } while (unsuccessful && (elapsedRealtime() - start < 5000));
 
