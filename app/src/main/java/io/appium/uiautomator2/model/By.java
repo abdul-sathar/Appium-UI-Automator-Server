@@ -13,6 +13,12 @@
  */
 package io.appium.uiautomator2.model;
 
+import static io.appium.uiautomator2.model.internal.NativeAndroidBySelector.SELECTOR_ACCESSIBILITY_ID;
+import static io.appium.uiautomator2.model.internal.NativeAndroidBySelector.SELECTOR_ANDROID_UIAUTOMATOR;
+import static io.appium.uiautomator2.model.internal.NativeAndroidBySelector.SELECTOR_CLASS;
+import static io.appium.uiautomator2.model.internal.NativeAndroidBySelector.SELECTOR_NATIVE_ID;
+import static io.appium.uiautomator2.model.internal.NativeAndroidBySelector.SELECTOR_XPATH;
+
 /**
  * Mechanism used to locate elements within a document. In order to create your own locating
  * mechanisms, it is possible to subclass this class and override the protected methods as
@@ -70,6 +76,8 @@ public abstract class By {
 
     public abstract String getElementLocator();
 
+    public abstract String getElementStrategy();
+
     @Override
     public int hashCode() {
         return toString().hashCode();
@@ -94,6 +102,11 @@ public abstract class By {
         }
 
         @Override
+        public String getElementStrategy() {
+            return SELECTOR_NATIVE_ID;
+        }
+
+        @Override
         public String toString() {
             return "By.id: " + id;
         }
@@ -109,6 +122,11 @@ public abstract class By {
         @Override
         public String getElementLocator() {
             return clazz;
+        }
+
+        @Override
+        public String getElementStrategy() {
+            return SELECTOR_CLASS;
         }
 
         @Override
@@ -130,39 +148,13 @@ public abstract class By {
         }
 
         @Override
+        public String getElementStrategy() {
+            return SELECTOR_ACCESSIBILITY_ID;
+        }
+
+        @Override
         public String toString() {
             return "By.accessibilityId: " + accessibilityId;
-        }
-    }
-
-    public static class ByPartialLinkText extends By {
-        private final String text;
-
-        public ByPartialLinkText(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public String getElementLocator() {
-            return text;
-        }
-
-        @Override
-        public String toString() {
-            return "By.partialText: " + text;
-        }
-    }
-
-    public static class ByName extends By {
-        private final String name;
-
-        public ByName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getElementLocator() {
-            return name;
         }
     }
 
@@ -176,6 +168,11 @@ public abstract class By {
         @Override
         public String getElementLocator() {
             return xpathExpression;
+        }
+
+        @Override
+        public String getElementStrategy() {
+            return SELECTOR_XPATH;
         }
 
         @Override
@@ -194,6 +191,11 @@ public abstract class By {
         @Override
         public String getElementLocator() {
             return expresion;
+        }
+
+        @Override
+        public String getElementStrategy() {
+            return SELECTOR_ANDROID_UIAUTOMATOR;
         }
 
         @Override

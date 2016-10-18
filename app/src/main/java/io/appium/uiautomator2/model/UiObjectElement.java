@@ -33,10 +33,12 @@ public class UiObjectElement implements AndroidElement {
     private static final Pattern endsWithInstancePattern = Pattern.compile(".*INSTANCE=\\d+]$");
     private final UiObject element;
     private final String id;
+    private final By by;
 
-    public UiObjectElement(String id, UiObject element) {
+    public UiObjectElement(String id, UiObject element, By by) {
         this.id = id;
         this.element = element;
+        this.by = by;
     }
 
     public void click() throws UiObjectNotFoundException {
@@ -119,6 +121,10 @@ public class UiObjectElement implements AndroidElement {
         }
     }
 
+    public By getBy() {
+        return by;
+    }
+
     public void clear() throws UiObjectNotFoundException {
         element.clearTextField();
     }
@@ -146,7 +152,7 @@ public class UiObjectElement implements AndroidElement {
         return element.getChild((UiSelector) selector);
     }
 
-    public List<Object> getChildren(final Object selector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+    public List<Object> getChildren(final Object selector, final By by) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof BySelector) {
             /**
              * We can't find the child elements with BySelector on UiObject,

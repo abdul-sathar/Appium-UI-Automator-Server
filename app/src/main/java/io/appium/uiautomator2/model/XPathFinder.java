@@ -186,11 +186,8 @@ public class XPathFinder implements Finder {
     }
   }
 
-  // add attribute only if it's true
   private static void setAttribute(Element element, Attribute attr, boolean value) {
-    if (value) {
-      element.setAttribute(attr.getName(), "");
-    }
+      element.setAttribute(attr.getName(), String.valueOf(value));
   }
 
   public UiAutomationElement getRootElement() {

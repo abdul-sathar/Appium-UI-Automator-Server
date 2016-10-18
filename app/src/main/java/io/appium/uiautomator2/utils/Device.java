@@ -11,6 +11,7 @@ import android.support.test.uiautomator.UiSelector;
 
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.model.AndroidElement;
+import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.UiObject2Element;
 import io.appium.uiautomator2.model.UiObjectElement;
 
@@ -24,11 +25,11 @@ public abstract class Device {
         return uiDevice;
     }
 
-    public static AndroidElement getAndroidElement(String id, Object element) throws UiAutomator2Exception {
+    public static AndroidElement getAndroidElement(String id, Object element, By by) throws UiAutomator2Exception {
         if (element instanceof UiObject2) {
-            return new UiObject2Element(id, (UiObject2) element);
+            return new UiObject2Element(id, (UiObject2) element, by);
         } else if (element instanceof UiObject) {
-            return new UiObjectElement(id, (UiObject) element);
+            return new UiObjectElement(id, (UiObject) element, by);
         } else {
             throw new UiAutomator2Exception("Unknown Element type: " + element.getClass().getName());
         }
