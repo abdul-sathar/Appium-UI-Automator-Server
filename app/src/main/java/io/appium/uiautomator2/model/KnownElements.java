@@ -36,13 +36,19 @@ public class KnownElements {
         return cache.get(id);
     }
 
-    public static AndroidElement geElement(final BySelector ui2BySelector, By appiumBySelector) throws ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception, ClassNotFoundException {
-        Object element = getInstance().findObject(ui2BySelector);
-        if (element == null) {
+    /**
+     *
+     * @param ui2BySelector, for finding {@link android.support.test.uiautomator.UiObject2} element derived using {@link By}
+     * @param by, user provided selector criteria from appium client.
+     * @return
+     */
+    public static AndroidElement geElement(final BySelector ui2BySelector, By by) throws ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception, ClassNotFoundException {
+        Object ui2Object = getInstance().findObject(ui2BySelector);
+        if (ui2Object == null) {
             throw new ElementNotFoundException();
         }
         String id = UUID.randomUUID().toString();
-        AndroidElement androidElement = getAndroidElement(id, element, appiumBySelector);
+        AndroidElement androidElement = getAndroidElement(id, ui2Object, by);
         cache.put(androidElement.getId(), androidElement);
         return androidElement;
     }

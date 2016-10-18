@@ -30,12 +30,12 @@ public class UiObject2Element implements AndroidElement {
 
     private final UiObject2 element;
     private final String id;
-    private final By bySelector;
+    private final By by;
 
-    public UiObject2Element(String id, UiObject2 element, By bySelector) {
+    public UiObject2Element(String id, UiObject2 element, By by) {
         this.id = id;
         this.element = element;
-        this.bySelector = bySelector;
+        this.by = by;
     }
 
     public void click() throws UiObjectNotFoundException {
@@ -114,9 +114,8 @@ public class UiObject2Element implements AndroidElement {
         }
     }
 
-    @Override
-    public By getBySelector() {
-        return bySelector;
+    public By getBy() {
+        return by;
     }
 
     public void clear() throws UiObjectNotFoundException {
@@ -151,7 +150,7 @@ public class UiObject2Element implements AndroidElement {
         return element.findObject((BySelector) selector);
     }
 
-    public List<Object> getChildren(final Object selector, final By bySelector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
+    public List<Object> getChildren(final Object selector, final By by) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException {
         if (selector instanceof UiSelector) {
             /**
              * We can't find the child elements with UiSelector on UiObject2,
@@ -165,8 +164,8 @@ public class UiObject2Element implements AndroidElement {
             uiSelector = customUiSelector.getUiSelector(nodeInfo);
             UiObject uiObject = (UiObject)  CustomUiDevice.getInstance().findObject(uiSelector);
             String id = UUID.randomUUID().toString();
-            AndroidElement androidElement = getAndroidElement(id, uiObject, bySelector);
-            return androidElement.getChildren(selector, bySelector);
+            AndroidElement androidElement = getAndroidElement(id, uiObject, by);
+            return androidElement.getChildren(selector, by);
         }
         return (List)element.findObjects((BySelector) selector);
     }

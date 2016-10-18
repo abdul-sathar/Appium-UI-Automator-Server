@@ -13,7 +13,7 @@ import io.appium.uiautomator2.utils.Point;
 
 public interface AndroidElement {
 
-    public By getBySelector();
+    public By getBy();
 
     public void clear() throws UiObjectNotFoundException;
 
@@ -38,7 +38,7 @@ public interface AndroidElement {
 
     public Object getChild(final Object sel) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
-    public List<Object> getChildren(final Object selector, final By bySelector) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
+    public List<Object> getChildren(final Object selector, final By by) throws UiObjectNotFoundException, InvalidSelectorException, ClassNotFoundException;
 
     public String getContentDesc() throws UiObjectNotFoundException;
 

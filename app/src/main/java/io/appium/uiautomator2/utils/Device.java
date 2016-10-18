@@ -25,11 +25,11 @@ public abstract class Device {
         return uiDevice;
     }
 
-    public static AndroidElement getAndroidElement(String id, Object element, By bySelector) throws UiAutomator2Exception {
+    public static AndroidElement getAndroidElement(String id, Object element, By by) throws UiAutomator2Exception {
         if (element instanceof UiObject2) {
-            return new UiObject2Element(id, (UiObject2) element, bySelector);
+            return new UiObject2Element(id, (UiObject2) element, by);
         } else if (element instanceof UiObject) {
-            return new UiObjectElement(id, (UiObject) element, bySelector);
+            return new UiObjectElement(id, (UiObject) element, by);
         } else {
             throw new UiAutomator2Exception("Unknown Element type: " + element.getClass().getName());
         }
