@@ -34,6 +34,7 @@ public class CustomUiDevice {
 
     private static final String FIELD_M_INSTRUMENTATION = "mInstrumentation";
     private static final String FIELD_API_LEVEL_ACTUAL = "API_LEVEL_ACTUAL";
+    private static final boolean MULTI_WINDOW = false;
 
     private static CustomUiDevice INSTANCE = new CustomUiDevice();
     private final Method METHOD_FIND_MATCH;
@@ -182,8 +183,14 @@ public class CustomUiDevice {
     AccessibilityNodeInfo[] getWindowRoots() throws UiAutomator2Exception {
         device.waitForIdle();
         ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
-        // Support multi-window searches for API level 21 and up
-        if ((Integer) API_LEVEL_ACTUAL >= Build.VERSION_CODES.LOLLIPOP) {
+        /**
+         * TODO: MULTI_WINDOW is disabled, UIAutomatorViewer captures active window properties and
+         * end users always relay on UIAutomatorViewer while writing tests.
+         * If we enable MULTI_WINDOW it effects end users.
+         * https://code.google.com/p/android/issues/detail?id=207569
+         */
+        if ((Integer) API_LEVEL_ACTUAL >= Build.VERSION_CODES.LOLLIPOP && MULTI_WINDOW) {
+            // Support multi-window searches for API level 21 and up
             for (AccessibilityWindowInfo window : mInstrumentation.getUiAutomation().getWindows()) {
                 AccessibilityNodeInfo root = window.getRoot();
 

@@ -318,7 +318,7 @@ public class HandlersTest {
     @Test
     public void getTextTest() throws JSONException {
         element = findElement(By.id("android:id/text1"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + element);
         String elementTxt = getText(element);
         assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
     }
@@ -718,5 +718,14 @@ public class HandlersTest {
 
         result = getAttribute(element, "enabled");
         assertEquals(true, (Boolean)getValueInJsonObject(result, "value"));
+    }
+
+    @Test
+    public void findElementWithClassName() throws JSONException {
+        waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
+        element = findElement(By.className("android.widget.TextView"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
+        String elementTxt = getText(element);
+        assertEquals("API Demos", getStringValueInJsonObject(elementTxt, "value"));
     }
 }
