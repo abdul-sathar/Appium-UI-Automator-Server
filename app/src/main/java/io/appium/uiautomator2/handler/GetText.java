@@ -23,14 +23,14 @@ public class GetText extends SafeRequestHandler {
         String text;
         AndroidElement element = KnownElements.getElementFromCache(id);
         if (element == null) {
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
         try {
             text = element.getText();
             Logger.info("Get Text :" + text);
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, text);
     }

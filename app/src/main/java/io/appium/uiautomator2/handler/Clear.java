@@ -31,7 +31,7 @@ public class Clear extends SafeRequestHandler {
                 String id = payload.getString("elementId");
                 element = KnownElements.getElementFromCache(id);
                 if (element == null) {
-                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
                 }
             } else {
                 //perform action on focused element
@@ -39,16 +39,19 @@ public class Clear extends SafeRequestHandler {
                     element = KnownElements.geElement(android.support.test.uiautomator.By.focused(true), null /* by */);
                 } catch (ElementNotFoundException e) {
                     Logger.debug("Error retrieving focused element: " + e);
-                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Unable to set text without a focused element.");
-                } catch (InvalidSelectorException | UiAutomator2Exception | ClassNotFoundException e) {
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+                } catch (InvalidSelectorException e) {
+                    Logger.error("Invalid selector: ", e);
+                    return new AppiumResponse(getSessionId(request), WDStatus.INVALID_SELECTOR, e);
+                }  catch ( UiAutomator2Exception | ClassNotFoundException e) {
                     Logger.debug("Error in finding focused element: " + e);
-                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Unable to find a focused element." + e.getStackTrace());
+                    return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Unable to find a focused element." + e.getStackTrace());
                 }
             }
             element.clear();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);

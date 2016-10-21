@@ -616,6 +616,7 @@ public class HandlersTest {
 
         assertEquals("HTTP Status code for unsuccessful request should be '500'.", 500, responseCode);
         assertEquals("AppiumResponse status code for element not found should be '7'.", WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(getStringValueInJsonObject(responseBody, "status")));
+        assertTrue("AppiumResponse value for element not found should contain 'An element could not be located'.", getStringValueInJsonObject(responseBody, "value").contains("An element could not be located"));
     }
 
     @Test
@@ -728,4 +729,6 @@ public class HandlersTest {
         String elementTxt = getText(element);
         assertEquals("API Demos", getStringValueInJsonObject(elementTxt, "value"));
     }
+
+
 }

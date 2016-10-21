@@ -26,12 +26,12 @@ public class TouchLongClick extends SafeRequestHandler {
             String id = payload.getString("elementId");
             AndroidElement element = KnownElements.getElementFromCache(id);
             if (element == null) {
-                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, false);
+                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
             }
             element.longClick();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);

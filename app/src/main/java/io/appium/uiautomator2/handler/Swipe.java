@@ -62,7 +62,7 @@ public class Swipe extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         } catch (final UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (final InvalidCoordinatesException e) {
             Logger.error("The coordinates provided to an interactions operation are invalid. ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.INVALID_ELEMENT_COORDINATES, e);

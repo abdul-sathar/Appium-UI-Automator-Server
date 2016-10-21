@@ -26,7 +26,7 @@ public class GetDataDir extends SafeRequestHandler {
             Logger.info("data directory at " + dataDirectory);
         } catch (Exception e) {
             Logger.error("Exception while accessing data directory" + e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, dataDirectory);
     }

@@ -28,7 +28,7 @@ public class GetElementAttribute extends SafeRequestHandler {
         String attributeName = getNameAttribute(request);
         AndroidElement element = KnownElements.getElementFromCache(id);
         if (element == null) {
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
         try {
             if ("name".equals(attributeName) || "contentDescription".equals(attributeName)
@@ -43,7 +43,7 @@ public class GetElementAttribute extends SafeRequestHandler {
 
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (NoAttributeFoundException e) {
             Logger.error(MessageFormat.format("Requested attribute {0} not supported.", attributeName), e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);

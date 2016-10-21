@@ -37,7 +37,7 @@ public class Flick extends SafeRequestHandler {
                 String id = payload.getString("elementId");
                 AndroidElement element = KnownElements.getElementFromCache(id);
                 if (element == null) {
-                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
                 }
                 start = element.getAbsolutePosition(start);
                 final Integer xoffset = Integer.parseInt(payload.getString("xoffset"));
@@ -73,7 +73,7 @@ public class Flick extends SafeRequestHandler {
             }
         } catch (UiObjectNotFoundException e) {
             Logger.error("Unable to find the element: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);

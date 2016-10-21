@@ -123,7 +123,7 @@ public class FindElements extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
     }
 
