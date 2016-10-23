@@ -20,7 +20,7 @@ sdkManager {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.3'
+    buildToolsVersion '23.0.1'
     defaultConfig {
         applicationId "io.appium.uiautomator2"
         minSdkVersion 19
@@ -100,7 +100,7 @@ afterEvaluate {
 def appendVersionNameVersionCode(variant, defaultConfig) {
     variant.outputs.each { output ->
         def file = output.packageApplication.outputFile
-        def fileName = file.name.replace("debug.apk", "${defaultConfig.versionName}.apk")
+        def fileName = file.name.replace("debug.apk", "v${defaultConfig.versionName}.apk")
         output.packageApplication.outputFile = new File(file.parent, fileName)
     }
 }
