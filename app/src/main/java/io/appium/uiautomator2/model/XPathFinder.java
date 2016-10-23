@@ -94,7 +94,7 @@ public class XPathFinder implements Finder {
       int nodesLength = nodes.getLength();
         for (int i = 0; i < nodesLength; i++) {
           if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-              list.addToList(FROM_DOM_MAP.get(nodes.item(0)).node);
+              list.addToList(FROM_DOM_MAP.get(nodes.item(i)).node);
           }
         }
       return list;

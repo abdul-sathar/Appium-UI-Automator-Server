@@ -199,9 +199,15 @@ public class TestUtil {
      * @throws JSONException
      */
     public static String getText(String element) throws JSONException {
-        String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
+        String elementId ;
+        JSONObject elementObject = new JSONObject(element);
+        if(elementObject.has("value")) {
+            elementId = elementObject.getJSONObject("value").getString("ELEMENT");
+        } else {
+            elementId = elementObject.getString("ELEMENT");
+        }
 
-        return get(baseUrl + "/element/" + elementId + "/text");
+        return getStringValueInJsonObject(get(baseUrl + "/element/" + elementId + "/text"), "value");
     }
 
     /**

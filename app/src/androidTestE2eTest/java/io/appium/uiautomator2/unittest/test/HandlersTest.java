@@ -320,7 +320,7 @@ public class HandlersTest {
         element = findElement(By.id("android:id/text1"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + element);
         String elementTxt = getText(element);
-        assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Accessibility", elementTxt);
     }
 
     /**
@@ -343,7 +343,7 @@ public class HandlersTest {
 
         waitForElement(By.id("io.appium.android.apis:id/edit"), 5 * SECOND);
         sendKeys(findElement(By.id("io.appium.android.apis:id/edit")), "Dummy Theme");
-        String enteredText = getStringValueInJsonObject(getText(findElement(By.id("io.appium.android.apis:id/edit"))), "value");
+        String enteredText = getText(findElement(By.id("io.appium.android.apis:id/edit")));
         assertEquals("Dummy Theme", enteredText);
     }
 
@@ -452,7 +452,7 @@ public class HandlersTest {
         click(findElement(By.id("io.appium.android.apis:id/start")));
         waitForSeconds(2 * SECOND);
         String elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
-        assertNotEquals("Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
+        assertNotEquals("Initial format: 00:00", elementTxt);
 
         String stop = findElement(By.id("io.appium.android.apis:id/stop"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + stop);
@@ -489,7 +489,7 @@ public class HandlersTest {
         assertEquals("OK", getStringValueInJsonObject(response, "value"));
 
         elementTxt = getText(findElement(By.id("io.appium.android.apis:id/chronometer")));
-        assertEquals("Initial format: 00:00", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Initial format: 00:00", elementTxt);
 
     }
 
@@ -616,6 +616,7 @@ public class HandlersTest {
 
         assertEquals("HTTP Status code for unsuccessful request should be '500'.", 500, responseCode);
         assertEquals("AppiumResponse status code for element not found should be '7'.", WDStatus.NO_SUCH_ELEMENT.code(), Integer.parseInt(getStringValueInJsonObject(responseBody, "status")));
+        assertTrue("AppiumResponse value for element not found should contain 'An element could not be located'.", getStringValueInJsonObject(responseBody, "value").contains("An element could not be located"));
     }
 
     @Test
@@ -647,7 +648,7 @@ public class HandlersTest {
         element = findElement(By.className("android.widget.TextView"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
-        assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Accessibility", elementTxt);
 
         //parent element - By.className  (UiObject2)
         response = findElement(By.className("android.widget.ListView"));
@@ -657,17 +658,17 @@ public class HandlersTest {
         element = findElement(By.className("android.widget.TextView"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         elementTxt = getText(element);
-        assertEquals("Accessibility", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Accessibility", elementTxt);
 
         //parent element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
-        assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Animation", elementTxt);
         //child  element - By.androidUiAutomator (UiObject)
         element = findElement(By.androidUiAutomator("new UiSelector().text(\"Animation\");"), contextId);
         elementTxt = getText(element);
-        assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Animation", elementTxt);
 
         //parent element - By.xpath
         response = findElement(By.xpath("//*[@class='android.widget.FrameLayout'][2]"));
@@ -676,7 +677,7 @@ public class HandlersTest {
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
-        assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Animation", elementTxt);
 
         //parent element - By.androidUiAutomator (UiObject)
         response = findElement(By.androidUiAutomator("new UiSelector()"
@@ -686,7 +687,7 @@ public class HandlersTest {
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
-        assertEquals("Animation", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Animation", elementTxt);
 
         click(findElement(By.accessibilityId("Animation")));
         getUiDevice().waitForIdle();
@@ -700,7 +701,7 @@ public class HandlersTest {
         //child  element - By.androidUiAutomator (UiObject)
         element = findElement(By.androidUiAutomator("new UiSelector().className(\"android.widget.TextView\")"), contextId);
         elementTxt = getText(element);
-        assertEquals("Animator Events:   ", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("Animator Events:   ", elementTxt);
     }
 
     @Test
@@ -726,6 +727,27 @@ public class HandlersTest {
         element = findElement(By.className("android.widget.TextView"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.className: " + element);
         String elementTxt = getText(element);
-        assertEquals("API Demos", getStringValueInJsonObject(elementTxt, "value"));
+        assertEquals("API Demos", elementTxt);
     }
+
+    @Test
+    public void findElementsWithAttribute() throws JSONException {
+        waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
+        element = findElement(By.accessibilityId("Accessibility"));
+        click(element);
+        waitForElement(By.xpath("//*[@text='Accessibility Node Provider']"), 5 * SECOND);
+        response = findElements(By.xpath("//*[@enabled='true' and @class='android.widget.TextView']"));
+
+        JSONArray elements = new JSONArray(getStringValueInJsonObject(response, "value"));
+
+        int elementCount = getJsonObjectCountInJsonArray(elements);
+        assertTrue("Elements Count in views screen should at least > 4, " +
+                "in all variants of screen sizes, but actual: " + elementCount, elementCount > 4);
+
+        assertEquals(getText(elements.get(0).toString()), "API Demos");
+        assertEquals(getText(elements.get(1).toString()), "Accessibility Node Provider");
+        assertEquals(getText(elements.get(2).toString()), "Accessibility Node Querying");
+        assertEquals(getText(elements.get(3).toString()), "Accessibility Service");
+    }
+
 }

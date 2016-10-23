@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -90,7 +91,11 @@ public class CustomUiDevice {
             node = (AccessibilityNodeInfo) selector;
             selector = By.clazz(node.getClassName().toString());
         }else if (selector instanceof UiSelector) {
-            return getUiDevice().findObject((UiSelector) selector);
+            UiObject uiObject = getUiDevice().findObject((UiSelector) selector);
+            if(uiObject.exists()) {
+                return uiObject;
+            }
+            return null;
         } else {
             throw new InvalidSelectorException("Selector of type " + selector.getClass().getName() + " not supported");
         }

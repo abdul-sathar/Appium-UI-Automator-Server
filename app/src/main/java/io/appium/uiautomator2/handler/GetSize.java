@@ -46,7 +46,7 @@ public class GetSize extends SafeRequestHandler {
         final JSONObject result = new JSONObject();
         AndroidElement element = KnownElements.getElementFromCache(id);
         if (element == null) {
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
         try {
             final Rect rect = element.getBounds();
@@ -54,7 +54,7 @@ public class GetSize extends SafeRequestHandler {
             result.put("height", rect.height());
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
             Logger.error(WDStatus.JSON_DECODER_ERROR, e);

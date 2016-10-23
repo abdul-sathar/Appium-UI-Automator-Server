@@ -22,7 +22,7 @@ public class PressBack extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, status);
         } else {
             Logger.info("Unable to Press Back");
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, status);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, status);
         }
     }
 }

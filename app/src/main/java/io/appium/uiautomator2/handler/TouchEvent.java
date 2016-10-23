@@ -34,7 +34,7 @@ public abstract class TouchEvent extends SafeRequestHandler {
                 String id = json.getString("elementId");
                 element = KnownElements.getElementFromCache(id);
                 if (element == null) {
-                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, "Element Not found");
+                    return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
                 }
                 final Rect bounds = element.getBounds();
                 clickX = bounds.centerX();

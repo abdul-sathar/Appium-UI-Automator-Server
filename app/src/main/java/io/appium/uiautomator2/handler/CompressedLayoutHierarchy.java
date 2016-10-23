@@ -36,7 +36,7 @@ public class CompressedLayoutHierarchy extends SafeRequestHandler {
 
         } catch (Exception e) {
             Logger.error("error setting compressLayoutHierarchy " + e.getMessage());
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT, e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
 
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, compressLayout);

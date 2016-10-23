@@ -30,6 +30,10 @@ public class AppiumResponse {
         this(sessionId, WDStatus.SUCCESS, value);
     }
 
+    public AppiumResponse(String sessionId, WDStatus status) {
+        this(sessionId, status, status.message());
+    }
+
     public static AppiumResponse forCatchAllError(String sessionId, Throwable e) {
         return new AppiumResponse(sessionId, WDStatus.UNKNOWN_ERROR, e);
     }
