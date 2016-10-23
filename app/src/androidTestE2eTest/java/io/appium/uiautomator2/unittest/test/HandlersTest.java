@@ -41,6 +41,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getAttribute;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getDeviceSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getLocation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getName;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getRotation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getScreenOrientation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
@@ -52,6 +53,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.multiPointerGesture;
 import static io.appium.uiautomator2.unittest.test.TestUtil.rotateScreen;
 import static io.appium.uiautomator2.unittest.test.TestUtil.scrollTo;
 import static io.appium.uiautomator2.unittest.test.TestUtil.sendKeys;
+import static io.appium.uiautomator2.unittest.test.TestUtil.setRotation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.tap;
@@ -594,6 +596,42 @@ public class HandlersTest {
 
         rotateScreen("PORTRAIT");
         assertEquals("PORTRAIT", getScreenOrientation());
+
+        /**
+         * LANDSCAPE RIGHT
+         */
+        JSONObject rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 90);
+        String response = setRotation(rotateMap);
+        String status = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
+        assertEquals(rotateMap.toString(), getRotation().toString());
+
+
+        /**
+         * PORTRAIT UPSIDE DOWN
+         */
+        rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 180);
+        response = setRotation(rotateMap);
+        status = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
+        assertEquals(rotateMap.toString(), getRotation().toString());
+
+        /**
+         * PORTRAIT
+         */
+        rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 180);
+        response = setRotation(rotateMap);
+        status = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
+        assertEquals(rotateMap.toString(), getRotation().toString());
+
+        /**
+         * INVALID MAP
+         */
+        rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 10);
+        response = setRotation(rotateMap);
+        status = getStringValueInJsonObject(response, "status");
+        assertEquals(WDStatus.UNKNOWN_COMMAND.code(), Integer.parseInt(status));
     }
 
     /**

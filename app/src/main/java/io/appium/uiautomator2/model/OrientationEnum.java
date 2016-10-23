@@ -46,4 +46,18 @@ public enum OrientationEnum {
   public int getValue() {
     return value;
   }
+
+  public String getOrientation(){
+    switch (this.getValue()) {
+      case 0:
+        return "PORTRAIT";
+      case 1:
+        return "LANDSCAPE RIGHT";
+      case 2:
+        return "PORTRAIT UPSIDE DOWN";
+      case 3:
+        return "LANDSCAPE LEFT";
+    }
+    return "UNKNOWN(" + this.getValue() + ")";
+  }
 }

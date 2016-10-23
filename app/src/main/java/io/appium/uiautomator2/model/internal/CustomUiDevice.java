@@ -74,6 +74,9 @@ public class CustomUiDevice {
         return INSTANCE;
     }
 
+    public Instrumentation getInstrumentation(){
+        return mInstrumentation;
+    }
 
     /**
      * Returns the first object to match the {@code selector} criteria.
