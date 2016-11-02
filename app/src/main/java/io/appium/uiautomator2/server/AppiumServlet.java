@@ -23,6 +23,7 @@ import io.appium.uiautomator2.handler.Flick;
 import io.appium.uiautomator2.handler.GetDeviceSize;
 import io.appium.uiautomator2.handler.GetElementAttribute;
 import io.appium.uiautomator2.handler.GetName;
+import io.appium.uiautomator2.handler.GetRotation;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetText;
@@ -84,6 +85,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new Click("/wd/hub/session/:sessionId/appium/tap"));
         register(postHandler, new Clear("/wd/hub/session/:sessionId/element/:id/clear"));
         register(postHandler, new RotateScreen("/wd/hub/session/:sessionId/orientation"));
+        register(postHandler, new RotateScreen("/wd/hub/session/:sessionId/rotation"));
         register(postHandler, new PressBack("/wd/hub/session/:sessionId/back"));
         register(postHandler, new SendKeysToElement("/wd/hub/session/:sessionId/element/:id/value"));
         register(postHandler, new SendKeysToElement("/wd/hub/session/:sessionId/keys"));
@@ -107,6 +109,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new Status("/wd/hub/status"));
         register(getHandler, new CaptureScreenshot("/wd/hub/session/:sessionId/screenshot"));
         register(getHandler, new GetScreenOrientation("/wd/hub/session/:sessionId/orientation"));
+        register(getHandler, new GetRotation("/wd/hub/session/:sessionId/rotation"));
         register(getHandler, new GetText("/wd/hub/session/:sessionId/element/:id/text"));
         register(getHandler, new GetElementAttribute("/wd/hub/session/:sessionId/element/:id/attribute/:name"));
         register(getHandler, new GetSize("/wd/hub/session/:sessionId/element/:id/size"));

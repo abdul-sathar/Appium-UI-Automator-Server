@@ -443,7 +443,7 @@ public class TestUtil {
     }
 
     public static boolean isElementPresent(String elementResponse) throws JSONException {
-       int status = new JSONObject(elementResponse).getInt("status");
+        int status = new JSONObject(elementResponse).getInt("status");
         return status == 0;
     }
     /**
@@ -514,6 +514,27 @@ public class TestUtil {
     public static String getScreenOrientation() throws JSONException {
         String response = get(baseUrl + "/orientation");
         return new JSONObject(response).get("value").toString();
+    }
+
+    /**
+     * return rotation
+     *
+     * @return
+     * @throws JSONException
+     */
+    public static JSONObject getRotation() throws JSONException {
+        String response = get(baseUrl + "/rotation");
+        return new JSONObject(response).getJSONObject("value");
+    }
+
+    /**
+     * return rotation
+     *
+     * @return
+     * @throws JSONException
+     */
+    public static String setRotation(JSONObject rotateMap) throws JSONException {
+        return post(baseUrl + "/rotation", rotateMap.toString());
     }
 
     public static String multiPointerGesture(String body) {
