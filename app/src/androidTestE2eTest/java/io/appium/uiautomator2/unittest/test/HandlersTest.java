@@ -124,7 +124,7 @@ public class HandlersTest {
         getUiDevice().waitForIdle();
         Logger.info("Configurator.getInstance().getWaitForSelectorTimeout:" + Configurator.getInstance().getWaitForSelectorTimeout());
         element = findElement(By.accessibilityId("Accessibility"));
-        assertTrue(By.accessibilityId("Accessibility") + "not found", isElementPresent(element));
+        assertTrue(By.accessibilityId("Accessibility") + " not found", isElementPresent(element));
     }
 
     /**
@@ -215,6 +215,14 @@ public class HandlersTest {
         response = findElement(By.xpath("//*[@text='API Demos']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
         assertTrue(By.xpath("//*[@text='API Demos']") + "not found", isElementPresent(response));
+
+        response = findElement(By.xpath("//hierarchy//*[@text='API Demos']"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
+        assertTrue(By.xpath("//*[@text='API Demos']") + "not found", isElementPresent(response));
+
+        response = findElement(By.xpath("//hierarchy"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
+        assertFalse(By.xpath("//*[@text='API Demos']") + " found", isElementPresent(response));
 
         response = findElement(By.xpath("//*[@resource-id='android:id/action_bar']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.id: " + response);
@@ -619,7 +627,7 @@ public class HandlersTest {
         /**
          * PORTRAIT
          */
-        rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 180);
+        rotateMap = new JSONObject().put("x", 0).put("y", 0).put("z", 0);
         response = setRotation(rotateMap);
         status = getStringValueInJsonObject(response, "status");
         assertEquals(WDStatus.SUCCESS.code(), Integer.parseInt(status));
@@ -698,18 +706,25 @@ public class HandlersTest {
         elementTxt = getText(element);
         assertEquals("Accessibility", elementTxt);
 
-        //parent element - By.xpath  (UiObject2)
+        //child element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         elementTxt = getText(element);
         assertEquals("Animation", elementTxt);
+
+        //child element - By.xpath  (UiObject2)
+        element = findElement(By.xpath("//hierarchy//*[@class='android.widget.TextView'][2]"), contextId);
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
+        elementTxt = getText(element);
+        assertEquals("Animation", elementTxt);
+
         //child  element - By.androidUiAutomator (UiObject)
         element = findElement(By.androidUiAutomator("new UiSelector().text(\"Animation\");"), contextId);
         elementTxt = getText(element);
         assertEquals("Animation", elementTxt);
 
         //parent element - By.xpath
-        response = findElement(By.xpath("//*[@class='android.widget.FrameLayout'][2]"));
+        response = findElement(By.xpath("//hierarchy//*[@class='android.widget.FrameLayout'][2]"));
         contextId = JsonPath.compile("$value.ELEMENT").read(response);
         //child element - By.xpath  (UiObject2)
         element = findElement(By.xpath("//*[@class='android.widget.TextView'][2]"), contextId);

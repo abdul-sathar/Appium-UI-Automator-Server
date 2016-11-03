@@ -93,7 +93,7 @@ public class XPathFinder implements Finder {
 
       int nodesLength = nodes.getLength();
         for (int i = 0; i < nodesLength; i++) {
-          if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+          if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE && !FROM_DOM_MAP.get(nodes.item(i)).getClassName().equals("hierarchy")) {
               list.addToList(FROM_DOM_MAP.get(nodes.item(i)).node);
           }
         }
@@ -172,7 +172,7 @@ public class XPathFinder implements Finder {
           Integer.toString(uiElement.getSelectionEnd()));
     }
     setAttribute(element, Attribute.SELECTED, uiElement.isSelected());
-    element.setAttribute(Attribute.BOUNDS.getName(), uiElement.getBounds().toShortString());
+    element.setAttribute(Attribute.BOUNDS.getName(), uiElement.getBounds()==null ? null : uiElement.getBounds().toShortString());
 
     for (UiElement<?, ?> child : uiElement.getChildren()) {
       element.appendChild(getDomNode(child));
