@@ -20,6 +20,8 @@ import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -43,6 +45,7 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
   private final UiAutomationElement parent;
   private final List<UiAutomationElement> children;
   public final static Map<AccessibilityNodeInfo, UiAutomationElement>  map = new WeakHashMap<AccessibilityNodeInfo, UiAutomationElement>();
+
   /**
    * A snapshot of all attributes is taken at construction. The attributes of a
    * {@code UiAutomationElement} instance are immutable. If the underlying
@@ -87,6 +90,32 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
     this.children = mutableChildren == null ? null : Collections.unmodifiableList(mutableChildren);
   }
 
+  protected UiAutomationElement(String className,
+                                AccessibilityNodeInfo childNode, int index){
+    this.parent = null;
+    Map<Attribute, Object> attribs = new EnumMap<Attribute, Object>(Attribute.class);
+
+    put(attribs, Attribute.INDEX, index);
+    put(attribs, Attribute.CLASS, charSequenceToString(className));
+    put(attribs, Attribute.CHECKABLE, false);
+    put(attribs, Attribute.CHECKED, false);
+    put(attribs, Attribute.CLICKABLE, false);
+    put(attribs, Attribute.ENABLED, false);
+    put(attribs, Attribute.FOCUSABLE, false);
+    put(attribs, Attribute.FOCUSED, false);
+    put(attribs, Attribute.LONG_CLICKABLE, false);
+    put(attribs, Attribute.PASSWORD, false);
+    put(attribs, Attribute.SCROLLABLE, false);
+    put(attribs, Attribute.SELECTED, false);
+
+    this.attributes = Collections.unmodifiableMap(attribs);
+    this.visible= true;
+    this.visibleBounds = null;
+    List<UiAutomationElement> mutableChildren =new ArrayList<UiAutomationElement>();
+    mutableChildren.add(new UiAutomationElement(childNode, this /* parent UiAutomationElement*/, 0/* index */));
+    this.children = Collections.unmodifiableList(mutableChildren);
+  }
+
   private void put(Map<Attribute, Object> attribs, Attribute key, Object value) {
     if (value != null) {
       attribs.put(key, value);
@@ -110,9 +139,12 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
     return children;
   }
 
-  public static UiAutomationElement newRootElement(AccessibilityNodeInfo rawRoot) {
+  public static UiAutomationElement newRootElement(AccessibilityNodeInfo rawElement) {
     clearData();
-    return getElement(rawRoot, null /* parent */, 0 /* index */);
+    /**
+     * Injecting root element as hierarchy and adding rawElement as a child.
+     */
+    return new UiAutomationElement("hierarchy" /*root element*/, rawElement /* child nodInfo */, 0 /* index */);
   }
 
   private static void clearData() {
@@ -142,7 +174,7 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
     Rect visibleBounds = getBounds(this.node);
     UiAutomationElement parent = getParent();
     Rect parentBounds;
-    while (parent != null) {
+    while (parent != null && parent.node != null) {
       parentBounds = parent.getBounds(this.parent.node);
       visibleBounds.intersect(parentBounds);
       parent = parent.getParent();
