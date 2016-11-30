@@ -151,6 +151,7 @@ public class XPathFinder implements Finder {
     TO_DOM_MAP.put(uiElement, element);
     FROM_DOM_MAP.put(element, uiElement);
 
+    setAttribute(element, Attribute.INDEX, String.valueOf(uiElement.getIndex()));
     setAttribute(element, Attribute.CLASS, className);
     setAttribute(element, Attribute.RESOURCE_ID, uiElement.getResourceId());
     setAttribute(element, Attribute.PACKAGE, uiElement.getPackageName());
