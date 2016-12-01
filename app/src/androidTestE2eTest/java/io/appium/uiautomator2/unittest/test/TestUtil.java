@@ -13,9 +13,9 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
+import static io.appium.uiautomator2.unittest.test.TestHelper.delete;
 import static io.appium.uiautomator2.unittest.test.TestHelper.get;
 import static io.appium.uiautomator2.unittest.test.TestHelper.post;
-import static io.appium.uiautomator2.unittest.test.TestHelper.delete;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class TestUtil {
@@ -576,6 +576,14 @@ public class TestUtil {
 
     public static String deleteSession(){
         return delete(baseUrl, new JSONObject().toString());
+    }
+
+    public static String toggleWifi(int setTo) throws JSONException {
+        return post(baseUrl + "/appium/device/toggle_wifi", new JSONObject().put("wifi", setTo).toString());
+    }
+
+    public static String getWifiState() throws JSONException {
+        return get(baseUrl + "/appium/device/wifi_state");
     }
 
 }

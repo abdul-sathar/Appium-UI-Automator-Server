@@ -16,6 +16,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -49,6 +50,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.getSize;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getStringValueInJsonObject;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getText;
 import static io.appium.uiautomator2.unittest.test.TestUtil.getValueInJsonObject;
+import static io.appium.uiautomator2.unittest.test.TestUtil.getWifiState;
 import static io.appium.uiautomator2.unittest.test.TestUtil.isElementPresent;
 import static io.appium.uiautomator2.unittest.test.TestUtil.longClick;
 import static io.appium.uiautomator2.unittest.test.TestUtil.multiPointerGesture;
@@ -59,6 +61,7 @@ import static io.appium.uiautomator2.unittest.test.TestUtil.setRotation;
 import static io.appium.uiautomator2.unittest.test.TestUtil.startActivity;
 import static io.appium.uiautomator2.unittest.test.TestUtil.swipe;
 import static io.appium.uiautomator2.unittest.test.TestUtil.tap;
+import static io.appium.uiautomator2.unittest.test.TestUtil.toggleWifi;
 import static io.appium.uiautomator2.unittest.test.TestUtil.touchDown;
 import static io.appium.uiautomator2.unittest.test.TestUtil.touchMove;
 import static io.appium.uiautomator2.unittest.test.TestUtil.touchUp;
@@ -857,5 +860,19 @@ public class HandlersTest {
         response = findElement(By.xpath("//*[@text='Clicked popup menu item Share']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
         assertTrue(By.xpath("//*[@text='Clicked popup menu item Share']") + "not found", isElementPresent(response));
+    }
+
+
+    @Ignore
+    @Test
+    /** @skip-ci */
+    public void setWifiState() throws JSONException {
+        getUiDevice().waitForIdle();
+        final int ON = 1;
+        final int OFF = 0;
+        toggleWifi(OFF);
+        assertEquals("WIFI should be disable", OFF, getValueInJsonObject(getWifiState(), "value"));
+        toggleWifi(ON);
+        assertEquals("WIFI should be enabled", ON, getValueInJsonObject(getWifiState(), "value"));
     }
 }
