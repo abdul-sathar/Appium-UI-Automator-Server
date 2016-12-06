@@ -27,10 +27,10 @@ import io.appium.uiautomator2.handler.GetRotation;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetText;
-import io.appium.uiautomator2.handler.GetWifiState;
 import io.appium.uiautomator2.handler.Location;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
 import io.appium.uiautomator2.handler.MultiPointerGesture;
+import io.appium.uiautomator2.handler.NetworkConnection;
 import io.appium.uiautomator2.handler.NewSession;
 import io.appium.uiautomator2.handler.OpenNotification;
 import io.appium.uiautomator2.handler.PressBack;
@@ -41,7 +41,6 @@ import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Source;
 import io.appium.uiautomator2.handler.Status;
 import io.appium.uiautomator2.handler.Swipe;
-import io.appium.uiautomator2.handler.ToggleWifi;
 import io.appium.uiautomator2.handler.TouchDown;
 import io.appium.uiautomator2.handler.TouchLongClick;
 import io.appium.uiautomator2.handler.TouchMove;
@@ -105,7 +104,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchUp("/wd/hub/session/:sessionId/touch/up"));
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
         register(postHandler, new CompressedLayoutHierarchy("/wd/hub/session/:sessionId/appium/device/compressedLayoutHierarchy"));
-        register(postHandler, new ToggleWifi("/wd/hub/session/:sessionId/appium/device/toggle_wifi"));
+        register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
     }
 
     private void registerGetHandler() {
@@ -120,7 +119,6 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
         register(getHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
         register(getHandler, new Source("/wd/hub/session/:sessionId/source"));
-        register(getHandler, new GetWifiState("/wd/hub/session/:sessionId/appium/device/wifi_state"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {

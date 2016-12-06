@@ -578,13 +578,5 @@ public class TestUtil {
         return delete(baseUrl, new JSONObject().toString());
     }
 
-    public static String toggleWifi(int setTo) throws JSONException {
-        return post(baseUrl + "/appium/device/toggle_wifi", new JSONObject().put("wifi", setTo).toString());
-    }
-
-    public static String getWifiState() throws JSONException {
-        return get(baseUrl + "/appium/device/wifi_state");
-    }
-
 }
 
