@@ -416,6 +416,7 @@ public class HandlersTest {
         getUiDevice().waitForIdle();
         waitForElement(By.id("android:id/text1"), 5 * SECOND);
         response = flickOnElement(findElement(By.id("android:id/text1")));
+        getUiDevice().waitForIdle();
         assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
     }
 
@@ -819,7 +820,7 @@ public class HandlersTest {
     }
 
     @Test
-    public void ToastVerificationTest() throws JSONException {
+    public void toastVerificationTest() throws JSONException {
         getUiDevice().waitForIdle();
         scrollTo("Views"); // Due to 'Views' option not visible on small screen
         waitForElement(By.accessibilityId("Views"), 10 * SECOND);
@@ -832,30 +833,40 @@ public class HandlersTest {
         waitForElement(By.xpath(".//*[@text='Search']"), 10 * SECOND);
         click(findElement(By.xpath(".//*[@text='Search']")));
         waitForMilliSeconds(500);
-        response = findElement(By.xpath("//*[@text='Clicked popup menu item Search']"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
-        assertTrue(By.xpath("//*[@text='Clicked popup menu item Search']") + "not found", isElementPresent(response));
+        element = findElement(By.xpath("//*[@text='Clicked popup menu item Search']"));
+        String toastMSG = getText(element);
+        assertEquals("Clicked popup menu item Search", toastMSG);
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
+        assertTrue(By.xpath("//*[@text='Clicked popup menu item Search']") + "not found", isElementPresent(element));
 
         click(findElement(By.accessibilityId("Make a Popup!")));
         waitForElement(By.xpath(".//*[@text='Add']"), 10 * SECOND);
         click(findElement(By.xpath(".//*[@text='Add']")));
         waitForMilliSeconds(500);
-        response = findElement(By.xpath("//*[@text='Clicked popup menu item Add']"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
-        assertTrue(By.xpath("//*[@text='Clicked popup menu item Search Add']") + "not found", isElementPresent(response));
+        element = findElement(By.xpath("//*[contains(@text,'Clicked popup menu item Add')]"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
+        assertTrue(By.xpath("//*[@text='Clicked popup menu item Add']") + "not found", isElementPresent(element));
+        toastMSG = getText(element);
+        assertEquals("Clicked popup menu item Add", toastMSG);
 
         click(findElement(By.accessibilityId("Make a Popup!")));
         waitForElement(By.xpath(".//*[@text='Edit']"), 10 * SECOND);
         click(findElement(By.xpath(".//*[@text='Edit']")));
         waitForMilliSeconds(500);
-        response = findElement(By.xpath("//*[@text='Clicked popup menu item Edit']"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
-        assertTrue(By.xpath("//*[@text='Clicked popup menu item Edit']") + "not found", isElementPresent(response));
+        element = findElement(By.xpath("//*[@text='Clicked popup menu item Edit']"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
+        assertTrue(By.xpath("//*[@text='Clicked popup menu item Edit']") + "not found", isElementPresent(element));
+        toastMSG = getText(element);
+        assertEquals("Clicked popup menu item Edit", toastMSG);
+
 
         click(findElement(By.xpath(".//*[@text='Share']")));
         waitForMilliSeconds(1000);
-        response = findElement(By.xpath("//*[@text='Clicked popup menu item Share']"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + response);
-        assertTrue(By.xpath("//*[@text='Clicked popup menu item Share']") + "not found", isElementPresent(response));
+        element = findElement(By.xpath("//*[@text='Clicked popup menu item Share']"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
+        assertTrue(By.xpath("//*[@text='Clicked popup menu item Share']") + "not found", isElementPresent(element));
+        toastMSG = getText(element);
+        assertEquals("Clicked popup menu item Share", toastMSG);
+
     }
 }

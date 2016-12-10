@@ -7,6 +7,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import io.appium.uiautomator2.utils.PositionHelper;
 import io.appium.uiautomator2.utils.UnicodeEncoder;
 
 import static io.appium.uiautomator2.utils.Device.getAndroidElement;
+import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 import static io.appium.uiautomator2.utils.ReflectionUtils.invoke;
 import static io.appium.uiautomator2.utils.ReflectionUtils.method;
 
@@ -47,8 +49,21 @@ public class UiObject2Element implements AndroidElement {
     }
 
     public String getText() throws UiObjectNotFoundException {
+        AccessibilityNodeInfo nodeInfo = (AccessibilityNodeInfo) getField(UiObject2.class, "mCachedNode", element);
+        /**
+         * If the given element is TOAST element, we can't perform any operation on {@link UiObject2} as it
+         * not formed with valid AccessibilityNodeInfo, Instead we are using custom created AccessibilityNodeInfo of
+         * TOAST Element to retrieve the Text.
+         */
+        if(isToastElement(nodeInfo)) {
+           return nodeInfo.getText().toString();
+        }
         // on null returning empty string
         return element.getText() != null ? element.getText() : "";
+    }
+
+    static boolean isToastElement(AccessibilityNodeInfo nodeInfo) {
+        return  nodeInfo.getClassName().toString().equals(Toast.class.getName());
     }
 
     public String getName() throws UiObjectNotFoundException {
