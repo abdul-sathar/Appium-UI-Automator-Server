@@ -13,9 +13,9 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
+import static io.appium.uiautomator2.unittest.test.TestHelper.delete;
 import static io.appium.uiautomator2.unittest.test.TestHelper.get;
 import static io.appium.uiautomator2.unittest.test.TestHelper.post;
-import static io.appium.uiautomator2.unittest.test.TestHelper.delete;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class TestUtil {

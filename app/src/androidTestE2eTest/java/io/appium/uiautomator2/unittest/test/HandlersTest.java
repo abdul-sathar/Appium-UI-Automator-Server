@@ -766,6 +766,8 @@ public class HandlersTest {
     @Test
     public void findElementWithAttributes() throws JSONException {
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
+        waitForElement(By.accessibilityId("Views"), 10 * SECOND);
+        click(findElement(By.accessibilityId("Views")));
         element = findElement(By.xpath("//*[@enabled='true' and @scrollable='true']"));
         Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
         assertTrue("//*[@enabled='true' and @scrollable='true'] not found", isElementPresent(element));
