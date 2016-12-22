@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,14 +143,35 @@ public class XPathFinder implements Finder {
     return domNode;
   }
 
+  private static void setNodeLocalName(Element element, String className) {
+    try {
+      Field localName = element.getClass().getDeclaredField("localName");
+      localName.setAccessible(true);
+      localName.set(element, tag(className));
+    } catch (NoSuchFieldException e) {
+      Logger.error("Unable to set field localName:"+e.getMessage());
+    } catch (IllegalAccessException e) {
+      Logger.error("Unable to set field localName:"+e.getMessage());
+    }
+  }
+
   private static Element buildDomNode(UiElement<?, ?> uiElement) {
     String className = uiElement.getClassName();
     if (className == null) {
       className = "UNKNOWN";
     }
-    Element element = getDocument().createElement(tag(className));
+    Element element = getDocument().createElement(simpleClassName(className));
     TO_DOM_MAP.put(uiElement, element);
     FROM_DOM_MAP.put(element, uiElement);
+
+    /**
+     * Setting the Element's className field.
+     * Reason for setting className field in Element object explicitly,
+     * className property might contain special characters like '$' if it is a Inner class and
+     * just not possible to create Element object with special characters.
+     * But Appium should consider Inner classes i.e special characters should be included.
+     */
+    setNodeLocalName(element, className);
 
     setAttribute(element, Attribute.INDEX, String.valueOf(uiElement.getIndex()));
     setAttribute(element, Attribute.CLASS, className);
@@ -237,5 +259,21 @@ public class XPathFinder implements Finder {
     // and local inner classes have names ending in "Outer.$1Inner"
     className = className.replaceAll("\\$[0-9]+", "\\$");
     return className;
+  }
+
+  /**
+   * returns by excluding inner class name.
+   */
+  private static String simpleClassName(String name) {
+    name = name.replaceAll("\\$[0-9]+", "\\$");
+    // we want the index of the inner class
+    int start = name.lastIndexOf('$');
+
+    // if this isn't an inner class, just find the start of the
+    // top level class name.
+    if (start == -1) {
+      return name;
+    }
+    return name.substring(0, start);
   }
 }

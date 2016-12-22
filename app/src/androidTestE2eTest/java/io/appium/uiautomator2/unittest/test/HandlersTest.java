@@ -253,6 +253,7 @@ public class HandlersTest {
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
         scrollTo("Views"); // Due to 'Views' option not visible on small screen
         click(findElement(By.accessibilityId("Views")));
+        waitForElement(By.accessibilityId("Animation"), 10 * SECOND);
 
         By androidUiAutomator = By.androidUiAutomator("new UiScrollable(new UiSelector()"
                 + ".resourceId(\"android:id/list\")).scrollIntoView("
@@ -417,6 +418,7 @@ public class HandlersTest {
         waitForElement(By.id("android:id/text1"), 5 * SECOND);
         response = flickOnElement(findElement(By.id("android:id/text1")));
         getUiDevice().waitForIdle();
+        waitForElement(By.accessibilityId("Custom View"), 10 * SECOND);
         assertTrue(JsonPath.compile("$.value").<Boolean>read(response));
     }
 
@@ -766,16 +768,16 @@ public class HandlersTest {
     @Test
     public void findElementWithAttributes() throws JSONException {
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
-        waitForElement(By.accessibilityId("Views"), 10 * SECOND);
+        scrollTo("Views");
         click(findElement(By.accessibilityId("Views")));
-        element = findElement(By.xpath("//*[@enabled='true' and @scrollable='true']"));
-        Logger.info("[AppiumUiAutomator2Server]", " findElement By.androidUiAutomator: " + element);
-        assertTrue("//*[@enabled='true' and @scrollable='true'] not found", isElementPresent(element));
+        waitForElement(By.accessibilityId("Focus"), 10 * SECOND);
+        getUiDevice().waitForIdle();
 
-        result = getAttribute(element, "selected");
-        assertEquals(false, (Boolean)getValueInJsonObject(result, "value"));
+        element = findElement(By.accessibilityId("Focus"));
+        Logger.info("[AppiumUiAutomator2Server]", " findElement By.accessibilityId: " + element);
+        assertTrue("By.accessibilityId(\"Focus\") not found", isElementPresent(element));
 
-        result = getAttribute(element, "scrollable");
+        result = getAttribute(element, "clickable");
         assertEquals(true, (Boolean)getValueInJsonObject(result, "value"));
 
         result = getAttribute(element, "enabled");
@@ -795,7 +797,7 @@ public class HandlersTest {
     public void findElementWithIndex() throws JSONException {
         //using index attribute on xpath
         waitForElement(By.xpath("//*[@text='API Demos']"), 5 * SECOND);
-        element = findElement(By.xpath("//android.widget.FrameLayout[@index='0']//android.view.ViewGroup[@index='0']//android.widget.FrameLayout[@index='0']//android.view.ViewGroup[@index='0']//android.widget.TextView[@index='0']"));
+        element = findElement(By.xpath("//android.widget.FrameLayout[@index='0']//android.widget.TextView[@index='0']"));
         Logger.debug("[AppiumUiAutomator2Server]", " findElement By.xpath: " + element);
         String elementTxt = getText(element);
         assertEquals("API Demos", elementTxt);
