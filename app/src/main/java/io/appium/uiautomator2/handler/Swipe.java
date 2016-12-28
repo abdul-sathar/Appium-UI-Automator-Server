@@ -34,7 +34,7 @@ public class Swipe extends SafeRequestHandler {
             Logger.info("JSON Payload : ", payload.toString());
             swipeArgs = new SwipeArguments(request);
 
-            if (payload.has("elementId")) {
+            if (payload.has(ELEMENT_ID_KEY_NAME)) {
                 absStartPos = swipeArgs.element.getAbsolutePosition(swipeArgs.start);
                 absEndPos = swipeArgs.element.getAbsolutePosition(swipeArgs.end);
                 Logger.debug("Swiping the element with ElementId " + swipeArgs.element.getId()
@@ -76,9 +76,9 @@ public class Swipe extends SafeRequestHandler {
 
         public SwipeArguments(final IHttpRequest request) throws JSONException {
             JSONObject payload = getPayload(request);
-            if (payload.has("elementId")) {
+            if (payload.has(ELEMENT_ID_KEY_NAME)) {
                 Logger.info("Payload has elementId" + payload);
-                String id = payload.getString("elementId");
+                String id = payload.getString(ELEMENT_ID_KEY_NAME);
                 element = KnownElements.getElementFromCache(id);
             }
             start = new Point(payload.get("startX"), payload.get("startY"));

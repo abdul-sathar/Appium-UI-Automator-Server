@@ -29,9 +29,9 @@ public class Click extends SafeRequestHandler {
         try {
 
             JSONObject payload = getPayload(request);
-            if (payload.has("elementId")) {
+            if (payload.has(ELEMENT_ID_KEY_NAME)) {
                 Logger.info("Click element command");
-                String id = payload.getString("elementId");
+                String id = payload.getString(ELEMENT_ID_KEY_NAME);
                 AndroidElement element = KnownElements.getElementFromCache(id);
                 if (element == null) {
                     return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);

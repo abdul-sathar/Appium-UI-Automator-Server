@@ -27,8 +27,8 @@ public class Clear extends SafeRequestHandler {
             Logger.info("Clear element command");
             JSONObject payload = getPayload(request);
             AndroidElement element;
-            if (payload.has("elementId")) {
-                String id = payload.getString("elementId");
+            if (payload.has(ELEMENT_ID_KEY_NAME)) {
+                String id = payload.getString(ELEMENT_ID_KEY_NAME);
                 element = KnownElements.getElementFromCache(id);
                 if (element == null) {
                     return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);

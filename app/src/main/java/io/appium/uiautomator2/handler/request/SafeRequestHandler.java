@@ -16,6 +16,8 @@ import io.appium.uiautomator2.utils.Logger;
 
 public abstract class SafeRequestHandler extends BaseRequestHandler {
 
+    protected final String ELEMENT_ID_KEY_NAME = "element";
+
     public SafeRequestHandler(String mappedUri) {
         super(mappedUri);
     }
