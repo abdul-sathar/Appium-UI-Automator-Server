@@ -180,7 +180,7 @@ public class HandlersTest {
         String destElementId = new JSONObject(new JSONObject(destElement).get("value").toString()).get("ELEMENT").toString();
 
         JSONObject dragBody = new JSONObject();
-        dragBody.put("element", srcElementId);
+        dragBody.put("elementId", srcElementId);
         dragBody.put("destElId", destElementId);
         dragBody.put("startX", startX);
         dragBody.put("startY", startY);
@@ -191,6 +191,9 @@ public class HandlersTest {
         response = drag(dragBody.toString());
         boolean result = (Boolean) getValueInJsonObject(response, "value");
         assertTrue("Drag status from src to dest should be true. ", result);
+
+        String dragStatus = findElement(By.id("io.appium.android.apis:id/drag_result_text"));
+        assertEquals("Dropped!", getText(dragStatus));
     }
 
     @Test
