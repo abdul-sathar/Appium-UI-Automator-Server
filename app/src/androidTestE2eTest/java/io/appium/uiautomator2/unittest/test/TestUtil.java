@@ -155,7 +155,7 @@ public class TestUtil {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("elementId", elementId);
+        jsonObject.put("element", elementId);
         return post(baseUrl + "/element/" + elementId + "/click", jsonObject.toString());
     }
 
@@ -178,7 +178,7 @@ public class TestUtil {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("elementId", elementId);
+        jsonObject.put("element", elementId);
         jsonObject.put("text", text);
         jsonObject.put("replace", false);
         return post(baseUrl + "/element/" + elementId + "/value", jsonObject.toString());
@@ -292,7 +292,7 @@ public class TestUtil {
     public static String flickOnElement(String element) throws JSONException {
         String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("elementId", elementId);
+        jsonObject.put("element", elementId);
         jsonObject.put("xoffset", 1);
         jsonObject.put("yoffset", 1);
         jsonObject.put("speed", 1000);
@@ -439,7 +439,7 @@ public class TestUtil {
     public static JSONObject getJsonForElement(String elementResponse) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         String elementId = new JSONObject(elementResponse).getJSONObject("value").getString("ELEMENT");
-        jsonObject.put("elementId", elementId);
+        jsonObject.put("element", elementId);
         return jsonObject;
     }
 
@@ -460,7 +460,7 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject();
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-            longClickJSON.put("params", jsonObject.put("elementId", elementId));
+            longClickJSON.put("params", jsonObject.put("element", elementId));
         } catch (JSONException e) {
             throw new RuntimeException("Element not found", e);
         }

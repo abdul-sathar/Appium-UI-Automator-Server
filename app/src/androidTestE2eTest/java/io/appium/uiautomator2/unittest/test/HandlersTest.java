@@ -180,7 +180,7 @@ public class HandlersTest {
         String destElementId = new JSONObject(new JSONObject(destElement).get("value").toString()).get("ELEMENT").toString();
 
         JSONObject dragBody = new JSONObject();
-        dragBody.put("elementId", srcElementId);
+        dragBody.put("element", srcElementId);
         dragBody.put("destElId", destElementId);
         dragBody.put("startX", startX);
         dragBody.put("startY", startY);

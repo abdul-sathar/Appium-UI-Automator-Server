@@ -27,11 +27,11 @@ public abstract class TouchEvent extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             JSONObject json = new JSONObject(getPayload(request).getString("params"));
-            if (json.has("elementId") && !(json.has("x") && json.has("y"))) {
+            if (json.has(ELEMENT_ID_KEY_NAME) && !(json.has("x") && json.has("y"))) {
                 /**
                  * Finding centerX and centerY.
                  */
-                String id = json.getString("elementId");
+                String id = json.getString(ELEMENT_ID_KEY_NAME);
                 element = KnownElements.getElementFromCache(id);
                 if (element == null) {
                     return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);

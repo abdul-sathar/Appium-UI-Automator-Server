@@ -23,7 +23,7 @@ public class TouchLongClick extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         try {
             JSONObject payload = getPayload(request).getJSONObject("params");
-            String id = payload.getString("elementId");
+            String id = payload.getString(ELEMENT_ID_KEY_NAME);
             AndroidElement element = KnownElements.getElementFromCache(id);
             if (element == null) {
                 return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
