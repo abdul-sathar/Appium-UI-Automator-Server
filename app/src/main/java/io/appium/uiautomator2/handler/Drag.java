@@ -30,7 +30,7 @@ public class Drag extends SafeRequestHandler {
         final DragArguments dragArgs;
         try {
             dragArgs = new DragArguments(request);
-            if (getPayload(request).has(ELEMENT_ID_KEY_NAME)) {
+            if (getPayload(request).has("elementId")) {
                 return dragElement(dragArgs, request);
             } else {
                 return drag(dragArgs, request);
@@ -133,8 +133,8 @@ public class Drag extends SafeRequestHandler {
 
             JSONObject payload = getPayload(request);
 
-            if (payload.has(ELEMENT_ID_KEY_NAME)) {
-                String id = payload.getString(ELEMENT_ID_KEY_NAME);
+            if (payload.has("elementId")) {
+                String id = payload.getString("elementId");
                 el = KnownElements.getElementFromCache(id);
             }
             if (payload.has("destElId")) {
