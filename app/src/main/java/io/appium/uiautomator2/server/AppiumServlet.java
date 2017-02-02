@@ -20,6 +20,7 @@ import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
 import io.appium.uiautomator2.handler.FindElements;
 import io.appium.uiautomator2.handler.Flick;
+import io.appium.uiautomator2.handler.GetDevicePixelRatio;
 import io.appium.uiautomator2.handler.GetDeviceSize;
 import io.appium.uiautomator2.handler.GetElementAttribute;
 import io.appium.uiautomator2.handler.GetName;
@@ -121,6 +122,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
         register(getHandler, new Source("/wd/hub/session/:sessionId/source"));
         register(getHandler, new GetStatusBarHeight("/wd/hub/session/:sessionId/statBarHeight"));
+        register(getHandler, new GetDevicePixelRatio("/wd/hub/session/:sessionId/devicePixelRatio"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
