@@ -26,6 +26,7 @@ import io.appium.uiautomator2.handler.GetName;
 import io.appium.uiautomator2.handler.GetRotation;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetSize;
+import io.appium.uiautomator2.handler.GetStatusBarHeight;
 import io.appium.uiautomator2.handler.GetText;
 import io.appium.uiautomator2.handler.Location;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
@@ -119,6 +120,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new Location("/wd/hub/session/:sessionId/element/:id/location"));
         register(getHandler, new GetDeviceSize("/wd/hub/session/:sessionId/window/:windowHandle/size"));
         register(getHandler, new Source("/wd/hub/session/:sessionId/source"));
+        register(getHandler, new GetStatusBarHeight("/wd/hub/session/:sessionId/statBarHeight"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
