@@ -28,6 +28,7 @@ import io.appium.uiautomator2.handler.GetScreenOrientation;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetStatusBarHeight;
 import io.appium.uiautomator2.handler.GetText;
+import io.appium.uiautomator2.handler.IsScrollable;
 import io.appium.uiautomator2.handler.Location;
 import io.appium.uiautomator2.handler.LongPressKeyCode;
 import io.appium.uiautomator2.handler.MultiPointerGesture;
@@ -123,6 +124,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new Source("/wd/hub/session/:sessionId/source"));
         register(getHandler, new GetStatusBarHeight("/wd/hub/session/:sessionId/statBarHeight"));
         register(getHandler, new GetDevicePixelRatio("/wd/hub/session/:sessionId/devicePixelRatio"));
+        register(getHandler, new IsScrollable("/wd/hub/session/:sessionId/isScrollable"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
