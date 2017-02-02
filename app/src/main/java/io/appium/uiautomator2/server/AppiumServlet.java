@@ -14,6 +14,7 @@ import io.appium.uiautomator2.handler.AppStrings;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;
+import io.appium.uiautomator2.handler.DefiniteScrolling;
 import io.appium.uiautomator2.handler.DeleteSession;
 import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
@@ -25,6 +26,7 @@ import io.appium.uiautomator2.handler.GetElementAttribute;
 import io.appium.uiautomator2.handler.GetName;
 import io.appium.uiautomator2.handler.GetRotation;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
+import io.appium.uiautomator2.handler.GetScrollableViewSize;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetStatusBarHeight;
 import io.appium.uiautomator2.handler.GetText;
@@ -108,6 +110,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
         register(postHandler, new UpdateSettings("/wd/hub/session/:sessionId/appium/settings"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
+        register(postHandler, new DefiniteScrolling("/wd/hub/session/:sessionId/definiteScrolling"));
     }
 
     private void registerGetHandler() {
@@ -125,6 +128,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetStatusBarHeight("/wd/hub/session/:sessionId/statBarHeight"));
         register(getHandler, new GetDevicePixelRatio("/wd/hub/session/:sessionId/devicePixelRatio"));
         register(getHandler, new IsScrollable("/wd/hub/session/:sessionId/isScrollable"));
+        register(getHandler, new GetScrollableViewSize("/wd/hub/session/:sessionId/scrollableViewSize"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
