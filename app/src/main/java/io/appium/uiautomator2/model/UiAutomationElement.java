@@ -140,7 +140,8 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
       children = new ArrayList<UiAutomationElement>(childCount);
       for (int i = 0; i < childCount; i++) {
         AccessibilityNodeInfo child = node.getChild(i);
-        if (child != null) {
+        //Ignore if element is not visible on the screen
+        if (child != null && child.isVisibleToUser()) {
           children.add(this.getElement(child, this, i));
         }
       }
