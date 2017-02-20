@@ -19,6 +19,7 @@ import io.appium.uiautomator2.handler.DeleteSession;
 import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
 import io.appium.uiautomator2.handler.FindElements;
+import io.appium.uiautomator2.handler.FirstVisibleItem;
 import io.appium.uiautomator2.handler.Flick;
 import io.appium.uiautomator2.handler.GetDevicePixelRatio;
 import io.appium.uiautomator2.handler.GetDeviceSize;
@@ -41,6 +42,7 @@ import io.appium.uiautomator2.handler.PressBack;
 import io.appium.uiautomator2.handler.PressKeyCode;
 import io.appium.uiautomator2.handler.RotateScreen;
 import io.appium.uiautomator2.handler.ScrollTo;
+import io.appium.uiautomator2.handler.ScrollToId;
 import io.appium.uiautomator2.handler.SendKeysToElement;
 import io.appium.uiautomator2.handler.Source;
 import io.appium.uiautomator2.handler.Status;
@@ -111,6 +113,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new UpdateSettings("/wd/hub/session/:sessionId/appium/settings"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
         register(postHandler, new DefiniteScrolling("/wd/hub/session/:sessionId/definiteScrolling"));
+        register(postHandler, new ScrollToId("/wd/hub/session/:sessionId/scrollToId"));
     }
 
     private void registerGetHandler() {
@@ -129,6 +132,7 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetDevicePixelRatio("/wd/hub/session/:sessionId/devicePixelRatio"));
         register(getHandler, new IsScrollable("/wd/hub/session/:sessionId/isScrollable"));
         register(getHandler, new GetScrollableViewSize("/wd/hub/session/:sessionId/scrollableViewSize"));
+        register(getHandler, new FirstVisibleItem("/wd/hub/session/:sessionId/firstVisibleItemFromScrollableView"));
     }
 
     protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
