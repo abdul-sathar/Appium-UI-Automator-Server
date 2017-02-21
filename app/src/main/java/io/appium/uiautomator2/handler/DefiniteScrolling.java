@@ -56,9 +56,8 @@ public class DefiniteScrolling extends SafeRequestHandler {
 
         PageUpDownArguments(final IHttpRequest request) throws JSONException {
             JSONObject payload = getPayload(request);
-            JSONObject payloadParams = payload.getJSONObject("params");
-            start = new Point(payloadParams.get("startX"), payloadParams.get("startY"));
-            end = new Point(payloadParams.get("endX"), payloadParams.get("endY"));
+            start = new Point(payload.get("startX"), payload.get("startY"));
+            end = new Point(payload.get("endX"), payload.get("endY"));
         }
 
         @Override
