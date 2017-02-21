@@ -46,8 +46,7 @@ public class ScrollToId extends SafeRequestHandler {
 
         ScrollToIdArguments(final IHttpRequest request) throws JSONException {
             JSONObject payload = getPayload(request);
-            JSONObject payloadParams = payload.getJSONObject("params");
-            id = String.valueOf(payloadParams.get("id"));
+            id = String.valueOf(payload.get("id"));
         }
 
         @Override
