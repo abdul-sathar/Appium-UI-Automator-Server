@@ -15,6 +15,9 @@ import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 
+/**
+ * Low-level implementation for scroll action with coordinates
+ */
 public class DefiniteScrolling extends SafeRequestHandler {
 
     public DefiniteScrolling(String mappedUri) {
@@ -40,6 +43,7 @@ public class DefiniteScrolling extends SafeRequestHandler {
             instrumentation.sendPointerSync(moveEvent);
 
             eventTime = SystemClock.uptimeMillis() + 500;
+            //After calling ACTION_UP move event can scroll a little bit. To prevent this should call ACTION_CANCEL
             MotionEvent upEvent = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_CANCEL, arguments.end.x.intValue(), arguments.end.y.intValue(), 0);
             instrumentation.sendPointerSync(upEvent);
 
