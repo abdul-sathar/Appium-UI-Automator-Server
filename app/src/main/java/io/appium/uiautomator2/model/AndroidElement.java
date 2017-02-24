@@ -19,7 +19,7 @@ public interface AndroidElement {
 
     public void click() throws UiObjectNotFoundException;
 
-    public void longClick() throws UiObjectNotFoundException;
+    public boolean longClick() throws UiObjectNotFoundException;
 
     public String getText() throws UiObjectNotFoundException;
 
