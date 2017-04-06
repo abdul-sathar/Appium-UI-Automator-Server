@@ -19,6 +19,7 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import io.appium.uiautomator2.server.ServerConfig;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -126,7 +127,7 @@ public abstract class TestHelper {
         long start = elapsedRealtime();
         boolean waitStatus;
         do {
-            getUiDevice().waitForIdle();
+            Device.waitForIdle();
             waitStatus = getUiDevice().wait(Until.hasObject(By.pkg(testAppPkg).depth(0)), LAUNCH_TIMEOUT);
             if (waitStatus) break;
         } while ((elapsedRealtime() - start < LAUNCH_TIMEOUT));
