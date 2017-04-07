@@ -82,7 +82,7 @@ public class CustomUiDevice {
     public Object findObject(Object selector) throws ClassNotFoundException, ElementNotFoundException, InvalidSelectorException, UiAutomator2Exception {
 
         AccessibilityNodeInfo node ;
-        getUiDevice().waitForIdle();
+        Device.waitForIdle();
         if (selector instanceof BySelector) {
             node = (AccessibilityNodeInfo) invoke(METHOD_FIND_MATCH, ByMatcher, Device.getUiDevice(), selector, getWindowRoots());
         } else if (selector instanceof NodeInfoList) {
@@ -187,7 +187,7 @@ public class CustomUiDevice {
      * Returns a list containing the root {@link AccessibilityNodeInfo}s for each active window
      */
     AccessibilityNodeInfo[] getWindowRoots() throws UiAutomator2Exception {
-        getUiDevice().waitForIdle();
+        Device.waitForIdle();
         ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
         /**
          * TODO: MULTI_WINDOW is disabled, UIAutomatorViewer captures active window properties and
@@ -222,7 +222,7 @@ public class CustomUiDevice {
                         Thread.sleep(1000);
                     } catch (InterruptedException ignored) {
                     }
-                    getUiDevice().waitForIdle();
+                    Device.waitForIdle();
                     Logger.debug(" ERROR: null root node returned by UiTestAutomationBridge, retrying: " + retryCount);
                     node = mInstrumentation.getUiAutomation().getRootInActiveWindow();
                     retryCount++;

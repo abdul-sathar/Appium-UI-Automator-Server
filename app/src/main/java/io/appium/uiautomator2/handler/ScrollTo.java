@@ -30,7 +30,7 @@ public class ScrollTo extends SafeRequestHandler {
             String json = getPayload(request).toString();
             String selector = "$.params.selector", uiSelectorString, scrollToString = "";
             uiSelectorString = JsonPath.compile(selector).read(json);
-            Device.getUiDevice().waitForIdle();
+            Device.waitForIdle();
             // Extracting (\"Radio Group\") text from the String
             // TODO This logic needs to be changed according to the request body from the Driver
             Matcher m = Pattern.compile("\\(\"([^)]+)\"\\)").matcher(uiSelectorString);
