@@ -782,10 +782,10 @@ public class HandlersTest {
         assertTrue("By.accessibilityId(\"Focus\") not found", isElementPresent(element));
 
         result = getAttribute(element, "clickable");
-        assertEquals(true, (Boolean)getValueInJsonObject(result, "value"));
+        assertEquals("true", getValueInJsonObject(result, "value"));
 
         result = getAttribute(element, "enabled");
-        assertEquals(true, (Boolean)getValueInJsonObject(result, "value"));
+        assertEquals("true", getValueInJsonObject(result, "value"));
     }
 
     @Test
