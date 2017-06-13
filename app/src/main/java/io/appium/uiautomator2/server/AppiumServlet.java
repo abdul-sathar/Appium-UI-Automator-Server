@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import io.appium.uiautomator2.handler.AllowInvisibleElements;
 import io.appium.uiautomator2.handler.AppStrings;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
@@ -103,6 +104,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchDown("/wd/hub/session/:sessionId/touch/down"));
         register(postHandler, new TouchUp("/wd/hub/session/:sessionId/touch/up"));
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
+        register(postHandler, new AllowInvisibleElements("/wd/hub/session/:sessionId/appium/device/allowInvisibleElements"));
         register(postHandler, new CompressedLayoutHierarchy("/wd/hub/session/:sessionId/appium/device/compressedLayoutHierarchy"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
     }
