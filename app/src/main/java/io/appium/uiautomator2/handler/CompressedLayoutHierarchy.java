@@ -1,5 +1,6 @@
 package io.appium.uiautomator2.handler;
 
+import io.appium.uiautomator2.server.ServerConfig;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
@@ -27,6 +28,7 @@ public class CompressedLayoutHierarchy extends SafeRequestHandler {
                 JSONObject payload = getPayload(request);
                 compressLayout = (Boolean) payload.get("compressLayout");
                 Device.getUiDevice().setCompressedLayoutHeirarchy(compressLayout);
+                ServerConfig.setCompressedLayoutHierarchy(compressLayout);
                 Logger.info("Set the Compressed Layout Hierarchy");
             } else {
                 Logger.info("SetCompressedLayoutHeirarchy doesn't exist on API <= 17");
