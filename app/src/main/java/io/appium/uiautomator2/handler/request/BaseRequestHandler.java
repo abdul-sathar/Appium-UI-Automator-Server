@@ -8,6 +8,10 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.AppiumServlet;
 import io.appium.uiautomator2.utils.Logger;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public abstract class BaseRequestHandler {
 
     private final String mappedUri;
@@ -37,6 +41,23 @@ public abstract class BaseRequestHandler {
             return new JSONObject(json);
         }
         return new JSONObject();
+    }
+
+    public Map<String, Object> getPayload(IHttpRequest request, String jsonKey) throws JSONException {
+        JSONObject payload = getPayload(request);
+        if (jsonKey != null) {
+            payload = payload.getJSONObject(jsonKey);
+        }
+
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        Iterator<String> keysItr = payload.keys();
+        while(keysItr.hasNext()) {
+            String key = keysItr.next();
+            Object value = payload.get(key);
+            map.put(key, value);
+        }
+        return map;
     }
 
     public String getSessionId(IHttpRequest request) {

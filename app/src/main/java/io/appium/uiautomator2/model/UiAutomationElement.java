@@ -139,10 +139,12 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
       children = null;
     } else {
       children = new ArrayList<UiAutomationElement>(childCount);
+      boolean isAllowInvisibleElements = (boolean) Session.capabilities.get(AllowInvisibleElements.SETTING_NAME);
+
       for (int i = 0; i < childCount; i++) {
         AccessibilityNodeInfo child = node.getChild(i);
         //Ignore if element is not visible on the screen
-        if (child != null && (child.isVisibleToUser() || ServerConfig.isAllowInvisibleElements())) {
+        if (child != null && (child.isVisibleToUser() || isAllowInvisibleElements)) {
           children.add(this.getElement(child, this, i));
         }
       }

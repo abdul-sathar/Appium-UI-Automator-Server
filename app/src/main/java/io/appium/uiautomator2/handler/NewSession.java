@@ -27,7 +27,7 @@ public class NewSession extends SafeRequestHandler {
 
         String sessionID;
         try {
-            Session.capabilities = getCapabilities(request);
+            Session.capabilities = getPayload(request, "desiredCapabilities");
             sessionID = new AppiumUiAutomatorDriver().initializeSession();
             Logger.info("Session Created with SessionID:" + sessionID);
         } catch (JSONException e) {
@@ -35,19 +35,5 @@ public class NewSession extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
         }
         return new AppiumResponse(sessionID, WDStatus.SUCCESS, "Created Session");
-    }
-
-
-    public  Map<String, Object> getCapabilities(IHttpRequest request) throws JSONException {
-        JSONObject caps = getPayload(request).getJSONObject("desiredCapabilities");
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        Iterator<String> keysItr = caps.keys();
-        while(keysItr.hasNext()) {
-            String key = keysItr.next();
-            Object value = caps.get(key);
-            map.put(key, value);
-        }
-        return map;
     }
 }
