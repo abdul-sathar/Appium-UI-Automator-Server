@@ -14,7 +14,6 @@ import io.appium.uiautomator2.handler.AppStrings;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
 import io.appium.uiautomator2.handler.Click;
-import io.appium.uiautomator2.handler.CompressedLayoutHierarchy;
 import io.appium.uiautomator2.handler.DeleteSession;
 import io.appium.uiautomator2.handler.Drag;
 import io.appium.uiautomator2.handler.FindElement;
@@ -46,6 +45,7 @@ import io.appium.uiautomator2.handler.TouchLongClick;
 import io.appium.uiautomator2.handler.TouchMove;
 import io.appium.uiautomator2.handler.TouchUp;
 import io.appium.uiautomator2.handler.request.BaseRequestHandler;
+import io.appium.uiautomator2.handler.UpdateSettings;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;
@@ -103,7 +103,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchDown("/wd/hub/session/:sessionId/touch/down"));
         register(postHandler, new TouchUp("/wd/hub/session/:sessionId/touch/up"));
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
-        register(postHandler, new CompressedLayoutHierarchy("/wd/hub/session/:sessionId/appium/device/compressedLayoutHierarchy"));
+        register(postHandler, new UpdateSettings("/wd/hub/session/:sessionId/appium/settings"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
     }
 
