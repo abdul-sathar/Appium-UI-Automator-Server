@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import io.appium.uiautomator2.server.ServerConfig;
 import io.appium.uiautomator2.utils.Attribute;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Preconditions;
@@ -139,7 +138,8 @@ public class UiAutomationElement extends UiElement<AccessibilityNodeInfo, UiAuto
       children = null;
     } else {
       children = new ArrayList<UiAutomationElement>(childCount);
-      boolean isAllowInvisibleElements = (boolean) Session.capabilities.get(AllowInvisibleElements.SETTING_NAME);
+      Object allowInvisibleElements = Session.capabilities.get(AllowInvisibleElements.SETTING_NAME);
+      boolean isAllowInvisibleElements = allowInvisibleElements != null && (boolean) allowInvisibleElements;
 
       for (int i = 0; i < childCount; i++) {
         AccessibilityNodeInfo child = node.getChild(i);
