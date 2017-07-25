@@ -41,13 +41,9 @@ public class AppiumResponse {
     public String render() {
         JSONObject o = new JSONObject();
         try {
-            if (sessionId != null) {
-                o.put("sessionId", sessionId);
-            }
+            o.put("sessionId", sessionId == null ? JSONObject.NULL : sessionId);
             o.put("status", status);
-            if (value != null) {
-                o.put("value", value);
-            }
+            o.put("value", value == null ? JSONObject.NULL : value);
         } catch (JSONException e) {
             Logger.error("Unable to create JSON Object:", e);
         }

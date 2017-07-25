@@ -12,12 +12,6 @@ buildscript {
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 
-// optionally including an emulator
-sdkManager {
-    emulatorVersion 'android-23'
-    emulatorArchitecture 'x86' // optional, defaults to arm
-}
-
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.1'
@@ -30,7 +24,7 @@ android {
         /**
          * versionName should be updated and inline with version in package.json for every npm release.
          */
-        versionName "0.1.1"
+        versionName "0.1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

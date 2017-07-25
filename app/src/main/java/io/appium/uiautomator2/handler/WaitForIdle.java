@@ -25,7 +25,7 @@ public class WaitForIdle extends SafeRequestHandler {
             if (payload.has("timeout")) {
                 timeout = Integer.parseInt(payload.getString("timeout"));
             }
-            Device.getUiDevice().waitForIdle(timeout);
+            Device.waitForIdle(timeout);
         } catch (JSONException e) {
             Logger.error("Unable to get timeout value from the json payload", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);

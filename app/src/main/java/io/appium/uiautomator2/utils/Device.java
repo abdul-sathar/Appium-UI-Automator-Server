@@ -45,4 +45,29 @@ public abstract class Device {
     public static boolean back() {
         return getUiDevice().pressBack();
     }
+
+    /**
+     * reason for explicit method, in some cases google UiAutomator2 throwing exception
+     * while calling waitForIdle() which is causing appium UiAutomator2 server to fall in
+     * unexpected behaviour.
+     * for more info please refer
+     * https://code.google.com/p/android/issues/detail?id=73297
+     */
+    public static void waitForIdle() {
+        try {
+            getUiDevice().waitForIdle();
+        }catch (Exception e) {
+            Logger.error("Unable wait for AUT to idle");
+        }
+    }
+
+    public static void waitForIdle(long timeInMS) {
+        try {
+            getUiDevice().waitForIdle(timeInMS);
+        }catch (Exception e) {
+            Logger.error(String.format("Unable wait %d for AUT to idle", timeInMS));
+        }
+    }
+
+
 }

@@ -45,8 +45,8 @@ public class UiObjectElement implements AndroidElement {
         element.click();
     }
 
-    public void longClick() throws UiObjectNotFoundException {
-        element.longClick();
+    public boolean longClick() throws UiObjectNotFoundException {
+        return element.longClick();
     }
 
     public String getText() throws UiObjectNotFoundException {

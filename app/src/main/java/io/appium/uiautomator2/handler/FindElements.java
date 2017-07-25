@@ -77,7 +77,7 @@ public class FindElements extends SafeRequestHandler {
             final String contextId = payload.getString("context");
             Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
             By by = new NativeAndroidBySelector().pickFrom(method, selector);
-            getUiDevice().waitForIdle();
+            Device.waitForIdle();
             List<Object> elements ;
             if(contextId.length() > 0) {
                 elements = this.findElements(by, contextId);
