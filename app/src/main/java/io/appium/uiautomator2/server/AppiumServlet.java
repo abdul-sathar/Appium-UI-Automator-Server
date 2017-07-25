@@ -51,6 +51,7 @@ import io.appium.uiautomator2.handler.TouchDown;
 import io.appium.uiautomator2.handler.TouchLongClick;
 import io.appium.uiautomator2.handler.TouchMove;
 import io.appium.uiautomator2.handler.TouchUp;
+import io.appium.uiautomator2.handler.UpdateSettings;
 import io.appium.uiautomator2.handler.request.BaseRequestHandler;
 import io.appium.uiautomator2.handler.UpdateSettings;
 import io.appium.uiautomator2.http.AppiumResponse;
