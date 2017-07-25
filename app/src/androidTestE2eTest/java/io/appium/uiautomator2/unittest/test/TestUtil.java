@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -383,7 +384,7 @@ public class TestUtil {
         ctx.startActivity(intent);
         Logger.info("[AppiumUiAutomator2Server]", " waiting for activity to launch ");
         TestHelper.waitForAppToLaunch(packg, 15 * SECOND);
-        getUiDevice().waitForIdle();
+        Device.waitForIdle();
     }
 
     /**
@@ -460,7 +461,7 @@ public class TestUtil {
         JSONObject jsonObject = new JSONObject();
         try {
             elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
-            longClickJSON.put("params", jsonObject.put("element", elementId));
+            longClickJSON.put("params", jsonObject.put("element", elementId).put("duration",1000));
         } catch (JSONException e) {
             throw new RuntimeException("Element not found", e);
         }

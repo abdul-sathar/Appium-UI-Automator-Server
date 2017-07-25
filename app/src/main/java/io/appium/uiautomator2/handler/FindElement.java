@@ -32,6 +32,7 @@ import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.model.XPathFinder;
 import io.appium.uiautomator2.model.internal.NativeAndroidBySelector;
 import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.NodeInfoList;
 import io.appium.uiautomator2.utils.UiAutomatorParser;
@@ -93,7 +94,7 @@ public class FindElement extends SafeRequestHandler {
             Logger.info(String.format("find element command using '%s' with selector '%s'.", method, selector));
             final By by = new NativeAndroidBySelector().pickFrom(method, selector);
 
-            getUiDevice().waitForIdle();
+            Device.waitForIdle();
             Object element;
             if(contextId.length() > 0) {
                 element = this.findElement(by, contextId);

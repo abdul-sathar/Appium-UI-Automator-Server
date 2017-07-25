@@ -17,7 +17,8 @@ import io.appium.uiautomator2.utils.Logger;
 
 public abstract class TouchEvent extends SafeRequestHandler {
     protected int clickX, clickY;
-    private AndroidElement element;
+    protected AndroidElement element;
+    protected JSONObject params;
 
     public TouchEvent(String mappedUri) {
         super(mappedUri);
@@ -26,12 +27,12 @@ public abstract class TouchEvent extends SafeRequestHandler {
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
         try {
-            JSONObject json = new JSONObject(getPayload(request).getString("params"));
-            if (json.has(ELEMENT_ID_KEY_NAME) && !(json.has("x") && json.has("y"))) {
+            params = new JSONObject(getPayload(request).getString("params"));
+            if (params.has(ELEMENT_ID_KEY_NAME) && !(params.has("x") && params.has("y"))) {
                 /**
                  * Finding centerX and centerY.
                  */
-                String id = json.getString(ELEMENT_ID_KEY_NAME);
+                String id = params.getString(ELEMENT_ID_KEY_NAME);
                 element = KnownElements.getElementFromCache(id);
                 if (element == null) {
                     return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
@@ -40,8 +41,8 @@ public abstract class TouchEvent extends SafeRequestHandler {
                 clickX = bounds.centerX();
                 clickY = bounds.centerY();
             } else { // no element so extract x and y from params
-                clickX = json.getInt("x");
-                clickY = json.getInt("y");
+                clickX = params.getInt("x");
+                clickY = params.getInt("y");
             }
 
             if (executeTouchEvent())
@@ -58,7 +59,7 @@ public abstract class TouchEvent extends SafeRequestHandler {
         }
     }
 
-    protected abstract boolean executeTouchEvent() throws UiObjectNotFoundException, UiAutomator2Exception;
+    protected abstract boolean executeTouchEvent() throws UiObjectNotFoundException, UiAutomator2Exception, JSONException;
 
     protected void printEventDebugLine(final String methodName,
                                        final Integer... duration) {

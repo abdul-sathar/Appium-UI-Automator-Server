@@ -12,6 +12,7 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
@@ -45,7 +46,7 @@ public class Click extends SafeRequestHandler {
                 final boolean res = getUiDevice().click(coords.x.intValue(), coords.y.intValue());
                 return new AppiumResponse(getSessionId(request), res);
             }
-            getUiDevice().waitForIdle();
+            Device.waitForIdle();
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);

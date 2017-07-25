@@ -38,7 +38,10 @@ public class GetElementAttribute extends SafeRequestHandler {
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, attribute);
             } else {
                 Boolean boolAttribute = element.getBoolAttribute(attributeName);
-                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, boolAttribute);
+                // The result should be of type string according to
+                // https://w3c.github.io/webdriver/webdriver-spec.html#get-element-attribute
+                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS,
+                        boolAttribute.toString());
             }
 
         } catch (UiObjectNotFoundException e) {
