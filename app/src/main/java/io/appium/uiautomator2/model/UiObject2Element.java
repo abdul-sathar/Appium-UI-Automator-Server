@@ -113,8 +113,8 @@ public class UiObject2Element implements AndroidElement {
         } else if ("displayed".equals(attr)) {
             res = invoke(method(UiObject2.class, "getAccessibilityNodeInfo"), element) != null ? true : false;
         }  else if ("password".equals(attr)) {
-			res = AccessibilityNodeInfoGetter.fromUiObject(element).isPassword();
-		}  else {
+            res = AccessibilityNodeInfoGetter.fromUiObject(element).isPassword();
+        }  else {
             throw new NoAttributeFoundException(attr);
         }
         return res;
