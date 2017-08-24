@@ -24,9 +24,9 @@ public class GetDevicePixelRatio extends SafeRequestHandler {
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
 
-        float ratio = getDeviceScaleRatio(instrumentation);
+        Float ratio = getDeviceScaleRatio(instrumentation);
 
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, ratio);
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, ratio.toString());
     }
 
     private float getDeviceScaleRatio(Instrumentation instrumentation) {
