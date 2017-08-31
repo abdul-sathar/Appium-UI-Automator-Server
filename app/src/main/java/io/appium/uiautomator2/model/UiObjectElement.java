@@ -103,7 +103,9 @@ public class UiObjectElement implements AndroidElement {
             res = element.isSelected();
         } else if ("displayed".equals(attr)) {
             res = element.exists();
-        } else {
+        } else if ("password".equals(attr)) {
+            res = AccessibilityNodeInfoGetter.fromUiObject(element).isPassword();
+        }  else {
             throw new NoAttributeFoundException(attr);
         }
         return res;
