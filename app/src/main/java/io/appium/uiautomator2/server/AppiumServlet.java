@@ -26,7 +26,6 @@ import io.appium.uiautomator2.handler.GetElementAttribute;
 import io.appium.uiautomator2.handler.GetName;
 import io.appium.uiautomator2.handler.GetRotation;
 import io.appium.uiautomator2.handler.GetScreenOrientation;
-import io.appium.uiautomator2.handler.GetElementContentSize;
 import io.appium.uiautomator2.handler.GetSize;
 import io.appium.uiautomator2.handler.GetStatusBarHeight;
 import io.appium.uiautomator2.handler.GetText;
@@ -127,7 +126,6 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new Source("/wd/hub/session/:sessionId/source"));
         register(getHandler, new GetStatusBarHeight("/wd/hub/session/:sessionId/appium/device/stat_bar_height"));
         register(getHandler, new GetDevicePixelRatio("/wd/hub/session/:sessionId/appium/device/pixel_ratio"));
-        register(getHandler, new GetElementContentSize("/wd/hub/session/:sessionId/appium/element/:id/content_size"));
         register(getHandler, new FirstVisibleView("/wd/hub/session/:sessionId/appium/element/:id/first_visible"));
     }
 
