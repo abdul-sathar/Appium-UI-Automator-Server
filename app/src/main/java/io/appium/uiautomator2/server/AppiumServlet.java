@@ -50,7 +50,6 @@ import io.appium.uiautomator2.handler.TouchMove;
 import io.appium.uiautomator2.handler.TouchUp;
 import io.appium.uiautomator2.handler.UpdateSettings;
 import io.appium.uiautomator2.handler.request.BaseRequestHandler;
-import io.appium.uiautomator2.handler.UpdateSettings;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;
