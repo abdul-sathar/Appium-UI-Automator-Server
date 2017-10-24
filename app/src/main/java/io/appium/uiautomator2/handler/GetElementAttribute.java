@@ -51,7 +51,7 @@ public class GetElementAttribute extends SafeRequestHandler {
                     || "resourceId".equals(attributeName)) {
                 String attribute = element.getStringAttribute(attributeName);
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, attribute);
-            } else if ("content_size".equals(attributeName)) {
+            } else if ("contentSize".equals(attributeName)) {
                 Rect boundsRect = element.getBounds();
                 ContentSize contentSize = new ContentSize(boundsRect);
                 contentSize.touchPadding = getTouchPadding(element);
