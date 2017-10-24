@@ -70,7 +70,7 @@ public class ScrollToElement extends SafeRequestHandler {
                 } else {
                     for (int x = 0; x < getMaxSearchSwipes(); x++) {
                         System.out.println("I'm going forward a page: " + x);
-                        if(!scrollForward() && x!=0) { // x!=0 is the hack
+                        if(!scrollForward()) {
                             return false;
                         }
 
