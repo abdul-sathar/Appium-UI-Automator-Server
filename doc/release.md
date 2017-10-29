@@ -22,8 +22,8 @@ const SERVER_DOWNLOAD_SHA512 = "server_apk_hash";
 const SERVER_TEST_DOWNLOAD_SHA512 = "androidTest_apk_hash"
 ```
 
-
-* Get the SHA-512 hash of the APK files (you could also use online file hash calculators like [md5file.com](https://md5file.com/calculator) to find SHA-512)
+Note:
+* You could use online file hash calculators like [md5file.com](https://md5file.com/calculator) to find SHA-512
 
 
 
