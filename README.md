@@ -37,6 +37,6 @@ you can also invoke the test using below command
 Note: AUT apk should be installed before executing above command.
 
 
-###Other Sections:
+### Other Sections:
 * [WIKI](https://github.com/appium/appium-uiautomator2-server/wiki)
 * [Version Release](https://github.com/appium/appium-uiautomator2-server/blob/master/doc/release.md)
