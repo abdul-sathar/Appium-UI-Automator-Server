@@ -2,16 +2,17 @@ package io.appium.uiautomator2.handler;
 
 import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -19,7 +20,6 @@ import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
-import io.appium.uiautomator2.utils.ReflectionUtils;
 
 import static io.appium.uiautomator2.utils.Device.getAndroidElement;
 
@@ -43,13 +43,27 @@ public class FirstVisibleView extends SafeRequestHandler {
         }
         try {
             KnownElements ke = new KnownElements();
-            UiObject firstObject = null;
-            UiObject childObject = ((UiObject) element.getUiObject()).getChild(new UiSelector().index(0));
-            for (int i = 0; i < childObject.getChildCount(); i++) {
-                UiObject object = childObject.getChild(new UiSelector().index(i));
-                if (object.exists()) {
-                    firstObject = object;
-                    break;
+            Object firstObject = null;
+            if (element.getUiObject() instanceof UiObject) {
+                UiObject childObject = ((UiObject) element.getUiObject()).getChild(new UiSelector().index(0));
+                for (int i = 0; i < childObject.getChildCount(); i++) {
+                    UiObject object = childObject.getChild(new UiSelector().index(i));
+                    if (object.exists()) {
+                        firstObject = object;
+                        break;
+                    }
+                }
+            } else {
+                UiObject2 childObject = ((UiObject2) element.getUiObject()).getChildren().get(0);
+                for (int i = 0; i < childObject.getChildCount(); i++) {
+                    UiObject2 object2 = childObject.getChildren().get(i);
+                    try {
+                        if (AccessibilityNodeInfoGetter.fromUiObject(object2) != null) {
+                            firstObject = object2;
+                            break;
+                        }
+                    } catch (UiAutomator2Exception ignored) {
+                    }
                 }
             }
 
