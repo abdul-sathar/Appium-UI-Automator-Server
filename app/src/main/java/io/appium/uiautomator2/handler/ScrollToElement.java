@@ -10,6 +10,7 @@ import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
+import io.appium.uiautomator2.server.AppiumServlet;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
@@ -23,16 +24,20 @@ public class ScrollToElement extends SafeRequestHandler {
     public AppiumResponse safeHandle(IHttpRequest request) {
         Logger.info("Scroll into view command");
         String id = getElementId(request);
+        String scrollToId = getElementNextId(request);
 
         AndroidElement element = KnownElements.getElementFromCache(id);
         if (element == null) {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
+        AndroidElement scrollToElement = KnownElements.getElementFromCache(scrollToId);
+        if (scrollToElement == null) {
+            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+        }
         try {
-            UiObject uiObject = (UiObject) element.getUiObject();
-            UiScrollable uiScrollable = new UiScrollable(new UiSelector().scrollable(true).instance(0));
+            UiScrollable uiScrollable = new UiScrollable(((UiObject) element.getUiObject()).getSelector());
 
-            boolean flag = uiScrollable.scrollIntoView(uiObject);
+            boolean flag = uiScrollable.scrollIntoView((UiObject) scrollToElement.getUiObject());
 
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, flag);
         } catch (UiObjectNotFoundException e) {
@@ -82,5 +87,9 @@ public class ScrollToElement extends SafeRequestHandler {
             }
             return false;
         }
+    }
+
+    private String getElementNextId(IHttpRequest request) {
+        return (String) request.data().get(AppiumServlet.ELEMENT_ID_NEXT_KEY);
     }
 }

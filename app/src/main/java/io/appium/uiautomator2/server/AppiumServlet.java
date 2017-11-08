@@ -61,6 +61,7 @@ public class AppiumServlet implements IHttpServlet {
     public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
 
     public static final String ELEMENT_ID_KEY = "id";
+    public static final String ELEMENT_ID_NEXT_KEY = "elementId";
     public static final String COMMAND_NAME_KEY = "COMMAND_KEY";
     public static final String NAME_ID_KEY = "NAME_ID_KEY";
     protected static ConcurrentMap<String, BaseRequestHandler> getHandler = new ConcurrentHashMap<String, BaseRequestHandler>();
@@ -110,7 +111,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
         register(postHandler, new UpdateSettings("/wd/hub/session/:sessionId/appium/settings"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
-        register(postHandler, new ScrollToElement("/wd/hub/session/:sessionId/appium/element/:id/scroll_to"));
+        register(postHandler, new ScrollToElement("/wd/hub/session/:sessionId/appium/element/:id/scroll_to/:elementId"));
     }
 
     private void registerGetHandler() {
@@ -250,6 +251,10 @@ public class AppiumServlet implements IHttpServlet {
         String name = getParameter(mappedUri, request.uri(), ":name");
         if (name != null) {
             request.data().put(NAME_ID_KEY, name);
+        }
+        String elementId = getParameter(mappedUri, request.uri(), ":elementId");
+        if (elementId != null) {
+            request.data().put(ELEMENT_ID_NEXT_KEY, elementId);
         }
 
         //request.data().put(DRIVER_KEY, driver);
