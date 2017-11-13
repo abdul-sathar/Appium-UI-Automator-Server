@@ -37,9 +37,9 @@ public class ScrollToElement extends SafeRequestHandler {
         try {
             UiScrollable uiScrollable = new UiScrollable(((UiObject) element.getUiObject()).getSelector());
 
-            boolean flag = uiScrollable.scrollIntoView((UiObject) scrollToElement.getUiObject());
+            boolean elementIsFound = uiScrollable.scrollIntoView((UiObject) scrollToElement.getUiObject());
 
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, flag);
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementIsFound);
         } catch (UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
