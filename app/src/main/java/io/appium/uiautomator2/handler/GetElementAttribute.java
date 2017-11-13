@@ -19,6 +19,7 @@ import java.text.MessageFormat;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.NoAttributeFoundException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+import io.appium.uiautomator2.core.AccessibilityNodeInfoGetter;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -120,11 +121,19 @@ public class GetElementAttribute extends SafeRequestHandler {
     private int getScrollableOffcet(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
         AccessibilityNodeInfo nodeInfo = null;
         int offset = 0;
-        UiObject object = (UiObject) uiScrollable.getChild(new UiSelector().index(0));
-        Method findAccessibilityNodeInfoMethod = ReflectionUtils.method(UiObject.class, "findAccessibilityNodeInfo", long.class);
-        long WAIT_FOR_SELECTOR_TIMEOUT = (long) ReflectionUtils.getField(UiObject.class, "WAIT_FOR_SELECTOR_TIMEOUT", object);
+        if (uiScrollable instanceof UiObject) {
+            UiObject object = (UiObject) uiScrollable.getChild(new UiSelector().index(0));
+            Method findAccessibilityNodeInfoMethod = ReflectionUtils.method(UiObject.class, "findAccessibilityNodeInfo", long.class);
+            long waitForSelectorTimeout = (long) ReflectionUtils.getField(UiObject.class, "WAIT_FOR_SELECTOR_TIMEOUT", object);
 
-        nodeInfo = (AccessibilityNodeInfo) ReflectionUtils.invoke(findAccessibilityNodeInfoMethod, object, WAIT_FOR_SELECTOR_TIMEOUT);
+            nodeInfo = (AccessibilityNodeInfo) ReflectionUtils.invoke(findAccessibilityNodeInfoMethod, object, waitForSelectorTimeout);
+        } else {
+            UiObject2 childObject = ((UiObject2) uiScrollable.getUiObject()).getChildren().get(0);
+            try {
+                nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(childObject);
+            } catch (UiAutomator2Exception ignored) {
+            }
+        }
 
         if (nodeInfo != null) {
             Rect rect = new Rect();
