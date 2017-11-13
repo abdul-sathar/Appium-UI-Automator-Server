@@ -1,6 +1,7 @@
 package io.appium.uiautomator2.model;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
@@ -56,8 +57,11 @@ public class UiObject2Element implements AndroidElement {
          * not formed with valid AccessibilityNodeInfo, Instead we are using custom created AccessibilityNodeInfo of
          * TOAST Element to retrieve the Text.
          */
-        if(isToastElement(nodeInfo)) {
-           return nodeInfo.getText().toString();
+        if (isToastElement(nodeInfo)) {
+            return nodeInfo.getText().toString();
+        }
+        if (nodeInfo.getRangeInfo() != null) {
+            return Float.toString(nodeInfo.getRangeInfo().getCurrent());
         }
         // on null returning empty string
         return element.getText() != null ? element.getText() : "";
@@ -121,15 +125,27 @@ public class UiObject2Element implements AndroidElement {
     }
 
     public void setText(final String text, boolean unicodeKeyboard) throws UiObjectNotFoundException {
-        if (unicodeKeyboard && UnicodeEncoder.needsEncoding(text)) {
-            Logger.debug("Sending Unicode text to element: " + text);
-            String encodedText = UnicodeEncoder.encode(text);
-            Logger.debug("Encoded text: " + encodedText);
-            element.setText(encodedText);
-        } else {
-            Logger.debug("Sending plain text to element: " + text);
-            element.setText(text);
+        String textToSend = text;
+        /**
+         * Below Android 7.0 (API level 24) calling setText() throws
+         * `IndexOutOfBoundsException: setSpan (x ... x) ends beyond length y`
+         * if text length is greater than getMaxTextLength()
+         */
+        if (Build.VERSION.SDK_INT < 24) {
+            AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element);
+            int maxTextLength = nodeInfo.getMaxTextLength();
+            if (maxTextLength > 0 && textToSend.length() > maxTextLength) {
+                Logger.debug("Element has limited text length. Text will be truncated to " + maxTextLength + " chars.");
+                textToSend = textToSend.substring(0, maxTextLength);
+            }
         }
+        if (unicodeKeyboard && UnicodeEncoder.needsEncoding(textToSend)) {
+            Logger.debug("Sending Unicode text to element: " + textToSend);
+            textToSend = UnicodeEncoder.encode(textToSend);
+            Logger.debug("Encoded text: " + textToSend);
+        }
+        Logger.debug("Sending text to element: " + textToSend);
+        element.setText(textToSend);
     }
 
     public By getBy() {
