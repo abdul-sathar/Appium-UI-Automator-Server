@@ -24,7 +24,7 @@ android {
         /**
          * versionName should be updated and inline with version in package.json for every npm release.
          */
-        versionName "0.1.9"
+        versionName "0.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
