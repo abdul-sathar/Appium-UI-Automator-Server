@@ -56,7 +56,7 @@ public class GetElementAttribute extends SafeRequestHandler {
                 Rect boundsRect = element.getBounds();
                 ContentSize contentSize = new ContentSize(boundsRect);
                 contentSize.touchPadding = getTouchPadding(element);
-                contentSize.scrollableOffset = getScrollableOffcet(element);
+                contentSize.scrollableOffset = getScrollableOffset(element);
 
                 return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, contentSize);
             } else {
@@ -81,7 +81,7 @@ public class GetElementAttribute extends SafeRequestHandler {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (ReflectiveOperationException | InvalidSelectorException e) {
             Logger.error("Can not access to method or field: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         }
 
     }
@@ -118,7 +118,7 @@ public class GetElementAttribute extends SafeRequestHandler {
         }
     }
 
-    private int getScrollableOffcet(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
+    private int getScrollableOffset(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
         AccessibilityNodeInfo nodeInfo = null;
         int offset = 0;
         if (uiScrollable instanceof UiObject) {
