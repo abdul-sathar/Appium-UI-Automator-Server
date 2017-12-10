@@ -18,6 +18,7 @@ package io.appium.uiautomator2.utils;
 
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -137,7 +138,12 @@ public abstract class XMLHierarchy {
     }
 
     private static String cleanTagName(String name) {
+        if (StringUtils.isBlank(name)) {
+            name = "android.view.View";
+        }
+        
         name = name.replaceAll("[$@#&]", ".");
+
         return safeCharSeqToString(name.replaceAll("\\s", ""));
     }
 
