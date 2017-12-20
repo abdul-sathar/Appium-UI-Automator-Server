@@ -58,7 +58,7 @@ public class GetElementAttribute extends SafeRequestHandler {
                 contentSize.touchPadding = getTouchPadding(element);
                 contentSize.scrollableOffset = getScrollableOffset(element);
 
-                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, contentSize);
+                return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, contentSize.toString());
             } else {
                 Boolean boolAttribute = element.getBoolAttribute(attributeName);
                 // The result should be of type string according to
