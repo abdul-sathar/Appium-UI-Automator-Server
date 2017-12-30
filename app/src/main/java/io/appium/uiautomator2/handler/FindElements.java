@@ -140,6 +140,9 @@ public class FindElements extends SafeRequestHandler {
             return getXPathUiObjects(by.getElementLocator(), null /* AndroidElement */);
         } else if (by instanceof By.ByAndroidUiAutomator) {
             //TODO: need to handle the context parameter in a smart way
+            if (by.getElementLocator().equals(FindElement.magicScrollableSelector)) {
+                return getInstance().findObjects(android.support.test.uiautomator.By.scrollable(true));
+            }
             return getUiObjectsUsingAutomator(findByUiAutomator(by.getElementLocator()), "");
         }
 
@@ -163,6 +166,9 @@ public class FindElements extends SafeRequestHandler {
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObjects(by.getElementLocator(), element);
         } else if (by instanceof By.ByAndroidUiAutomator) {
+            if (by.getElementLocator().equals(FindElement.magicScrollableSelector)) {
+                return element.getChildren(android.support.test.uiautomator.By.scrollable(true), by);
+            }
             return getUiObjectsUsingAutomator(findByUiAutomator(by.getElementLocator()), contextId);
         }
         String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());

@@ -93,7 +93,7 @@ public class CustomUiDevice {
             selector = By.clazz(node.getClassName().toString());
         }else if (selector instanceof UiSelector) {
             UiObject uiObject = getUiDevice().findObject((UiSelector) selector);
-            if(uiObject.exists()) {
+            if (uiObject.exists()) {
                 return uiObject;
             }
             return null;

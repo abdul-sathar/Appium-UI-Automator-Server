@@ -1,6 +1,7 @@
 package io.appium.uiautomator2.handler;
 
 
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -61,6 +62,8 @@ public class FindElement extends SafeRequestHandler {
      */
     static final Pattern resourceIdRegex   = Pattern
             .compile("^[a-zA-Z_][a-zA-Z0-9\\._]*:[^\\/]+\\/[\\S]+$");
+
+    public static final String magicScrollableSelector = "new BySelector().scrollable(true)";
 
     public FindElement(String mappedUri) {
         super(mappedUri);
@@ -152,6 +155,9 @@ public class FindElement extends SafeRequestHandler {
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObject(by.getElementLocator(), null /* AndroidElement */);
         } else if (by instanceof By.ByAndroidUiAutomator) {
+            if (by.getElementLocator().equals(magicScrollableSelector)) {
+                return getInstance().findObject(android.support.test.uiautomator.By.scrollable(true));
+            }
             return getInstance().findObject(findByUiAutomator(by.getElementLocator()));
         }
         String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());
@@ -174,6 +180,9 @@ public class FindElement extends SafeRequestHandler {
         } else if (by instanceof By.ByXPath) {
             return getXPathUiObject(by.getElementLocator(), element);
         } else if (by instanceof By.ByAndroidUiAutomator) {
+            if (by.getElementLocator().equals(magicScrollableSelector)) {
+                return element.getChild(android.support.test.uiautomator.By.scrollable(true));
+            }
             return element.getChild(findByUiAutomator(by.getElementLocator()));
         }
         String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());
