@@ -3,15 +3,18 @@ package io.appium.uiautomator2.handler;
 import android.app.Instrumentation;
 import android.support.test.InstrumentationRegistry;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
-public class GetStatusBarHeight extends SafeRequestHandler {
+public class GetSystemBars extends SafeRequestHandler {
 
-    public GetStatusBarHeight(String mappedUri) {
+    public GetSystemBars(String mappedUri) {
         super(mappedUri);
     }
 
@@ -23,7 +26,15 @@ public class GetStatusBarHeight extends SafeRequestHandler {
 
         int height = getStatusBarHeight(instrumentation);
 
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, height);
+        JSONObject result = new JSONObject();
+        try {
+            result.put("statusBar", height);
+        } catch (JSONException e) {
+            Logger.error("Exception while building JSON: ", e);
+            return new AppiumResponse(getSessionId(request), WDStatus.JSON_DECODER_ERROR, e);
+        }
+
+        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, result);
     }
 
     private int getStatusBarHeight(Instrumentation instrumentation) {
