@@ -25,6 +25,9 @@ public class ScrollToElement extends SafeRequestHandler {
         Logger.info("Scroll into view command");
         String id = getElementId(request);
         String scrollToId = getElementNextId(request);
+        String errorMsg = null;
+        UiObject elementUiObject = null;
+        UiObject scrollElementUiObject = null;
 
         AndroidElement element = KnownElements.getElementFromCache(id);
         if (element == null) {
@@ -34,10 +37,34 @@ public class ScrollToElement extends SafeRequestHandler {
         if (scrollToElement == null) {
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
-        try {
-            UiScrollable uiScrollable = new UiScrollable(((UiObject) element.getUiObject()).getSelector());
 
-            boolean elementIsFound = uiScrollable.scrollIntoView((UiObject) scrollToElement.getUiObject());
+        // attempt to get UiObjects from the container and scroll to element
+        // if we can't, we have to error out, since scrollIntoView only works with UiObjects
+        // (and not for example UiObject2)
+        // TODO make an equivalent implementation of this method for UiObject2 if possible
+        try {
+            elementUiObject = (UiObject) element.getUiObject();
+            try {
+                scrollElementUiObject = (UiObject) scrollToElement.getUiObject();
+            } catch (Exception e) {
+                errorMsg = "Scroll to Element";
+            }
+        } catch (Exception e) {
+            errorMsg = "Element";
+        }
+
+        if (errorMsg != null) {
+            errorMsg += " was not an instance of UiObject; only UiSelector is supported. " +
+                        "Ensure you use the -android uiautomator2 locator strategy when " +
+                        "finding elements for use with ScrollToElement";
+            Logger.error(errorMsg);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, errorMsg);
+        }
+
+        try {
+            UiScrollable uiScrollable = new UiScrollable(elementUiObject.getSelector());
+
+            boolean elementIsFound = uiScrollable.scrollIntoView(scrollElementUiObject);
 
             return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementIsFound);
         } catch (UiObjectNotFoundException e) {

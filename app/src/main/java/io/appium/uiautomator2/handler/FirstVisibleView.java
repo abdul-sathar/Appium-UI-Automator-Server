@@ -45,6 +45,7 @@ public class FirstVisibleView extends SafeRequestHandler {
             KnownElements ke = new KnownElements();
             Object firstObject = null;
             if (element.getUiObject() instanceof UiObject) {
+                Logger.debug("Container for first visible is a uiobject");
                 UiObject childObject = ((UiObject) element.getUiObject()).getChild(new UiSelector().index(0));
                 for (int i = 0; i < childObject.getChildCount(); i++) {
                     UiObject object = childObject.getChild(new UiSelector().index(i));
@@ -54,6 +55,7 @@ public class FirstVisibleView extends SafeRequestHandler {
                     }
                 }
             } else {
+                Logger.debug("Container for first visible is a uiobject2");
                 UiObject2 childObject = ((UiObject2) element.getUiObject()).getChildren().get(0);
                 for (int i = 0; i < childObject.getChildCount(); i++) {
                     UiObject2 object2 = childObject.getChildren().get(i);
@@ -65,6 +67,11 @@ public class FirstVisibleView extends SafeRequestHandler {
                     } catch (UiAutomator2Exception ignored) {
                     }
                 }
+            }
+
+            if (firstObject == null) {
+                Logger.error("No visible child was found for element");
+                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
             }
 
             String id = UUID.randomUUID().toString();
