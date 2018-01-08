@@ -68,8 +68,8 @@ public class GetElementAttribute extends SafeRequestHandler {
             }
 
         } catch (UiObjectNotFoundException e) {
-            Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+            Logger.error(MessageFormat.format("Element not found while trying to get attribute '{0}'", attributeName), e);
+            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR);
         } catch (NoAttributeFoundException e) {
             Logger.error(MessageFormat.format("Requested attribute {0} not supported.", attributeName), e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
@@ -77,7 +77,7 @@ public class GetElementAttribute extends SafeRequestHandler {
             Logger.error("Stale Element Exception: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.STALE_ELEMENT_REFERENCE, e);
         } catch (UiAutomator2Exception e) {
-            Logger.error(MessageFormat.format("Unable to retrive attribute {0}", attributeName), e);
+            Logger.error(MessageFormat.format("Unable to retrieve attribute {0}", attributeName), e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (ReflectiveOperationException | InvalidSelectorException e) {
             Logger.error("Can not access to method or field: ", e);
@@ -86,7 +86,7 @@ public class GetElementAttribute extends SafeRequestHandler {
 
     }
 
-    private class ContentSize {
+    private static class ContentSize {
         int width;
         int height;
         int top;
@@ -118,7 +118,7 @@ public class GetElementAttribute extends SafeRequestHandler {
         }
     }
 
-    private int getScrollableOffset(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
+    private static int getScrollableOffset(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
         AccessibilityNodeInfo nodeInfo = null;
         int offset = 0;
         if (uiScrollable instanceof UiObject) {
@@ -144,7 +144,7 @@ public class GetElementAttribute extends SafeRequestHandler {
         return offset;
     }
 
-    private int getTouchPadding(AndroidElement element) throws UiObjectNotFoundException, ReflectiveOperationException {
+    private static int getTouchPadding(AndroidElement element) throws UiObjectNotFoundException, ReflectiveOperationException {
         UiObject2 uiObject2;
         if (element instanceof UiObject2Element) {
             uiObject2 = Device.getUiDevice().findObject(By.clazz(((UiObject2) element.getUiObject()).getClassName()));

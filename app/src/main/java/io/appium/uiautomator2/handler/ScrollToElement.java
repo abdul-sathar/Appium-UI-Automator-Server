@@ -25,7 +25,7 @@ public class ScrollToElement extends SafeRequestHandler {
         Logger.info("Scroll into view command");
         String id = getElementId(request);
         String scrollToId = getElementNextId(request);
-        String errorMsg = null;
+        StringBuilder errorMsg = new StringBuilder();
         UiObject elementUiObject = null;
         UiObject scrollElementUiObject = null;
 
@@ -47,17 +47,17 @@ public class ScrollToElement extends SafeRequestHandler {
             try {
                 scrollElementUiObject = (UiObject) scrollToElement.getUiObject();
             } catch (Exception e) {
-                errorMsg = "Scroll to Element";
+                errorMsg.append("Scroll to Element");
             }
         } catch (Exception e) {
-            errorMsg = "Element";
+            errorMsg.append("Element");
         }
 
-        if (errorMsg != null) {
-            errorMsg += " was not an instance of UiObject; only UiSelector is supported. " +
-                        "Ensure you use the -android uiautomator2 locator strategy when " +
-                        "finding elements for use with ScrollToElement";
-            Logger.error(errorMsg);
+        if (errorMsg.toString() != "") {
+            errorMsg.append(" was not an instance of UiObject; only UiSelector is supported. " +
+                            "Ensure you use the '-android uiautomator' locator strategy when " +
+                            "finding elements for use with ScrollToElement");
+            Logger.error(errorMsg.toString());
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, errorMsg);
         }
 
@@ -93,30 +93,31 @@ public class ScrollToElement extends SafeRequestHandler {
         public boolean scrollIntoView(UiObject obj) throws UiObjectNotFoundException {
             if (obj.exists()) {
                 return true;
-            } else {
-                System.out.println("It doesn't exist on this page");
-                // we will need to reset the search from the beginning to start search
-                flingToBeginning(getMaxSearchSwipes());
+            }
+
+            // we will need to reset the search from the beginning to start search
+            flingToBeginning(getMaxSearchSwipes());
+            if (obj.exists()) {
+                return true;
+            }
+
+
+            for (int x = 0; x < getMaxSearchSwipes(); x++) {
+                if (!scrollForward()) {
+                    return false;
+                }
+
                 if (obj.exists()) {
                     return true;
-                } else {
-                    for (int x = 0; x < getMaxSearchSwipes(); x++) {
-                        System.out.println("I'm going forward a page: " + x);
-                        if(!scrollForward()) {
-                            return false;
-                        }
-
-                        if (obj.exists()) {
-                            return true;
-                        }
-                    }
                 }
             }
+
             return false;
         }
+
     }
 
-    private String getElementNextId(IHttpRequest request) {
+    private static String getElementNextId(IHttpRequest request) {
         return (String) request.data().get(AppiumServlet.ELEMENT_ID_NEXT_KEY);
     }
 }

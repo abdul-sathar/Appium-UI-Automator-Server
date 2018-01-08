@@ -1,7 +1,6 @@
 package io.appium.uiautomator2.handler;
 
 
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -40,7 +39,6 @@ import io.appium.uiautomator2.utils.UiAutomatorParser;
 
 import static io.appium.uiautomator2.model.internal.CustomUiDevice.getInstance;
 import static io.appium.uiautomator2.utils.Device.getAndroidElement;
-import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class FindElement extends SafeRequestHandler {
 
