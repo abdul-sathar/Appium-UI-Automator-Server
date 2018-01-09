@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiSelector;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
@@ -56,7 +57,11 @@ public class FirstVisibleView extends SafeRequestHandler {
                 }
             } else {
                 Logger.debug("Container for first visible is a uiobject2");
-                UiObject2 childObject = ((UiObject2) element.getUiObject()).getChildren().get(0);
+                List<UiObject2> childObjects = ((UiObject2) element.getUiObject()).getChildren();
+                if (childObjects.size() == 0) {
+                    throw new UiObjectNotFoundException("Could not get children for container object");
+                }
+                UiObject2 childObject = childObjects.get(0);
                 for (int i = 0; i < childObject.getChildCount(); i++) {
                     UiObject2 object2 = childObject.getChildren().get(i);
                     try {
