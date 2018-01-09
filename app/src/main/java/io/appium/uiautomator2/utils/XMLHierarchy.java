@@ -44,7 +44,9 @@ import io.appium.uiautomator2.model.XPathFinder;
 public abstract class XMLHierarchy {
     // XML 1.0 Legal Characters (http://stackoverflow.com/a/4237934/347155)
     // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
-    private static Pattern XML10Pattern = Pattern.compile("[^" + "\u0009\r\n" + "\u0020-\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
+    private final static Pattern XML10Pattern = Pattern.compile("[^" + "\u0009\r\n" +
+            "\u0020-\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
+    private final static String DEFAULT_VIEW_NAME = "android.view.View";
 
     private static XPathExpression compileXpath(String xpathExpression) throws InvalidSelectorException {
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -139,12 +141,22 @@ public abstract class XMLHierarchy {
 
     private static String cleanTagName(String name) {
         if (StringUtils.isBlank(name)) {
-            name = "android.view.View";
+            return DEFAULT_VIEW_NAME;
         }
-        
-        name = name.replaceAll("[$@#&]", ".");
 
-        return safeCharSeqToString(name.replaceAll("\\s", ""));
+        String fixedName = name
+                .replaceAll("[$@#&]", ".")
+                // https://github.com/appium/appium/issues/9934
+                .replaceAll("[ˊ\\s]", "");
+        fixedName = safeCharSeqToString(fixedName)
+                // https://github.com/appium/appium/issues/9934
+                .replace("?", "")
+                .replaceAll("\\.+", ".")
+                .replaceAll("(^\\.|\\.$)", "");
+        if (!fixedName.equals(name)) {
+            Logger.info(String.format("Rewrote XML tag name '%s' to '%s'", name, fixedName));
+        }
+        return StringUtils.isBlank(fixedName) ? DEFAULT_VIEW_NAME : fixedName;
     }
 
     public static String safeCharSeqToString(CharSequence cs) {
