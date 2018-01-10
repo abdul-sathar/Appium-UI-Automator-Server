@@ -121,14 +121,15 @@ public class GetElementAttribute extends SafeRequestHandler {
     private static int getScrollableOffset(AndroidElement uiScrollable) throws UiObjectNotFoundException, ClassNotFoundException, InvalidSelectorException {
         AccessibilityNodeInfo nodeInfo = null;
         int offset = 0;
-        if (uiScrollable instanceof UiObject) {
+        Object actualObject = uiScrollable.getUiObject();
+        if (actualObject instanceof UiObject) {
             UiObject object = (UiObject) uiScrollable.getChild(new UiSelector().index(0));
             Method findAccessibilityNodeInfoMethod = ReflectionUtils.method(UiObject.class, "findAccessibilityNodeInfo", long.class);
             long waitForSelectorTimeout = (long) ReflectionUtils.getField(UiObject.class, "WAIT_FOR_SELECTOR_TIMEOUT", object);
 
             nodeInfo = (AccessibilityNodeInfo) ReflectionUtils.invoke(findAccessibilityNodeInfoMethod, object, waitForSelectorTimeout);
         } else {
-            UiObject2 childObject = ((UiObject2) uiScrollable.getUiObject()).getChildren().get(0);
+            UiObject2 childObject = ((UiObject2) actualObject).getChildren().get(0);
             try {
                 nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(childObject);
             } catch (UiAutomator2Exception ignored) {
