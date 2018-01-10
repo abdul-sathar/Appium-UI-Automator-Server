@@ -93,7 +93,7 @@ public class CustomUiDevice {
             selector = By.clazz(node.getClassName().toString());
         }else if (selector instanceof UiSelector) {
             UiObject uiObject = getUiDevice().findObject((UiSelector) selector);
-            if(uiObject.exists()) {
+            if (uiObject.exists()) {
                 return uiObject;
             }
             return null;
@@ -104,7 +104,7 @@ public class CustomUiDevice {
             if(node == null){
                 return null;
             }
-            Class uiObject2 = Class.forName("android.support.test.uiautomator" + ".UiObject2");
+            Class uiObject2 = Class.forName("android.support.test.uiautomator.UiObject2");
             Constructor cons = uiObject2.getDeclaredConstructors()[0];
             cons.setAccessible(true);
             Object[] constructorParams = {getUiDevice(), selector, node};

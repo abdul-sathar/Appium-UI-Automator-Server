@@ -19,7 +19,7 @@ public class WifiHandler {
 
     public static AppiumResponse toggle(final boolean setTo, final String sessionId) {
         wfm = (WifiManager) InstrumentationRegistry
-                .getInstrumentation().getContext().getSystemService(Context.WIFI_SERVICE);
+                .getInstrumentation().getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         boolean status = wfm.setWifiEnabled(setTo);
         if (!status) {
