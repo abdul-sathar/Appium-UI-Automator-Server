@@ -53,7 +53,7 @@ public class ScrollToElement extends SafeRequestHandler {
             errorMsg.append("Element");
         }
 
-        if (errorMsg.toString() != "") {
+        if (!errorMsg.toString().isEmpty()) {
             errorMsg.append(" was not an instance of UiObject; only UiSelector is supported. " +
                             "Ensure you use the '-android uiautomator' locator strategy when " +
                             "finding elements for use with ScrollToElement");

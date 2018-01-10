@@ -58,7 +58,7 @@ public class FirstVisibleView extends SafeRequestHandler {
             } else {
                 Logger.debug("Container for first visible is a uiobject2");
                 List<UiObject2> childObjects = ((UiObject2) element.getUiObject()).getChildren();
-                if (childObjects.size() == 0) {
+                if (childObjects.isEmpty()) {
                     throw new UiObjectNotFoundException("Could not get children for container object");
                 }
                 UiObject2 childObject = childObjects.get(0);
