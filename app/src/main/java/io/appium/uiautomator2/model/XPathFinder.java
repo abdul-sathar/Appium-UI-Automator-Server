@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.lang.IllegalStateException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -234,20 +235,25 @@ public class XPathFinder implements Finder {
     Device.waitForIdle();
 
     long end = SystemClock.uptimeMillis() + timeoutMillis;
-    while (true) {
-      AccessibilityNodeInfo root = UiAutomatorBridge.getInstance().getQueryController().getAccessibilityRootNode();
-
+    while (end > SystemClock.uptimeMillis()) {
+      AccessibilityNodeInfo root = null;
+      try {
+          root = UiAutomatorBridge.getInstance().getQueryController().getAccessibilityRootNode();
+      } catch (IllegalStateException ignore) {
+          /**
+           * Sometimes getAccessibilityRootNode() throws
+           * "java.lang.IllegalStateException: Cannot perform this action on a sealed instance."
+           * Ignore it and try to re-get root node.
+           */
+           Logger.debug("IllegalStateException was catched while invoking getAccessibilityRootNode() - ignore it");
+      }
       if (root != null) {
         return root;
       }
-      long remainingMillis = end - SystemClock.uptimeMillis();
-      if (remainingMillis < 0) {
-        throw new UiAutomator2Exception(
-                String.format("Timed out after %d milliseconds waiting for root AccessibilityNodeInfo",
-                        timeoutMillis));
-      }
-      SystemClock.sleep(Math.min(250, remainingMillis));
+      SystemClock.sleep(250);
     }
+    final String message = "Timed out after %d milliseconds waiting for root AccessibilityNodeInfo";
+    throw new UiAutomator2Exception(String.format(message, timeoutMillis));
   }
 
   /**
