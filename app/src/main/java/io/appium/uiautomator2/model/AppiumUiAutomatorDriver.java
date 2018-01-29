@@ -9,6 +9,9 @@ import java.util.UUID;
 public class AppiumUiAutomatorDriver {
 
     private Session session;
+    private static AppiumUiAutomatorDriver instance;
+
+    private AppiumUiAutomatorDriver() {}
 
     public String initializeSession() throws JSONException {
 
@@ -18,6 +21,17 @@ public class AppiumUiAutomatorDriver {
         }
         this.session = new Session(UUID.randomUUID().toString());
         return session.getSessionId();
+    }
+
+    public Session getSession () {
+        return session;
+    }
+
+    public static synchronized AppiumUiAutomatorDriver getInstance() {
+        if (instance == null) {
+            instance = new AppiumUiAutomatorDriver();
+        }
+        return instance;
     }
 }
 

@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.appium.uiautomator2.common.exceptions.InvalidCoordinatesException;
+import io.appium.uiautomator2.core.EventRegister;
+import io.appium.uiautomator2.core.ReturningRunnable;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -26,7 +28,7 @@ public class Swipe extends SafeRequestHandler {
 
     @Override
     public AppiumResponse safeHandle(IHttpRequest request) {
-        Point absStartPos, absEndPos;
+        final Point absStartPos, absEndPos;
         final boolean isSwipePerformed;
         try {
             final SwipeArguments swipeArgs;
@@ -47,9 +49,15 @@ public class Swipe extends SafeRequestHandler {
                         + absEndPos.toString() + " with steps: " + swipeArgs.steps.toString());
             }
 
-            isSwipePerformed = getUiDevice().swipe(absStartPos.x.intValue(),
-                    absStartPos.y.intValue(), absEndPos.x.intValue(),
-                    absEndPos.y.intValue(), swipeArgs.steps);
+            isSwipePerformed = EventRegister.runAndRegisterScrollEvents(new ReturningRunnable<Boolean>() {
+                @Override
+                public void run() {
+                    setResult(getUiDevice().swipe(absStartPos.x.intValue(),
+                            absStartPos.y.intValue(), absEndPos.x.intValue(),
+                            absEndPos.y.intValue(), swipeArgs.steps));
+
+                }
+            });
             if (!isSwipePerformed) {
                 return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, "Swipe did not complete successfully");
             } else {

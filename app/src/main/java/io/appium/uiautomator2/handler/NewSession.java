@@ -28,7 +28,7 @@ public class NewSession extends SafeRequestHandler {
         String sessionID;
         try {
             Session.capabilities = getPayload(request, "desiredCapabilities");
-            sessionID = new AppiumUiAutomatorDriver().initializeSession();
+            sessionID = AppiumUiAutomatorDriver.getInstance().initializeSession();
             Logger.info("Session Created with SessionID:" + sessionID);
         } catch (JSONException e) {
             Logger.error("Exception while reading JSON: ", e);
