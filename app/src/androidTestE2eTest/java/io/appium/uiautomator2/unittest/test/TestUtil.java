@@ -579,5 +579,27 @@ public class TestUtil {
         return delete(baseUrl, new JSONObject().toString());
     }
 
-}
+    /**
+     * Get device screenshot
+     *
+     * @return Base64-encoded screenshot string
+     */
+    public static String screenshot() {
+        String result = get(baseUrl + "/screenshot");
+        Logger.info("screenshoot: " + result);
+        return result;
+    }
 
+    /**
+     * Get element screenshot
+     *
+     * @param element
+     * @return Base64-encoded element screenshot string
+     */
+    public static String screenshot(String element) throws JSONException {
+        String elementId = new JSONObject(element).getJSONObject("value").getString("ELEMENT");
+        String result = get(baseUrl + "/element/" + elementId + "/screenshot");
+        Logger.info("screenshoot: " + result);
+        return result;
+    }
+}
