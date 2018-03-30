@@ -60,14 +60,8 @@ public class SetClipboard extends SafeRequestHandler {
             if (payload.has("label")) {
                 label = payload.getString("label");
             }
-            switch (contentType) {
-                case PLAINTEXT:
-                    new ClipboardHelper(mInstrumentation.getTargetContext())
-                            .setTextData(label, content);
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
+
+            mInstrumentation.runOnMainSync(new AppiumSetClipboardRunnable(contentType, label, content));
         } catch (IllegalArgumentException e) {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR,
                     String.format("Only '%s' content types are supported. '%s' is given instead",
@@ -79,4 +73,27 @@ public class SetClipboard extends SafeRequestHandler {
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS);
     }
 
+    // Clip feature should run with main thread
+    private class AppiumSetClipboardRunnable implements Runnable {
+        private ClipDataType contentType;
+        private String label;
+        private String content;
+
+        AppiumSetClipboardRunnable(ClipDataType contentType, String label, String content) {
+            this.contentType = contentType;
+            this.label = label;
+            this.content = content;
+        }
+
+        @Override
+        public void run() {
+            switch (contentType) {
+                case PLAINTEXT:
+                    new ClipboardHelper(mInstrumentation.getTargetContext()).setTextData(label, content);
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
 }

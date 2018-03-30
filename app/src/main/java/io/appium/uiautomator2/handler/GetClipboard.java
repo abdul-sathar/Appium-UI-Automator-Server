@@ -54,14 +54,8 @@ public class GetClipboard extends SafeRequestHandler {
                         .getString("contentType")
                         .toUpperCase());
             }
-            switch (contentType) {
-                case PLAINTEXT:
-                    return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS,
-                            toBase64String(new ClipboardHelper(mInstrumentation.getTargetContext())
-                                    .getTextData()));
-                default:
-                    throw new IllegalArgumentException();
-            }
+            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS,
+                    getClipboardResponse(contentType));
         } catch (IllegalArgumentException e) {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR,
                     String.format("Only '%s' content types are supported. '%s' is given instead",
@@ -69,6 +63,37 @@ public class GetClipboard extends SafeRequestHandler {
                             contentType));
         } catch (Exception e) {
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
+        }
+    }
+
+    // Clip feature should run with main thread
+    private String getClipboardResponse(ClipDataType contentType) {
+        AppiumGetClipboardRunnable runnable = new AppiumGetClipboardRunnable(contentType);
+        mInstrumentation.runOnMainSync(runnable);
+        return runnable.getContent();
+    }
+
+    private class AppiumGetClipboardRunnable implements Runnable {
+        private ClipDataType contentType;
+        private String content;
+
+        AppiumGetClipboardRunnable(ClipDataType contentType) {
+            this.contentType = contentType;
+        }
+
+        @Override
+        public void run() {
+            switch (contentType) {
+                case PLAINTEXT:
+                    content = toBase64String(new ClipboardHelper(mInstrumentation.getTargetContext()).getTextData());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public String getContent() {
+            return content;
         }
     }
 }
