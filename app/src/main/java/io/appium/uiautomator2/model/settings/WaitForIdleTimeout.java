@@ -20,10 +20,14 @@ import android.support.test.uiautomator.Configurator;
 
 public class WaitForIdleTimeout extends AbstractSetting<Integer> {
 
-    public static final String SETTING_NAME = "waitForIdleTimeout";
+    public static final String SETTING_NAME = Settings.waitForIdleTimeout.toString();
 
     public WaitForIdleTimeout() {
         super(Integer.class);
+    }
+
+    static public long getTime() {
+        return Configurator.getInstance().getWaitForIdleTimeout();
     }
 
     @Override

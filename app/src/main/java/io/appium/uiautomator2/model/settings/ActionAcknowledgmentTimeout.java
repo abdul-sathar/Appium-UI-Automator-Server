@@ -16,14 +16,19 @@
 
 package io.appium.uiautomator2.model.settings;
 
+import android.support.annotation.NonNull;
 import android.support.test.uiautomator.Configurator;
 
 public class ActionAcknowledgmentTimeout extends AbstractSetting<Integer> {
 
-    public static final String SETTING_NAME = "actionAcknowledgmentTimeout";
+    public static final String SETTING_NAME = Settings.actionAcknowledgmentTimeout.toString();
 
     public ActionAcknowledgmentTimeout() {
         super(Integer.class);
+    }
+
+    static public long getTime() {
+        return Configurator.getInstance().getActionAcknowledgmentTimeout();
     }
 
     @Override

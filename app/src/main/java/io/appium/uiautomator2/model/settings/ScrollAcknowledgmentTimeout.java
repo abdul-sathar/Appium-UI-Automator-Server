@@ -20,10 +20,14 @@ import android.support.test.uiautomator.Configurator;
 
 public class ScrollAcknowledgmentTimeout extends AbstractSetting<Integer> {
 
-    public static final String SETTING_NAME = "scrollAcknowledgmentTimeout";
+    public static final String SETTING_NAME = Settings.scrollAcknowledgmentTimeout.toString();
 
     public ScrollAcknowledgmentTimeout() {
         super(Integer.class);
+    }
+
+    static public long getTime() {
+        return Configurator.getInstance().getScrollAcknowledgmentTimeout();
     }
 
     @Override

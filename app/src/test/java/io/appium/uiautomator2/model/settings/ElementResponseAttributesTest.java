@@ -20,6 +20,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.appium.uiautomator2.model.Session;
+
+import static io.appium.uiautomator2.model.Session.CAP_ELEMENT_RESPONSE_ATTRIBUTES;
+
 public class ElementResponseAttributesTest {
 
     private ElementResponseAttributes elementResponseAttributes;
@@ -37,5 +41,19 @@ public class ElementResponseAttributesTest {
     @Test
     public void shouldReturnValidSettingName() {
         Assert.assertEquals("elementResponseAttributes", elementResponseAttributes.getSettingName());
+    }
+
+    @Test
+    public void shouldBeAbleToDisableElementResponseAttributes() {
+        Session.capabilities.remove(CAP_ELEMENT_RESPONSE_ATTRIBUTES);
+
+        Assert.assertEquals(false, ElementResponseAttributes.isEnabled());
+    }
+
+    @Test
+    public void shouldBeAbleToEnableElementResponseAttributes() {
+        Session.capabilities.put(CAP_ELEMENT_RESPONSE_ATTRIBUTES, "a,b");
+
+        Assert.assertEquals(true, ElementResponseAttributes.isEnabled());
     }
 }

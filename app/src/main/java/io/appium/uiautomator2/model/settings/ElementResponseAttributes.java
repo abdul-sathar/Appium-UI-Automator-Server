@@ -16,14 +16,21 @@
 
 package io.appium.uiautomator2.model.settings;
 
+import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.utils.Logger;
+
+import static io.appium.uiautomator2.model.Session.CAP_ELEMENT_RESPONSE_ATTRIBUTES;
 
 public class ElementResponseAttributes extends AbstractSetting<String> {
 
-    public static final String SETTING_NAME = "elementResponseAttributes";
+    public static final String SETTING_NAME = Settings.elementResponseAttributes.toString();
 
     public ElementResponseAttributes() {
         super(String.class);
+    }
+
+    static public boolean isEnabled() {
+        return Session.capabilities.containsKey(CAP_ELEMENT_RESPONSE_ATTRIBUTES);
     }
 
     @Override
