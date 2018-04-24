@@ -16,6 +16,8 @@
 
 package io.appium.uiautomator2.common.exceptions;
 
+import android.support.annotation.Nullable;
+
 import io.appium.uiautomator2.utils.UiSelectorParser;
 
 @SuppressWarnings("serial")
@@ -26,7 +28,17 @@ public class UiSelectorSyntaxException extends Exception {
      *
      * @param msg A descriptive message describing the error.
      */
-    public UiSelectorSyntaxException(final String msg) {
-        super(msg);
+    public UiSelectorSyntaxException(final String expression, final String msg) {
+        this(expression, msg, null);
+    }
+
+    public UiSelectorSyntaxException(final String expression, final String msg,
+                                     final int position) {
+        this(expression, msg + " at position " + position, null);
+    }
+
+    public UiSelectorSyntaxException(final String expression, final String msg,
+                                     @Nullable final Throwable cause) {
+        super(String.format("Could not parse expression `%s`: %s", expression, msg), cause);
     }
 }

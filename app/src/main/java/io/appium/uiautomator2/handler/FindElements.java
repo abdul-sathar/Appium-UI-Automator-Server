@@ -126,7 +126,9 @@ public class FindElements extends SafeRequestHandler {
         }
     }
 
-    private List<Object> findElements(By by) throws ElementNotFoundException, ParserConfigurationException, ClassNotFoundException, InvalidSelectorException, UiAutomator2Exception, UiSelectorSyntaxException {
+    private List<Object> findElements(By by) throws ElementNotFoundException,
+            ParserConfigurationException, ClassNotFoundException, InvalidSelectorException,
+            UiAutomator2Exception, UiSelectorSyntaxException, UiObjectNotFoundException {
         if (by instanceof By.ById) {
             String locator = getElementLocator((ById) by);
             return getInstance().findObjects(android.support.test.uiautomator.By.res(locator));
@@ -168,16 +170,12 @@ public class FindElements extends SafeRequestHandler {
         throw new UnsupportedOperationException(msg);
     }
 
-    public List<UiSelector> findByUiAutomator(String expression) throws UiSelectorSyntaxException {
+    public List<UiSelector> findByUiAutomator(String expression) throws UiSelectorSyntaxException,
+            UiObjectNotFoundException {
         List<UiSelector> parsedSelectors = null;
         UiAutomatorParser uiAutomatorParser = new UiAutomatorParser();
         final List<UiSelector> selectors = new ArrayList<UiSelector>();
-        try {
-            parsedSelectors = uiAutomatorParser.parse(expression);
-        } catch (final UiSelectorSyntaxException e) {
-            throw new UiSelectorSyntaxException(
-                    "Could not parse UiSelector argument: " + e.getMessage());
-        }
+        parsedSelectors = uiAutomatorParser.parse(expression);
 
         for (final UiSelector selector : parsedSelectors) {
             selectors.add(selector);
