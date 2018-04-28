@@ -1,42 +1,82 @@
 package io.appium.uiautomator2.server;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteException;
-
 import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
+import io.appium.uiautomator2.model.settings.Settings;
+import io.appium.uiautomator2.model.settings.ShutdownOnPowerDisconnect;
 import io.appium.uiautomator2.utils.Logger;
 
+import static android.content.Intent.ACTION_POWER_DISCONNECTED;
+import static android.support.test.InstrumentationRegistry.getContext;
+import static io.appium.uiautomator2.server.ServerConfig.getServerPort;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 
 public class ServerInstrumentation {
+    private static final int MIN_PORT = 1024;
+    private static final int MAX_PORT = 65535;
+
     private static ServerInstrumentation instance;
-    private static Context context;
+
+    private final Context context;
     private HttpdThread serverThread;
     private PowerManager.WakeLock wakeLock;
-    private int serverPort;
-    private  boolean isStopServer;
+    private final int serverPort;
+    private boolean isServerStopped;
 
-    private ServerInstrumentation(int serverPort) {
-        this.serverPort = serverPort;
+    public static class PowerConnectionReceiver extends BroadcastReceiver {
 
-        if (!isValidPort(serverPort)) {
-            throw new RuntimeException(("Invalid port: " + serverPort));
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Logger.debug("Received broadcast action: " + intent.getAction());
+
+            if (!ACTION_POWER_DISCONNECTED.equalsIgnoreCase(intent.getAction())) {
+                return;
+            }
+
+            if (instance == null) {
+                Logger.debug("The server is already down - doing nothing.");
+                return;
+            }
+
+            final ShutdownOnPowerDisconnect shutdownOnPowerDisconnect =
+                    (ShutdownOnPowerDisconnect) Settings.SHUTDOWN_ON_POWER_DISCONNECT.getSetting();
+            if (!shutdownOnPowerDisconnect.getValue()) {
+                Logger.debug(String.format("The value of `%s` setting is false - " +
+                                "ignoring broadcasting.", shutdownOnPowerDisconnect.getName()));
+                return;
+            }
+
+            Logger.info("The device was disconnected from power source. Shutting down the server.");
+            getInstance().stopServer();
         }
     }
 
-    public boolean isStopServer(){
-        return isStopServer;
-    }
-    private static boolean isValidPort(int port) {
-        return port >= 1024 && port <= 65535;
+    public ServerInstrumentation(Context context, int serverPort) {
+        if (!isValidPort(serverPort)) {
+            throw new UiAutomator2Exception(String.format(
+                    "The port is out of valid range [%s;%s]: %s", MIN_PORT, MAX_PORT, serverPort));
+        }
+        this.serverPort = serverPort;
+        this.context = context;
     }
 
-    public static synchronized ServerInstrumentation getInstance(Context activityContext, int serverPort) {
+    public boolean isServerStopped(){
+        return isServerStopped;
+    }
+
+    private boolean isValidPort(int port) {
+        return port >= MIN_PORT && port <= MAX_PORT;
+    }
+
+    public static synchronized ServerInstrumentation getInstance() {
         if (instance == null) {
-            context = activityContext;
-            instance = new ServerInstrumentation(serverPort);
+            instance = new ServerInstrumentation(getContext(), getServerPort());
         }
         return instance;
     }
@@ -57,12 +97,12 @@ public class ServerInstrumentation {
     }
 
 
-    public void startServer() throws InterruptedException, SessionRemovedException {
+    public void startServer() throws SessionRemovedException {
         if (serverThread != null && serverThread.isAlive()) {
             return;
         }
 
-        if(serverThread == null && isStopServer){
+        if(serverThread == null && isServerStopped){
             throw new SessionRemovedException("Delete Session has been invoked");
         }
 
@@ -71,7 +111,7 @@ public class ServerInstrumentation {
             stopServer();
         }
 
-        serverThread = new HttpdThread(this, this.serverPort);
+        serverThread = new HttpdThread(this.serverPort);
         serverThread.start();
         //client to wait for io.appium.uiautomator2.server to up
         Logger.info("io.appium.uiautomator2.server started:");
@@ -94,17 +134,15 @@ public class ServerInstrumentation {
         } catch (InterruptedException ignored) {
         }
         serverThread = null;
-        isStopServer = true;
+        isServerStopped = true;
     }
 
     private class HttpdThread extends Thread {
 
         private final AndroidServer server;
-        private ServerInstrumentation instrumentation;
         private Looper looper;
 
-        public HttpdThread(ServerInstrumentation instrumentation, int serverPort) {
-            this.instrumentation = instrumentation;
+        public HttpdThread(int serverPort) {
             // Create the io.appium.uiautomator2.server but absolutely do not start it here
             server = new AndroidServer(serverPort);
         }
