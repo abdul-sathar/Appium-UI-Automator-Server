@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
 import io.appium.uiautomator2.common.exceptions.InvalidSelectorException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
@@ -58,8 +56,8 @@ public class FindElement extends SafeRequestHandler {
      * Example:
      * http://java-regex-tester.appspot.com/regex/5f04ac92-f9aa-45a6-b1dc-e2c25fd3cc6b
      */
-    static final Pattern resourceIdRegex = Pattern
-            .compile("^[a-zA-Z_][a-zA-Z0-9\\._]*:[^\\/]+\\/[\\S]+$");
+    private static final Pattern resourceIdRegex = Pattern
+            .compile("^[a-zA-Z_][a-zA-Z0-9\\._]*:[^/]+/[\\S]+$");
 
     public FindElement(String mappedUri) {
         super(mappedUri);
@@ -70,7 +68,7 @@ public class FindElement extends SafeRequestHandler {
      * TODO: Need to handle contextId based finding
      */
     private static Object getXPathUiObject(final String expression, AndroidElement element)
-            throws InvalidSelectorException, ClassNotFoundException, UiAutomator2Exception, ElementNotFoundException {
+            throws ClassNotFoundException, UiAutomator2Exception {
         AccessibilityNodeInfo nodeInfo = null;
         if (element != null) {
             nodeInfo = AccessibilityNodeInfoGetter.fromUiObject(element.getUiObject());
@@ -80,6 +78,20 @@ public class FindElement extends SafeRequestHandler {
             throw new ElementNotFoundException();
         }
         return getInstance().findObject(nodeList);
+    }
+
+    public static String getElementLocator(ById by) {
+        String locator = by.getElementLocator();
+
+        if (!resourceIdRegex.matcher(by.getElementLocator()).matches()) {
+            // not a fully qualified resource id
+            // transform "textToBeChanged" into:
+            // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
+            // it's prefixed with the app package.
+            locator = Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
+            Logger.debug("Updated findElement locator strategy: " + locator);
+        }
+        return locator;
     }
 
     @Override
@@ -116,12 +128,9 @@ public class FindElement extends SafeRequestHandler {
         } catch (InvalidSelectorException e) {
             Logger.error("Invalid selector: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.INVALID_SELECTOR, e);
-        } catch (ElementNotFoundException e) {
+        } catch (ElementNotFoundException | UiObjectNotFoundException e) {
             Logger.error("Element not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
-        } catch (ParserConfigurationException e) {
-            Logger.error("Unable to parse configuration: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
         } catch (ClassNotFoundException e) {
             Logger.error("Class not found: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
@@ -131,18 +140,14 @@ public class FindElement extends SafeRequestHandler {
         } catch (UiSelectorSyntaxException e) {
             Logger.error("Unable to parse UiSelector: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_COMMAND, e);
-        } catch (UiAutomator2Exception e) {
+        } catch (Exception e) {
             Logger.error("Exception while finding element: ", e);
             return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, e);
-        } catch (UiObjectNotFoundException e) {
-            Logger.error("Element not found: ", e);
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
         }
     }
 
-    private Object findElement(By by) throws InvalidSelectorException, ElementNotFoundException,
-            ParserConfigurationException, ClassNotFoundException, UiSelectorSyntaxException,
-            UiAutomator2Exception, UiObjectNotFoundException {
+    private Object findElement(By by) throws ClassNotFoundException, UiAutomator2Exception,
+            UiObjectNotFoundException {
         if (by instanceof ById) {
             String locator = getElementLocator((ById) by);
             return getInstance().findObject(android.support.test.uiautomator.By.res(locator));
@@ -159,10 +164,8 @@ public class FindElement extends SafeRequestHandler {
         throw new UnsupportedOperationException(msg);
     }
 
-    private Object findElement(By by, String contextId) throws InvalidSelectorException,
-            ClassNotFoundException, UiSelectorSyntaxException,
-            UiAutomator2Exception, UiObjectNotFoundException, ElementNotFoundException {
-
+    private Object findElement(By by, String contextId) throws ClassNotFoundException,
+            UiAutomator2Exception, UiObjectNotFoundException {
         AndroidElement element = KnownElements.getElementFromCache(contextId);
         if (element == null) {
             throw new ElementNotFoundException();
@@ -181,36 +184,15 @@ public class FindElement extends SafeRequestHandler {
         }
         String msg = String.format("By locator %s is currently not supported!", by.getClass().getSimpleName());
         throw new UnsupportedOperationException(msg);
-
     }
 
     /**
      * finds the UiSelector for given expression
      */
-    public UiSelector findByUiAutomator(String expression) throws UiSelectorSyntaxException,
+    private UiSelector findByUiAutomator(String expression) throws UiSelectorSyntaxException,
             UiObjectNotFoundException {
-        List<UiSelector> parsedSelectors = null;
         UiAutomatorParser uiAutomatorParser = new UiAutomatorParser();
-        final List<UiSelector> selectors = new ArrayList<UiSelector>();
-        parsedSelectors = uiAutomatorParser.parse(expression);
-
-        for (final UiSelector selector : parsedSelectors) {
-            selectors.add(selector);
-        }
-        return selectors.get(0);
-    }
-
-    public static String getElementLocator(ById by) {
-        String locator = by.getElementLocator();
-
-        if (!resourceIdRegex.matcher(by.getElementLocator()).matches()) {
-            // not a fully qualified resource id
-            // transform "textToBeChanged" into:
-            // com.example.android.testing.espresso.BasicSample:id/textToBeChanged
-            // it's prefixed with the app package.
-            locator = (String) Session.capabilities.get("appPackage") + ":id/" + by.getElementLocator();
-            Logger.debug("Updated findElement locator strategy: " + locator);
-        }
-        return locator;
+        List<UiSelector> parsedSelectors = uiAutomatorParser.parse(expression);
+        return new ArrayList<>(parsedSelectors).get(0);
     }
 }
