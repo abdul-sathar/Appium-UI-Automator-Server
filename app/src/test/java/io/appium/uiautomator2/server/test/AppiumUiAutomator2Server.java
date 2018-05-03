@@ -18,12 +18,12 @@ public class AppiumUiAutomator2Server {
      * Starts the server on the device
      */
     @Test
-    public void startServer() throws InterruptedException {
+    public void startServer() {
         if (serverInstrumentation == null) {
             serverInstrumentation = ServerInstrumentation.getInstance();
             Logger.info("[AppiumUiAutomator2Server]", " Starting Server");
             try {
-                while (!serverInstrumentation.isStopServer()) {
+                while (!serverInstrumentation.isServerStopped()) {
                     SystemClock.sleep(1000);
                     serverInstrumentation.startServer();
                 }
