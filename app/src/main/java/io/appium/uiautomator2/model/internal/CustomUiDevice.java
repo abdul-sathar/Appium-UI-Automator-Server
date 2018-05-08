@@ -123,15 +123,7 @@ public class CustomUiDevice {
                 SystemClock.sleep(Math.min(200, remainingMillis));
             }
 
-        } catch (InvocationTargetException e) {
-            final String msg = String.format("error while creating  UiObject2 object");
-            Logger.error(msg + " " + e);
-            throw new UiAutomator2Exception(msg, e);
-        } catch (InstantiationException e) {
-            final String msg = String.format("error while creating  UiObject2 object");
-            Logger.error(msg + " " + e);
-            throw new UiAutomator2Exception(msg, e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             final String msg = String.format("error while creating  UiObject2 object");
             Logger.error(msg + " " + e);
             throw new UiAutomator2Exception(msg, e);
@@ -142,17 +134,15 @@ public class CustomUiDevice {
      * Returns List<object> to match the {@code selector} criteria.
      */
     public List<Object> findObjects(Object selector) throws ClassNotFoundException, UiAutomator2Exception {
-
         List<Object> ret = new ArrayList<>();
 
-        ArrayList<AccessibilityNodeInfo> list = new ArrayList<AccessibilityNodeInfo>();
+        ArrayList<AccessibilityNodeInfo> list;
         if (selector instanceof BySelector) {
             ReflectionUtils.getClass("android.support.test.uiautomator.ByMatcher");
             Object nodes = invoke(METHOD_FIND_MATCHS, ByMatcher, getUiDevice(), selector, getWindowRoots());
             list = (ArrayList) nodes;
         } else if (selector instanceof NodeInfoList) {
             list = ((NodeInfoList) selector).getNodeList();
-
         } else {
             throw new InvalidSelectorException("Selector of type " + selector.getClass().getName() + " not supported");
         }
@@ -164,16 +154,8 @@ public class CustomUiDevice {
                 selector = By.clazz(node.getClassName().toString());
                 Object[] constructorParams = {getUiDevice(), selector, node};
                 ret.add(cons.newInstance(constructorParams));
-            } catch (InvocationTargetException e) {
-                final String msg = String.format("error while creating  UiObject2 object:");
-                Logger.error(msg + " " + e);
-                throw new UiAutomator2Exception(msg, e);
-            } catch (InstantiationException e) {
-                final String msg = String.format("error while creating  UiObject2 object");
-                Logger.error(msg + " " + e);
-                throw new UiAutomator2Exception(msg, e);
-            } catch (IllegalAccessException e) {
-                final String msg = String.format("error while creating  UiObject2 object");
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                final String msg = "error while creating  UiObject2 object";
                 Logger.error(msg + " " + e);
                 throw new UiAutomator2Exception(msg, e);
             }
@@ -185,10 +167,10 @@ public class CustomUiDevice {
     /**
      * Returns a list containing the root {@link AccessibilityNodeInfo}s for each active window
      */
-    AccessibilityNodeInfo[] getWindowRoots() throws UiAutomator2Exception {
+    private AccessibilityNodeInfo[] getWindowRoots() throws UiAutomator2Exception {
         Device.waitForIdle();
         ArrayList<AccessibilityNodeInfo> ret = new ArrayList<>();
-        /**
+        /*
          * TODO: MULTI_WINDOW is disabled, UIAutomatorViewer captures active window properties and
          * end users always relay on UIAutomatorViewer while writing tests.
          * If we enable MULTI_WINDOW it effects end users.
