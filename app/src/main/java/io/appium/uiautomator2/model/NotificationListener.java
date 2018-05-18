@@ -17,10 +17,8 @@
 package io.appium.uiautomator2.model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.accessibility.AccessibilityEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,10 +32,11 @@ public final class NotificationListener implements OnAccessibilityEventListener 
     private static final NotificationListener INSTANCE = new NotificationListener();
     private static final int TOAST_CLEAR_TIMEOUT = 3500;
 
+    private final UiAutomation uiAutomation;
     private List<CharSequence> toastMessage = new CopyOnWriteArrayList<>();
     private long recentToastTimestamp = currentTimeMillis();
     private OnAccessibilityEventListener originalListener = null;
-    private final UiAutomation uiAutomation;
+    private volatile boolean isListening;
 
     protected NotificationListener() {
         uiAutomation = UiAutomation.getInstance();
@@ -57,6 +56,7 @@ public final class NotificationListener implements OnAccessibilityEventListener 
         }
         Logger.debug("Starting toast notification listener.");
         originalListener = uiAutomation.getOnAccessibilityEventListener();
+        isListening = true;
         Logger.debug("Original listener: " + originalListener);
         uiAutomation.setOnAccessibilityEventListener(this);
     }
@@ -67,6 +67,7 @@ public final class NotificationListener implements OnAccessibilityEventListener 
             return;
         }
         Logger.debug("Stopping toast notification listener.");
+        isListening = false;
         uiAutomation.setOnAccessibilityEventListener(originalListener);
     }
 
@@ -86,7 +87,7 @@ public final class NotificationListener implements OnAccessibilityEventListener 
     }
 
     public boolean isListening() {
-        return uiAutomation.getOnAccessibilityEventListener() == this;
+        return isListening;
     }
 
     protected long getToastClearTimeout() {

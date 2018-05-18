@@ -85,16 +85,15 @@ public class NotificationListenerTests {
 
     @Test
     public void shouldBeAbleToStartListener() {
-        doReturn(false).when(notificationListener).isListening();
         notificationListener.start();
-        verify(uiAutomation).setOnAccessibilityEventListener(notificationListener);
+        assertTrue(notificationListener.isListening());
     }
 
     @Test
     public void shouldBeAbleToStopListener() {
-        doReturn(true).when(notificationListener).isListening();
+        notificationListener.start();
         notificationListener.stop();
-        verify(uiAutomation).setOnAccessibilityEventListener(null);
+        assertFalse(notificationListener.isListening());
     }
 
     @Test
@@ -144,16 +143,6 @@ public class NotificationListenerTests {
         when(notificationListener.getToastClearTimeout()).thenReturn(-1L);
 
         assertTrue(notificationListener.getToastMessage().isEmpty());
-    }
-
-    @Test
-    public void shouldProperlyDetectListeningState() {
-        doReturn(originalAccessibilityEventListener).when(uiAutomation)
-                .getOnAccessibilityEventListener();
-        assertFalse(notificationListener.isListening());
-
-        doReturn(notificationListener).when(uiAutomation).getOnAccessibilityEventListener();
-        assertTrue(notificationListener.isListening());
     }
 
     @Test
