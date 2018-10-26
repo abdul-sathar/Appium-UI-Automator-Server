@@ -163,6 +163,7 @@ public class ActionsHelpers {
         Rect bounds;
         try {
             final AndroidElement element = KnownElements.getElementFromCache(elementId);
+            //noinspection ConstantConditions
             bounds = element.getBounds();
             if (bounds.width() == 0 || bounds.height() == 0) {
                 throw new ActionsParseException(String.format(
@@ -306,8 +307,8 @@ public class ActionsHelpers {
         return actions;
     }
 
-    public static int getPointerAction(int motionEnvent, int index) {
-        return motionEnvent + (index << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
+    public static int getPointerAction(int motionEvent, int index) {
+        return motionEvent + (index << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
     }
 
     private static int actionToToolType(final JSONObject action) throws JSONException {
@@ -327,7 +328,7 @@ public class ActionsHelpers {
                 }
             }
         }
-        return MotionEvent.TOOL_TYPE_MOUSE;
+        return MotionEvent.TOOL_TYPE_FINGER;
     }
 
     public static int toolTypeToInputSource(final int toolType) {
@@ -339,10 +340,8 @@ public class ActionsHelpers {
             case MotionEvent.TOOL_TYPE_FINGER:
                 return InputDevice.SOURCE_TOUCHSCREEN;
             default:
-                // use default
-                break;
+                return InputDevice.SOURCE_TOUCHSCREEN;
         }
-        return InputDevice.SOURCE_MOUSE;
     }
 
     private static List<JSONObject> filterActionsByType(final JSONArray actions,
@@ -360,7 +359,8 @@ public class ActionsHelpers {
 
     private static void recordEventParams(final long timeDeltaMs,
                                           final LongSparseArray<List<InputEventParams>> mapping,
-                                          @Nullable final InputEventParams newParams) {
+                                          @Nullable final InputEventParams newParams,
+                                          boolean shouldOverwrite) {
         final List<InputEventParams> allParams = mapping.get(timeDeltaMs);
         if (allParams == null) {
             final List<InputEventParams> params = new ArrayList<>();
@@ -369,6 +369,9 @@ public class ActionsHelpers {
             }
             mapping.put(timeDeltaMs, params);
         } else if (newParams != null) {
+            if (shouldOverwrite) {
+                allParams.remove(allParams.size() - 1);
+            }
             allParams.add(newParams);
         }
     }
@@ -396,41 +399,47 @@ public class ActionsHelpers {
         long chainEntryPointDelta = 0;
         boolean isPointerDown = false;
         boolean isPointerHovering = false;
+        long recentUpDownDelta = -1;
         int recentButton = 0;
         final JSONArray actionItems = action.getJSONArray(ACTION_KEY_ACTIONS);
-        for (int i = 0; i < actionItems.length(); i++) {
-            final JSONObject actionItem = actionItems.getJSONObject(i);
+        for (int actionItemIdx = 0; actionItemIdx < actionItems.length(); actionItemIdx++) {
+            final JSONObject actionItem = actionItems.getJSONObject(actionItemIdx);
             final String itemType = actionItem.getString(ACTION_ITEM_TYPE_KEY);
             switch (itemType) {
                 case ACTION_ITEM_TYPE_PAUSE: {
-                    timeDelta += extractDuration(action, actionItem);
-                    recordEventParams(timeDelta, mapping, null);
+                    long duration = extractDuration(action, actionItem);
+                    if (duration > 0) {
+                        timeDelta += duration;
+                        recordEventParams(timeDelta, mapping, null, false);
+                    }
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_DOWN: {
                     chainEntryPointDelta = timeDelta;
                     if (isPointerHovering) {
-                        recordEventParams(timeDelta, mapping,
+                        recordEventParams(timeDelta - 1, mapping,
                                 toMotionEventInputParams(MotionEvent.ACTION_HOVER_EXIT,
-                                        extractCoordinates(actionId, actionItems, i),
-                                        0, props, chainEntryPointDelta));
+                                        extractCoordinates(actionId, actionItems, actionItemIdx),
+                                        0, props, chainEntryPointDelta), false);
                         isPointerHovering = false;
                     }
                     recentButton = extractButton(actionItem, props.toolType);
                     recordEventParams(timeDelta, mapping, toMotionEventInputParams(
-                            MotionEvent.ACTION_DOWN, extractCoordinates(actionId, actionItems, i),
-                            recentButton, props, chainEntryPointDelta));
+                            MotionEvent.ACTION_DOWN, extractCoordinates(actionId, actionItems, actionItemIdx),
+                            recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
                     isPointerDown = true;
+                    recentUpDownDelta = timeDelta;
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_UP: {
                     recentButton = extractButton(actionItem, props.toolType);
                     recordEventParams(timeDelta, mapping, toMotionEventInputParams(
-                            MotionEvent.ACTION_UP, extractCoordinates(actionId, actionItems, i),
-                            recentButton, props, chainEntryPointDelta));
+                            MotionEvent.ACTION_UP, extractCoordinates(actionId, actionItems, actionItemIdx),
+                            recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
                     isPointerDown = false;
                     recentButton = 0;
                     chainEntryPointDelta = timeDelta;
+                    recentUpDownDelta = timeDelta;
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_MOVE: {
@@ -438,22 +447,27 @@ public class ActionsHelpers {
                     if (duration < MOTION_EVENT_INJECTION_DELAY_MS) {
                         break;
                     }
-                    if (i == 0) {
+                    if (actionItemIdx == 0) {
                         // FIXME: Selenium client sets the default move duration
                         // to 250 ms, but it won't work if this is the very first
                         // action item, since gesture start coordinate is undefined.
                         // It would be better to set the default duration to zero.
                         timeDelta += duration;
-                        recordEventParams(timeDelta, mapping, null);
+                        recordEventParams(timeDelta, mapping, null, true);
                         break;
                     }
+                    boolean shouldAlignTimeDelta = false;
+                    if (recentUpDownDelta == timeDelta) {
+                        timeDelta++;
+                        shouldAlignTimeDelta = true;
+                    }
                     int actionCode = MotionEvent.ACTION_MOVE;
-                    final PointerCoords startCoordinates = extractCoordinates(actionId, actionItems, i - 1);
+                    final PointerCoords startCoordinates = extractCoordinates(actionId, actionItems, actionItemIdx - 1);
                     if (!isPointerDown) {
                         if (!isPointerHovering) {
                             recordEventParams(timeDelta, mapping, toMotionEventInputParams(
                                     MotionEvent.ACTION_HOVER_ENTER, startCoordinates,
-                                    0, props, chainEntryPointDelta));
+                                    0, props, chainEntryPointDelta), true);
                             isPointerHovering = true;
                         }
                         actionCode = MotionEvent.ACTION_HOVER_MOVE;
@@ -461,7 +475,7 @@ public class ActionsHelpers {
                     // `stepsCount` is never going to be equal to zero, because of the
                     // `if (duration < MOTION_EVENT_INJECTION_DELAY_MS)` condition above
                     final long stepsCount = duration / MOTION_EVENT_INJECTION_DELAY_MS;
-                    final PointerCoords endCoordinates = extractCoordinates(actionId, actionItems, i);
+                    final PointerCoords endCoordinates = extractCoordinates(actionId, actionItems, actionItemIdx);
                     for (long step = 0; step < stepsCount; ++step) {
                         final PointerCoords currentCoordinates = new PointerCoords();
                         currentCoordinates.x = startCoordinates.x +
@@ -469,8 +483,11 @@ public class ActionsHelpers {
                         currentCoordinates.y = startCoordinates.y +
                                 (endCoordinates.y - startCoordinates.y) / stepsCount * step;
                         recordEventParams(timeDelta, mapping, toMotionEventInputParams(actionCode,
-                                currentCoordinates, recentButton, props, chainEntryPointDelta));
+                                currentCoordinates, recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
                         timeDelta += MOTION_EVENT_INJECTION_DELAY_MS;
+                    }
+                    if (shouldAlignTimeDelta) {
+                        timeDelta--;
                     }
                 }
                 break;
@@ -481,10 +498,10 @@ public class ActionsHelpers {
             }
         }
         if (isPointerHovering) {
-            recordEventParams(timeDelta, mapping, toMotionEventInputParams(
+            recordEventParams(timeDelta + 1, mapping, toMotionEventInputParams(
                     MotionEvent.ACTION_HOVER_EXIT,
                     extractCoordinates(actionId, actionItems, actionItems.length() - 1),
-                    0, props, chainEntryPointDelta));
+                    0, props, chainEntryPointDelta), true);
             //noinspection UnusedAssignment
             isPointerHovering = false;
         }
@@ -549,8 +566,11 @@ public class ActionsHelpers {
             final String itemType = actionItem.getString(ACTION_ITEM_TYPE_KEY);
             switch (itemType) {
                 case ACTION_ITEM_TYPE_PAUSE:
-                    timeDelta += extractDuration(action, actionItem);
-                    recordEventParams(timeDelta, mapping, null);
+                    long duration = extractDuration(action, actionItem);
+                    if (duration > 0) {
+                        timeDelta += duration;
+                        recordEventParams(timeDelta, mapping, null, false);
+                    }
                     break;
                 case ACTION_ITEM_TYPE_KEY_DOWN:
                     chainEntryPointDelta = timeDelta;
@@ -571,7 +591,7 @@ public class ActionsHelpers {
                     evtParams.keyAction = itemType.equals(ACTION_ITEM_TYPE_KEY_DOWN) ?
                             KeyEvent.ACTION_DOWN : KeyEvent.ACTION_UP;
                     evtParams.startDelta = chainEntryPointDelta;
-                    recordEventParams(timeDelta, mapping, evtParams);
+                    recordEventParams(timeDelta, mapping, evtParams, false);
                     chainEntryPointDelta = timeDelta;
                     break;
                 default:
@@ -596,7 +616,7 @@ public class ActionsHelpers {
                         ACTION_ITEM_TYPE_KEY, itemType, action.getString(ACTION_KEY_ID)));
             }
             timeDelta += extractDuration(action, actionItem);
-            recordEventParams(timeDelta, mapping, null);
+            recordEventParams(timeDelta, mapping, null, false);
         }
     }
 
