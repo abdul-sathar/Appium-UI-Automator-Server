@@ -369,7 +369,7 @@ public class ActionsHelpers {
             }
             mapping.put(timeDeltaMs, params);
         } else if (newParams != null) {
-            if (shouldOverwrite) {
+            if (!allParams.isEmpty() && shouldOverwrite) {
                 allParams.remove(allParams.size() - 1);
             }
             allParams.add(newParams);
