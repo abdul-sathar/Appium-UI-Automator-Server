@@ -316,7 +316,7 @@ public class W3CActionsTransformationTests {
         final LongSparseArray<List<InputEventParams>> eventsChain = actionsToInputEventsMapping(
                 preprocessActions(actionJson)
         );
-        assertThat(eventsChain.size(), equalTo(8));
+        assertThat(eventsChain.size(), equalTo(7));
 
         final List<InputEventParams> paramSet1 = eventsChain.valueAt(0);
         assertThat(eventsChain.keyAt(0), equalTo(0L));
@@ -332,7 +332,7 @@ public class W3CActionsTransformationTests {
         assertThat(downParams.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet2 = eventsChain.valueAt(1);
-        assertThat(eventsChain.keyAt(1), equalTo(1L));
+        assertThat(eventsChain.keyAt(1), equalTo(5L));
         assertThat(paramSet2.size(), equalTo(1));
 
         final MotionInputEventParams move1Params = (MotionInputEventParams) paramSet2.get(0);
@@ -345,74 +345,61 @@ public class W3CActionsTransformationTests {
         assertThat(move1Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet3 = eventsChain.valueAt(2);
-        assertThat(eventsChain.keyAt(2), equalTo(6L));
+        assertThat(eventsChain.keyAt(2), equalTo(10L));
 
         final MotionInputEventParams move2Params = (MotionInputEventParams) paramSet3.get(0);
         assertThat(move2Params.startDelta, equalTo(0L));
         assertThat(move2Params.actionCode, equalTo(MotionEvent.ACTION_MOVE));
         assertThat(move2Params.button, equalTo(MotionEvent.BUTTON_SECONDARY));
-        assertEquals(move2Params.coordinates.x, 75.0, Math.ulp(1.0));
+        assertEquals(move2Params.coordinates.x, 50.0, Math.ulp(1.0));
         assertEquals(move2Params.coordinates.y, 100.0, Math.ulp(1.0));
         assertThat(move2Params.properties.id, is(equalTo(0)));
         assertThat(move2Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet4 = eventsChain.valueAt(3);
-        assertThat(eventsChain.keyAt(3), equalTo(10L));
+        assertThat(eventsChain.keyAt(3), equalTo(15L));
         assertThat(paramSet3.size(), equalTo(1));
 
         final MotionInputEventParams move3Params = (MotionInputEventParams) paramSet4.get(0);
         assertThat(move3Params.startDelta, equalTo(0L));
         assertThat(move3Params.actionCode, equalTo(MotionEvent.ACTION_MOVE));
         assertThat(move3Params.button, equalTo(MotionEvent.BUTTON_SECONDARY));
-        assertEquals(move3Params.coordinates.x, 50.0, Math.ulp(1.0));
+        assertEquals(move3Params.coordinates.x, 100.0, Math.ulp(1.0));
         assertEquals(move3Params.coordinates.y, 100.0, Math.ulp(1.0));
         assertThat(move3Params.properties.id, is(equalTo(0)));
         assertThat(move3Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet5 = eventsChain.valueAt(4);
-        assertThat(eventsChain.keyAt(4), equalTo(15L));
+        assertThat(eventsChain.keyAt(4), equalTo(20L));
         assertThat(paramSet4.size(), equalTo(1));
 
         final MotionInputEventParams move4Params = (MotionInputEventParams) paramSet5.get(0);
         assertThat(move4Params.startDelta, equalTo(0L));
         assertThat(move4Params.actionCode, equalTo(MotionEvent.ACTION_MOVE));
         assertThat(move4Params.button, equalTo(MotionEvent.BUTTON_SECONDARY));
-        assertEquals(move4Params.coordinates.x, 100.0, Math.ulp(1.0));
+        assertEquals(move4Params.coordinates.x, 150.0, Math.ulp(1.0));
         assertEquals(move4Params.coordinates.y, 100.0, Math.ulp(1.0));
         assertThat(move4Params.properties.id, is(equalTo(0)));
         assertThat(move4Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet6 = eventsChain.valueAt(5);
-        assertThat(eventsChain.keyAt(5), equalTo(20L));
+        assertThat(eventsChain.keyAt(5), equalTo(25L));
         assertThat(paramSet5.size(), equalTo(1));
 
         final MotionInputEventParams move5Params = (MotionInputEventParams) paramSet6.get(0);
         assertThat(move5Params.startDelta, equalTo(0L));
         assertThat(move5Params.actionCode, equalTo(MotionEvent.ACTION_MOVE));
         assertThat(move5Params.button, equalTo(MotionEvent.BUTTON_SECONDARY));
-        assertEquals(move5Params.coordinates.x, 150.0, Math.ulp(1.0));
-        assertEquals(move5Params.coordinates.y, 100.0, Math.ulp(1.0));
+        assertEquals(move5Params.coordinates.x, 75.0, Math.ulp(1.0));
+        assertEquals(move5Params.coordinates.y, 50.0, Math.ulp(1.0));
         assertThat(move5Params.properties.id, is(equalTo(0)));
         assertThat(move5Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final List<InputEventParams> paramSet7 = eventsChain.valueAt(6);
-        assertThat(eventsChain.keyAt(6), equalTo(25L));
+        assertThat(eventsChain.keyAt(6), equalTo(30L));
         assertThat(paramSet6.size(), equalTo(1));
 
-        final MotionInputEventParams move6Params = (MotionInputEventParams) paramSet7.get(0);
-        assertThat(move6Params.startDelta, equalTo(0L));
-        assertThat(move6Params.actionCode, equalTo(MotionEvent.ACTION_MOVE));
-        assertThat(move6Params.button, equalTo(MotionEvent.BUTTON_SECONDARY));
-        assertEquals(move6Params.coordinates.x, 75.0, Math.ulp(1.0));
-        assertEquals(move6Params.coordinates.y, 50.0, Math.ulp(1.0));
-        assertThat(move6Params.properties.id, is(equalTo(0)));
-        assertThat(move6Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
-
-        final List<InputEventParams> paramSet8 = eventsChain.valueAt(7);
-        assertThat(eventsChain.keyAt(7), equalTo(30L));
-        assertThat(paramSet7.size(), equalTo(1));
-
-        final MotionInputEventParams upParams = (MotionInputEventParams) paramSet8.get(0);
+        final MotionInputEventParams upParams = (MotionInputEventParams) paramSet7.get(0);
         assertThat(upParams.startDelta, equalTo(0L));
         assertThat(upParams.actionCode, equalTo(MotionEvent.ACTION_UP));
         assertThat(upParams.button, equalTo(MotionEvent.BUTTON_SECONDARY));
@@ -431,16 +418,16 @@ public class W3CActionsTransformationTests {
                 "\"id\": \"mouse1\"," +
                 "\"actions\": [" +
                 "{\"type\": \"pointerMove\", \"duration\": 0, \"x\": 100, \"y\": 100}," +
-                "{\"type\": \"pointerMove\", \"duration\": 10, \"x\": 0, \"y\": 0}]" +
+                "{\"type\": \"pointerMove\", \"duration\": 20, \"x\": 0, \"y\": 0}]" +
                 "} ]");
         final LongSparseArray<List<InputEventParams>> eventsChain = actionsToInputEventsMapping(
                 preprocessActions(actionJson)
         );
-        assertThat(eventsChain.size(), equalTo(3));
+        assertThat(eventsChain.size(), equalTo(4));
 
         final List<InputEventParams> paramSet1 = eventsChain.valueAt(0);
         assertThat(eventsChain.keyAt(0), equalTo(0L));
-        assertThat(paramSet1.size(), equalTo(2));
+        assertThat(paramSet1.size(), equalTo(1));
 
         final MotionInputEventParams enterParams = (MotionInputEventParams) paramSet1.get(0);
         assertThat(enterParams.startDelta, equalTo(0L));
@@ -451,20 +438,24 @@ public class W3CActionsTransformationTests {
         assertThat(enterParams.properties.id, is(equalTo(0)));
         assertThat(enterParams.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_MOUSE));
 
-        final MotionInputEventParams move1Params = (MotionInputEventParams) paramSet1.get(1);
-        assertThat(move1Params.startDelta, equalTo(0L));
-        assertThat(move1Params.actionCode, equalTo(MotionEvent.ACTION_HOVER_MOVE));
-        assertThat(move1Params.button, equalTo(0));
-        assertEquals(move1Params.coordinates.x, 100.0, Math.ulp(1.0));
-        assertEquals(move1Params.coordinates.y, 100.0, Math.ulp(1.0));
-        assertThat(move1Params.properties.id, is(equalTo(0)));
-        assertThat(move1Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_MOUSE));
-
         final List<InputEventParams> paramSet2 = eventsChain.valueAt(1);
         assertThat(eventsChain.keyAt(1), equalTo(5L));
         assertThat(paramSet2.size(), equalTo(1));
 
-        final MotionInputEventParams move2Params = (MotionInputEventParams) paramSet2.get(0);
+        final MotionInputEventParams move1Params = (MotionInputEventParams) paramSet2.get(0);
+        assertThat(move1Params.startDelta, equalTo(0L));
+        assertThat(move1Params.actionCode, equalTo(MotionEvent.ACTION_HOVER_MOVE));
+        assertThat(move1Params.button, equalTo(0));
+        assertEquals(move1Params.coordinates.x, 75.0, Math.ulp(1.0));
+        assertEquals(move1Params.coordinates.y, 75.0, Math.ulp(1.0));
+        assertThat(move1Params.properties.id, is(equalTo(0)));
+        assertThat(move1Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_MOUSE));
+
+        final List<InputEventParams> paramSet3 = eventsChain.valueAt(2);
+        assertThat(eventsChain.keyAt(2), equalTo(10L));
+        assertThat(paramSet3.size(), equalTo(1));
+
+        final MotionInputEventParams move2Params = (MotionInputEventParams) paramSet3.get(0);
         assertThat(move2Params.startDelta, equalTo(0L));
         assertThat(move2Params.actionCode, equalTo(MotionEvent.ACTION_HOVER_MOVE));
         assertThat(move2Params.button, equalTo(0));
@@ -473,11 +464,11 @@ public class W3CActionsTransformationTests {
         assertThat(move2Params.properties.id, is(equalTo(0)));
         assertThat(move2Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_MOUSE));
 
-        final List<InputEventParams> paramSet3 = eventsChain.valueAt(2);
-        assertThat(eventsChain.keyAt(2), equalTo(10L));
-        assertThat(paramSet3.size(), equalTo(1));
+        final List<InputEventParams> paramSet4 = eventsChain.valueAt(3);
+        assertThat(eventsChain.keyAt(3), equalTo(15L));
+        assertThat(paramSet4.size(), equalTo(1));
 
-        final MotionInputEventParams exitParams = (MotionInputEventParams) paramSet3.get(0);
+        final MotionInputEventParams exitParams = (MotionInputEventParams) paramSet4.get(0);
         assertThat(exitParams.startDelta, equalTo(0L));
         assertThat(exitParams.actionCode, equalTo(MotionEvent.ACTION_HOVER_EXIT));
         assertThat(exitParams.button, equalTo(0));

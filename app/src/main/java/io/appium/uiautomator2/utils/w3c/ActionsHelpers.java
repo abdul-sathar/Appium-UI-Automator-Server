@@ -38,6 +38,7 @@ import java.util.Set;
 
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.KnownElements;
+import io.appium.uiautomator2.utils.Logger;
 
 import static io.appium.uiautomator2.utils.w3c.ActionsConstants.ACTION_ITEM_BUTTON_KEY;
 import static io.appium.uiautomator2.utils.w3c.ActionsConstants.ACTION_ITEM_DURATION_KEY;
@@ -357,11 +358,71 @@ public class ActionsHelpers {
         return result;
     }
 
-    private static void recordEventParams(final long timeDeltaMs,
+    @Nullable
+    private static Long findEntryPointDeltaForSecondaryTapAction(long timeDeltaMs,
+                                                                 final LongSparseArray<List<InputEventParams>> mapping) {
+        Long result = null;
+        int upDownBalance = 0;
+        for (int i = 0; i < mapping.size(); ++i) {
+            final long currentDelta = mapping.keyAt(i);
+            if (currentDelta > timeDeltaMs) {
+                break;
+            }
+
+            final List<InputEventParams> allParams = mapping.get(currentDelta);
+            if (allParams == null) {
+                continue;
+            }
+
+            for (InputEventParams params : allParams) {
+                if (!(params instanceof MotionInputEventParams)) {
+                    continue;
+                }
+                final MotionInputEventParams motionParams = (MotionInputEventParams) params;
+                if (motionParams.actionCode == MotionEvent.ACTION_DOWN) {
+                    if (upDownBalance == 0) {
+                        result = currentDelta;
+                    }
+                    upDownBalance++;
+                } else if (motionParams.actionCode == MotionEvent.ACTION_UP) {
+                    upDownBalance--;
+                }
+            }
+        }
+
+        return upDownBalance > 1 ? result : null;
+    }
+
+    private static long recordEventParams(long timeDeltaMs,
                                           final LongSparseArray<List<InputEventParams>> mapping,
-                                          @Nullable final InputEventParams newParams,
-                                          boolean shouldOverwrite) {
-        final List<InputEventParams> allParams = mapping.get(timeDeltaMs);
+                                          @Nullable final InputEventParams newParams) {
+        if (newParams instanceof MotionInputEventParams) {
+            final MotionInputEventParams motionParams = (MotionInputEventParams) newParams;
+            final long alignValue = timeDeltaMs % MOTION_EVENT_INJECTION_DELAY_MS;
+            if (motionParams.actionCode == MotionEvent.ACTION_HOVER_MOVE
+                    || motionParams.actionCode == MotionEvent.ACTION_HOVER_EXIT
+                    || motionParams.actionCode == MotionEvent.ACTION_HOVER_ENTER) {
+                // Align hover events to 5 ms intervals
+                timeDeltaMs += alignValue;
+            }
+            if ((motionParams.actionCode == MotionEvent.ACTION_UP
+                    || motionParams.actionCode == MotionEvent.ACTION_DOWN
+                    || motionParams.actionCode == MotionEvent.ACTION_MOVE)) {
+                Long entryPointDelta = findEntryPointDeltaForSecondaryTapAction(timeDeltaMs, mapping);
+                if (entryPointDelta != null) {
+                    // The entry point for secondary tap actions and for move actions
+                    // will always be the timestamp
+                    // of the very first touch down action in the chain
+                    motionParams.startDelta = entryPointDelta;
+                    // Align secondary tap events to 5 ms intervals
+                    timeDeltaMs += alignValue;
+                } else if (motionParams.actionCode == MotionEvent.ACTION_MOVE) {
+                    // Align move events to 5 ms intervals
+                    timeDeltaMs += alignValue;
+                }
+            }
+        }
+        List<InputEventParams> allParams = mapping.get(timeDeltaMs);
         if (allParams == null) {
             final List<InputEventParams> params = new ArrayList<>();
             if (newParams != null) {
@@ -369,11 +430,9 @@ public class ActionsHelpers {
             }
             mapping.put(timeDeltaMs, params);
         } else if (newParams != null) {
-            if (!allParams.isEmpty() && shouldOverwrite) {
-                allParams.remove(allParams.size() - 1);
-            }
             allParams.add(newParams);
         }
+        return timeDeltaMs;
     }
 
     private static MotionInputEventParams toMotionEventInputParams(
@@ -395,11 +454,11 @@ public class ActionsHelpers {
         final PointerProperties props = new PointerProperties();
         props.id = pointerIndex;
         props.toolType = actionToToolType(action);
+        final boolean isToolTypeMouse = props.toolType == MotionEvent.TOOL_TYPE_MOUSE;
         long timeDelta = 0;
         long chainEntryPointDelta = 0;
-        boolean isPointerDown = false;
-        boolean isPointerHovering = false;
         long recentUpDownDelta = -1;
+        boolean isPointerDown = false;
         int recentButton = 0;
         final JSONArray actionItems = action.getJSONArray(ACTION_KEY_ACTIONS);
         for (int actionItemIdx = 0; actionItemIdx < actionItems.length(); actionItemIdx++) {
@@ -410,32 +469,37 @@ public class ActionsHelpers {
                     long duration = extractDuration(action, actionItem);
                     if (duration > 0) {
                         timeDelta += duration;
-                        recordEventParams(timeDelta, mapping, null, false);
+                        timeDelta = recordEventParams(timeDelta, mapping, null);
                     }
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_DOWN: {
-                    chainEntryPointDelta = timeDelta;
-                    if (isPointerHovering) {
-                        recordEventParams(timeDelta - 1, mapping,
-                                toMotionEventInputParams(MotionEvent.ACTION_HOVER_EXIT,
-                                        extractCoordinates(actionId, actionItems, actionItemIdx),
-                                        0, props, chainEntryPointDelta), false);
-                        isPointerHovering = false;
+                    if (isPointerDown) {
+                        Logger.info(String.format("Ignoring a redundant ACTION_ITEM_TYPE_POINTER_DOWN at " +
+                                "%sms in '%s' actions chain", timeDelta, actionId));
+                        break;
                     }
+
+                    chainEntryPointDelta = timeDelta;
                     recentButton = extractButton(actionItem, props.toolType);
-                    recordEventParams(timeDelta, mapping, toMotionEventInputParams(
+                    timeDelta = recordEventParams(timeDelta, mapping, toMotionEventInputParams(
                             MotionEvent.ACTION_DOWN, extractCoordinates(actionId, actionItems, actionItemIdx),
-                            recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
+                            recentButton, props, chainEntryPointDelta));
                     isPointerDown = true;
                     recentUpDownDelta = timeDelta;
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_UP: {
+                    if (!isPointerDown) {
+                        Logger.info(String.format("Ignoring a redundant ACTION_ITEM_TYPE_POINTER_UP at " +
+                                "%sms in '%s' actions chain", timeDelta, actionId));
+                        break;
+                    }
+
                     recentButton = extractButton(actionItem, props.toolType);
-                    recordEventParams(timeDelta, mapping, toMotionEventInputParams(
+                    timeDelta = recordEventParams(timeDelta, mapping, toMotionEventInputParams(
                             MotionEvent.ACTION_UP, extractCoordinates(actionId, actionItems, actionItemIdx),
-                            recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
+                            recentButton, props, chainEntryPointDelta));
                     isPointerDown = false;
                     recentButton = 0;
                     chainEntryPointDelta = timeDelta;
@@ -444,66 +508,77 @@ public class ActionsHelpers {
                 break;
                 case ACTION_ITEM_TYPE_POINTER_MOVE: {
                     final long duration = extractDuration(action, actionItem);
-                    if (duration < MOTION_EVENT_INJECTION_DELAY_MS) {
+                    if (duration <= MOTION_EVENT_INJECTION_DELAY_MS) {
                         break;
                     }
                     if (actionItemIdx == 0) {
-                        // FIXME: Selenium client sets the default move duration
+                        // Selenium client sets the default move duration
                         // to 250 ms, but it won't work if this is the very first
                         // action item, since gesture start coordinate is undefined.
                         // It would be better to set the default duration to zero.
                         timeDelta += duration;
-                        recordEventParams(timeDelta, mapping, null, true);
+                        timeDelta = recordEventParams(timeDelta, mapping, null);
                         break;
-                    }
-                    boolean shouldAlignTimeDelta = false;
-                    if (recentUpDownDelta == timeDelta) {
-                        timeDelta++;
-                        shouldAlignTimeDelta = true;
                     }
                     int actionCode = MotionEvent.ACTION_MOVE;
                     final PointerCoords startCoordinates = extractCoordinates(actionId, actionItems, actionItemIdx - 1);
-                    if (!isPointerDown) {
-                        if (!isPointerHovering) {
-                            recordEventParams(timeDelta, mapping, toMotionEventInputParams(
-                                    MotionEvent.ACTION_HOVER_ENTER, startCoordinates,
-                                    0, props, chainEntryPointDelta), true);
-                            isPointerHovering = true;
+
+                    final long startDelta = timeDelta;
+                    final long firstActionDelta;
+                    if (recentUpDownDelta == timeDelta && timeDelta % MOTION_EVENT_INJECTION_DELAY_MS == 0) {
+                        firstActionDelta = timeDelta + MOTION_EVENT_INJECTION_DELAY_MS;
+                    } else {
+                        firstActionDelta = timeDelta;
+                    }
+                    if (!isPointerDown && isToolTypeMouse) {
+                        if (duration <= MOTION_EVENT_INJECTION_DELAY_MS * 3) {
+                            // Hover gesture should also include enter and exit
+                            // events, so we must book enough time for these
+                            timeDelta += duration;
+                            timeDelta = recordEventParams(timeDelta, mapping, null);
+                            break;
                         }
+                        timeDelta = recordEventParams(firstActionDelta, mapping, toMotionEventInputParams(
+                                MotionEvent.ACTION_HOVER_ENTER, startCoordinates,
+                                0, props, firstActionDelta));
                         actionCode = MotionEvent.ACTION_HOVER_MOVE;
+                    } else {
+                        timeDelta = recordEventParams(firstActionDelta, mapping, toMotionEventInputParams(
+                                MotionEvent.ACTION_MOVE, startCoordinates,
+                                recentButton, props, chainEntryPointDelta));
                     }
-                    // `stepsCount` is never going to be equal to zero, because of the
-                    // `if (duration < MOTION_EVENT_INJECTION_DELAY_MS)` condition above
-                    final long stepsCount = duration / MOTION_EVENT_INJECTION_DELAY_MS;
+
                     final PointerCoords endCoordinates = extractCoordinates(actionId, actionItems, actionItemIdx);
-                    for (long step = 0; step < stepsCount; ++step) {
-                        final PointerCoords currentCoordinates = new PointerCoords();
-                        currentCoordinates.x = startCoordinates.x +
-                                (endCoordinates.x - startCoordinates.x) / stepsCount * step;
-                        currentCoordinates.y = startCoordinates.y +
-                                (endCoordinates.y - startCoordinates.y) / stepsCount * step;
-                        recordEventParams(timeDelta, mapping, toMotionEventInputParams(actionCode,
-                                currentCoordinates, recentButton, props, chainEntryPointDelta), recentUpDownDelta == timeDelta);
+                    final long totalActionDuration = startDelta + duration - firstActionDelta;
+                    final long stepsCount = totalActionDuration / MOTION_EVENT_INJECTION_DELAY_MS;
+                    long step = 1;
+                    if (stepsCount > 0) {
                         timeDelta += MOTION_EVENT_INJECTION_DELAY_MS;
+                        while (timeDelta < startDelta + duration) {
+                            final PointerCoords currentCoordinates = new PointerCoords();
+                            currentCoordinates.x = startCoordinates.x + (endCoordinates.x - startCoordinates.x) / stepsCount * step;
+                            currentCoordinates.y = startCoordinates.y + (endCoordinates.y - startCoordinates.y) / stepsCount * step;
+                            if (timeDelta + MOTION_EVENT_INJECTION_DELAY_MS >= firstActionDelta + duration
+                                    && actionCode == MotionEvent.ACTION_HOVER_MOVE) {
+                                timeDelta = recordEventParams(timeDelta, mapping, toMotionEventInputParams(
+                                        MotionEvent.ACTION_HOVER_EXIT, endCoordinates, 0, props, firstActionDelta));
+                            } else {
+                                timeDelta = recordEventParams(timeDelta, mapping, toMotionEventInputParams(actionCode,
+                                        currentCoordinates, recentButton, props,
+                                        actionCode == MotionEvent.ACTION_HOVER_MOVE ? firstActionDelta : chainEntryPointDelta));
+                            }
+                            timeDelta += MOTION_EVENT_INJECTION_DELAY_MS;
+                            step++;
+                        }
                     }
-                    if (shouldAlignTimeDelta) {
-                        timeDelta--;
-                    }
+                    timeDelta = startDelta + duration;
                 }
                 break;
                 default:
                     throw new ActionsParseException(String.format(
                             "Unexpected action item %s '%s' in action with id '%s'",
-                            ACTION_ITEM_TYPE_KEY, itemType, action.getString(ACTION_KEY_ID)));
+                            ACTION_ITEM_TYPE_KEY, itemType, actionId));
             }
-        }
-        if (isPointerHovering) {
-            recordEventParams(timeDelta + 1, mapping, toMotionEventInputParams(
-                    MotionEvent.ACTION_HOVER_EXIT,
-                    extractCoordinates(actionId, actionItems, actionItems.length() - 1),
-                    0, props, chainEntryPointDelta), true);
-            //noinspection UnusedAssignment
-            isPointerHovering = false;
         }
     }
 
@@ -569,7 +644,7 @@ public class ActionsHelpers {
                     long duration = extractDuration(action, actionItem);
                     if (duration > 0) {
                         timeDelta += duration;
-                        recordEventParams(timeDelta, mapping, null, false);
+                        timeDelta = recordEventParams(timeDelta, mapping, null);
                     }
                     break;
                 case ACTION_ITEM_TYPE_KEY_DOWN:
@@ -591,7 +666,7 @@ public class ActionsHelpers {
                     evtParams.keyAction = itemType.equals(ACTION_ITEM_TYPE_KEY_DOWN) ?
                             KeyEvent.ACTION_DOWN : KeyEvent.ACTION_UP;
                     evtParams.startDelta = chainEntryPointDelta;
-                    recordEventParams(timeDelta, mapping, evtParams, false);
+                    timeDelta = recordEventParams(timeDelta, mapping, evtParams);
                     chainEntryPointDelta = timeDelta;
                     break;
                 default:
@@ -616,7 +691,7 @@ public class ActionsHelpers {
                         ACTION_ITEM_TYPE_KEY, itemType, action.getString(ACTION_KEY_ID)));
             }
             timeDelta += extractDuration(action, actionItem);
-            recordEventParams(timeDelta, mapping, null, false);
+            timeDelta = recordEventParams(timeDelta, mapping, null);
         }
     }
 

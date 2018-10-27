@@ -67,7 +67,8 @@ public class W3CActions extends SafeRequestHandler {
             final List<MotionInputEventParams> motionEventsParams, final boolean shouldHovering) {
         final List<PointerProperties> result = new ArrayList<>();
         for (final MotionInputEventParams eventParams : motionEventsParams) {
-            if (shouldHovering && HOVERING_ACTIONS.contains(eventParams.actionCode)) {
+            if (shouldHovering && HOVERING_ACTIONS.contains(eventParams.actionCode)
+                    && eventParams.properties.toolType == MotionEvent.TOOL_TYPE_MOUSE) {
                 result.add(eventParams.properties);
             } else if (!shouldHovering && !HOVERING_ACTIONS.contains(eventParams.actionCode)) {
                 result.add(eventParams.properties);
@@ -80,7 +81,8 @@ public class W3CActions extends SafeRequestHandler {
             final List<MotionInputEventParams> motionEventsParams, final boolean shouldHovering) {
         final List<PointerCoords> result = new ArrayList<>();
         for (final MotionInputEventParams eventParams : motionEventsParams) {
-            if (shouldHovering && HOVERING_ACTIONS.contains(eventParams.actionCode)) {
+            if (shouldHovering && HOVERING_ACTIONS.contains(eventParams.actionCode) &&
+                    eventParams.properties.toolType == MotionEvent.TOOL_TYPE_MOUSE) {
                 result.add(eventParams.coordinates);
             } else if (!shouldHovering && !HOVERING_ACTIONS.contains(eventParams.actionCode)) {
                 result.add(eventParams.coordinates);
