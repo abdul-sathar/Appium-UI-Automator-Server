@@ -48,6 +48,7 @@ import io.appium.uiautomator2.utils.w3c.W3CKeyCode;
 
 import static io.appium.uiautomator2.utils.InteractionUtils.injectEventSync;
 import static io.appium.uiautomator2.utils.w3c.ActionsHelpers.actionsToInputEventsMapping;
+import static io.appium.uiautomator2.utils.w3c.ActionsHelpers.getActionsCount;
 import static io.appium.uiautomator2.utils.w3c.ActionsHelpers.getPointerAction;
 import static io.appium.uiautomator2.utils.w3c.ActionsHelpers.metaKeysToState;
 import static io.appium.uiautomator2.utils.w3c.ActionsHelpers.toolTypeToInputSource;
@@ -219,33 +220,36 @@ public class W3CActions extends SafeRequestHandler {
                 final PointerCoords[] nonHoveringCoords = filterPointerCoordinates(motionEventsParams, false);
                 final PointerCoords[] hoveringCoords = filterPointerCoordinates(motionEventsParams, true);
 
+                int moveActionsCount = getActionsCount(MotionEvent.ACTION_MOVE, motionEventsParams);
+                int pointerCount = moveActionsCount == 0 ? 1 : moveActionsCount;
+
                 for (final MotionInputEventParams motionEventParams : motionEventsParams) {
                     final int actionCode = motionEventParams.actionCode;
                     MotionEvent synthesizedEvent = null;
                     switch (actionCode) {
                         case MotionEvent.ACTION_DOWN: {
-                            final int action = nonHoveringProps.length <= 1
+                            final int action = pointerCount <= 1
                                     ? MotionEvent.ACTION_DOWN
-                                    : getPointerAction(MotionEvent.ACTION_POINTER_DOWN, nonHoveringProps.length - 1);
+                                    : getPointerAction(MotionEvent.ACTION_POINTER_DOWN, pointerCount - 1);
                             synthesizedEvent = MotionEvent.obtain(startTimestamp + motionEventParams.startDelta,
-                                    SystemClock.uptimeMillis(), action, nonHoveringProps.length, nonHoveringProps, nonHoveringCoords,
+                                    SystemClock.uptimeMillis(), action, pointerCount++, nonHoveringProps, nonHoveringCoords,
                                     metaKeysToState(depressedMetaKeys), motionEventParams.button,
                                     1, 1, 0, 0, inputSource, 0);
                         }
                         break;
                         case MotionEvent.ACTION_UP: {
-                            final int action = nonHoveringProps.length <= 1
+                            final int action = pointerCount <= 1
                                     ? MotionEvent.ACTION_UP
-                                    : getPointerAction(MotionEvent.ACTION_POINTER_UP, nonHoveringProps.length - 1);
+                                    : getPointerAction(MotionEvent.ACTION_POINTER_UP, pointerCount - 1);
                             synthesizedEvent = MotionEvent.obtain(startTimestamp + motionEventParams.startDelta,
-                                    SystemClock.uptimeMillis(), action, nonHoveringProps.length,
+                                    SystemClock.uptimeMillis(), action, pointerCount--,
                                     nonHoveringProps, nonHoveringCoords, metaKeysToState(depressedMetaKeys), motionEventParams.button,
                                     1, 1, 0, 0, inputSource, 0);
                         }
                         break;
                         case MotionEvent.ACTION_MOVE: {
                             synthesizedEvent = MotionEvent.obtain(startTimestamp + motionEventParams.startDelta,
-                                    SystemClock.uptimeMillis(), actionCode, nonHoveringProps.length,
+                                    SystemClock.uptimeMillis(), actionCode, pointerCount,
                                     nonHoveringProps, nonHoveringCoords, metaKeysToState(depressedMetaKeys),
                                     motionEventParams.button, 1, 1, 0, 0, inputSource, 0);
                         }
@@ -254,7 +258,7 @@ public class W3CActions extends SafeRequestHandler {
                         case MotionEvent.ACTION_HOVER_EXIT:
                         case MotionEvent.ACTION_HOVER_MOVE: {
                             synthesizedEvent = MotionEvent.obtain(startTimestamp + motionEventParams.startDelta,
-                                    SystemClock.uptimeMillis(), actionCode, hoveringProps.length,
+                                    SystemClock.uptimeMillis(), actionCode, 1,
                                     hoveringProps, hoveringCoords, metaKeysToState(depressedMetaKeys),
                                     0, 1, 1, 0, 0, inputSource, 0);
                         }

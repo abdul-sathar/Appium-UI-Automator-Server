@@ -582,7 +582,7 @@ public class W3CActionsTransformationTests {
         assertThat(up1Params.button, equalTo(0));
         assertEquals(up1Params.coordinates.x, 50.0, Math.ulp(1.0));
         assertEquals(up1Params.coordinates.y, 50.0, Math.ulp(1.0));
-        assertThat(up1Params.properties.id, is(equalTo(0)));
+        assertThat(up1Params.properties.id, is(equalTo(1)));
         assertThat(up1Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
 
         final MotionInputEventParams up2Params = (MotionInputEventParams) paramSet4.get(1);
@@ -591,7 +591,7 @@ public class W3CActionsTransformationTests {
         assertThat(up2Params.button, equalTo(0));
         assertEquals(up2Params.coordinates.x, 50.0, Math.ulp(1.0));
         assertEquals(up2Params.coordinates.y, 50.0, Math.ulp(1.0));
-        assertThat(up2Params.properties.id, is(equalTo(1)));
+        assertThat(up2Params.properties.id, is(equalTo(0)));
         assertThat(up2Params.properties.toolType, equalTo(MotionEvent.TOOL_TYPE_FINGER));
     }
 

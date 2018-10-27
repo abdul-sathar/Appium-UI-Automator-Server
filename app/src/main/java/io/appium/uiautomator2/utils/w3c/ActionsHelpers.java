@@ -393,11 +393,32 @@ public class ActionsHelpers {
         return upDownBalance > 1 ? result : null;
     }
 
+    private static void addUpDownAction(InputEventParams action, List<InputEventParams> allParams) {
+        for (int idx = 0; idx < allParams.size(); ++idx) {
+            if (allParams.get(idx) instanceof MotionInputEventParams) {
+                final MotionInputEventParams currentAction = (MotionInputEventParams) allParams.get(idx);
+                if (currentAction.actionCode == MotionEvent.ACTION_MOVE
+                        || currentAction.actionCode == MotionEvent.ACTION_UP) {
+                    // All tap actions must be added before move actions
+                    allParams.add(idx, action);
+                    return;
+                }
+            }
+        }
+        // Append at the tail by default
+        allParams.add(action);
+    }
+
     private static long recordEventParams(long timeDeltaMs,
                                           final LongSparseArray<List<InputEventParams>> mapping,
-                                          @Nullable final InputEventParams newParams) {
-        if (newParams instanceof MotionInputEventParams) {
-            final MotionInputEventParams motionParams = (MotionInputEventParams) newParams;
+                                          @Nullable final InputEventParams newParam) {
+        boolean isUpDownAction = false;
+        if (newParam instanceof MotionInputEventParams) {
+            final MotionInputEventParams motionParams = (MotionInputEventParams) newParam;
+
+            isUpDownAction = motionParams.actionCode == MotionEvent.ACTION_UP
+                    || motionParams.actionCode == MotionEvent.ACTION_DOWN;
+
             final long alignValue = timeDeltaMs % MOTION_EVENT_INJECTION_DELAY_MS;
             if (motionParams.actionCode == MotionEvent.ACTION_HOVER_MOVE
                     || motionParams.actionCode == MotionEvent.ACTION_HOVER_EXIT
@@ -410,7 +431,7 @@ public class ActionsHelpers {
                     || motionParams.actionCode == MotionEvent.ACTION_MOVE)) {
                 Long entryPointDelta = findEntryPointDeltaForSecondaryTapAction(timeDeltaMs, mapping);
                 if (entryPointDelta != null) {
-                    // The entry point for secondary tap actions and for move actions
+                    // The entry point for secondary up/down and move actions
                     // will always be the timestamp
                     // of the very first touch down action in the chain
                     motionParams.startDelta = entryPointDelta;
@@ -424,13 +445,21 @@ public class ActionsHelpers {
         }
         List<InputEventParams> allParams = mapping.get(timeDeltaMs);
         if (allParams == null) {
-            final List<InputEventParams> params = new ArrayList<>();
-            if (newParams != null) {
-                params.add(newParams);
+            final List<InputEventParams> param = new ArrayList<>();
+            if (newParam != null) {
+                if (isUpDownAction) {
+                    addUpDownAction(newParam, param);
+                } else {
+                    param.add(newParam);
+                }
             }
-            mapping.put(timeDeltaMs, params);
-        } else if (newParams != null) {
-            allParams.add(newParams);
+            mapping.put(timeDeltaMs, param);
+        } else if (newParam != null) {
+            if (isUpDownAction) {
+                addUpDownAction(newParam, allParams);
+            } else {
+                allParams.add(newParam);
+            }
         }
         return timeDeltaMs;
     }
@@ -466,11 +495,8 @@ public class ActionsHelpers {
             final String itemType = actionItem.getString(ACTION_ITEM_TYPE_KEY);
             switch (itemType) {
                 case ACTION_ITEM_TYPE_PAUSE: {
-                    long duration = extractDuration(action, actionItem);
-                    if (duration > 0) {
-                        timeDelta += duration;
-                        timeDelta = recordEventParams(timeDelta, mapping, null);
-                    }
+                    timeDelta += extractDuration(action, actionItem);
+                    timeDelta = recordEventParams(timeDelta, mapping, null);
                 }
                 break;
                 case ACTION_ITEM_TYPE_POINTER_DOWN: {
@@ -641,11 +667,8 @@ public class ActionsHelpers {
             final String itemType = actionItem.getString(ACTION_ITEM_TYPE_KEY);
             switch (itemType) {
                 case ACTION_ITEM_TYPE_PAUSE:
-                    long duration = extractDuration(action, actionItem);
-                    if (duration > 0) {
-                        timeDelta += duration;
-                        timeDelta = recordEventParams(timeDelta, mapping, null);
-                    }
+                    timeDelta += extractDuration(action, actionItem);
+                    timeDelta = recordEventParams(timeDelta, mapping, null);
                     break;
                 case ACTION_ITEM_TYPE_KEY_DOWN:
                     chainEntryPointDelta = timeDelta;
@@ -709,6 +732,16 @@ public class ActionsHelpers {
         final List<JSONObject> emptyActions = filterActionsByType(actions, ACTION_TYPE_NONE);
         for (final JSONObject emptyAction : emptyActions) {
             applyEmptyActionToEventsMapping(emptyAction, result);
+        }
+        return result;
+    }
+
+    public static int getActionsCount(int action, List<MotionInputEventParams> motionEventsParams) {
+        int result = 0;
+        for (MotionInputEventParams params : motionEventsParams) {
+            if (params.actionCode == action) {
+                result++;
+            }
         }
         return result;
     }
