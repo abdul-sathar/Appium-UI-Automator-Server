@@ -16,6 +16,7 @@
 
 package io.appium.uiautomator2.handler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,9 +25,12 @@ import java.util.Map;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
-import io.appium.uiautomator2.model.AppiumUiAutomatorDriver;
+import io.appium.uiautomator2.model.AppiumUIA2Driver;
 import io.appium.uiautomator2.model.Session;
 import io.appium.uiautomator2.server.WDStatus;
+import io.appium.uiautomator2.utils.JSONUtils;
+
+import static io.appium.uiautomator2.model.Session.NO_ID;
 
 public class GetSessions extends SafeRequestHandler {
     public GetSessions(String mappedUri) {
@@ -35,18 +39,21 @@ public class GetSessions extends SafeRequestHandler {
 
     @Override
     protected AppiumResponse safeHandle(IHttpRequest request) throws JSONException {
-        Session session = AppiumUiAutomatorDriver.getInstance().getSession();
-        JSONObject result = new JSONObject();
+        Session session = AppiumUIA2Driver.getInstance().getSession();
+        JSONArray result = new JSONArray();
         if (session != null) {
+            JSONObject sessionProps = new JSONObject();
             String sessionId = session.getSessionId();
             if (sessionId != null) {
+                sessionProps.put("id", sessionId);
                 JSONObject sessionCaps = new JSONObject();
-                for (Map.Entry<String, Object> capEntry : Session.capabilities.entrySet()) {
-                    sessionCaps.put(capEntry.getKey(), String.valueOf(capEntry.getValue()));
+                for (Map.Entry<String, Object> capEntry : session.getCapabilities().entrySet()) {
+                    sessionCaps.put(capEntry.getKey(), JSONUtils.formatNull(capEntry.getValue()));
                 }
-                result.put(sessionId, sessionCaps);
+                sessionProps.put("capabilities", sessionCaps);
             }
+            result.put(sessionProps);
         }
-        return new AppiumResponse("SESSIONID", WDStatus.SUCCESS, result);
+        return new AppiumResponse(NO_ID, WDStatus.SUCCESS, result);
     }
 }
