@@ -17,10 +17,15 @@
 package io.appium.uiautomator2.handler;
 
 import android.app.Instrumentation;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
@@ -30,12 +35,61 @@ import io.appium.uiautomator2.utils.Logger;
 
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static io.appium.uiautomator2.utils.JSONUtils.formatNull;
+import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 
 public class GetDeviceInfo extends SafeRequestHandler {
     private final Instrumentation mInstrumentation = getInstrumentation();
 
     public GetDeviceInfo(String mappedUri) {
         super(mappedUri);
+    }
+
+    private static Object extractSafeJSONValue(String fieldName, Object source) {
+        try {
+            return formatNull(getField(fieldName, source));
+        } catch (UiAutomator2Exception ign) {
+            return JSONObject.NULL;
+        }
+    }
+
+    private static JSONArray extractNetworkInfo(DeviceInfoHelper deviceInfoHelper) throws JSONException {
+        JSONArray result = new JSONArray();
+        for (Network network : deviceInfoHelper.getNetworks()) {
+            JSONObject resultItem = new JSONObject();
+            NetworkInfo networkInfo = deviceInfoHelper.extractInfo(network);
+            if (networkInfo != null) {
+                resultItem.put("type", networkInfo.getType());
+                resultItem.put("typeName", networkInfo.getTypeName());
+                resultItem.put("subtype", networkInfo.getSubtype());
+                resultItem.put("subtypeName", networkInfo.getSubtypeName());
+                resultItem.put("isConnected", networkInfo.isConnected());
+                resultItem.put("connectionState", networkInfo.getDetailedState().ordinal());
+                resultItem.put("extraInfo", formatNull(networkInfo.getExtraInfo()));
+                resultItem.put("isAvailable", networkInfo.isAvailable());
+                resultItem.put("isFailover", networkInfo.isFailover());
+                resultItem.put("isRoaming", networkInfo.isRoaming());
+            }
+
+            NetworkCapabilities networkCaps = deviceInfoHelper.extractCapabilities(network);
+            JSONObject caps = new JSONObject();
+            if (networkCaps != null) {
+                caps.put("transportTypes", DeviceInfoHelper.extractTransportTypes(networkCaps));
+                caps.put("networkCapabilities", DeviceInfoHelper.extractCapNames(networkCaps));
+                caps.put("linkUpstreamBandwidthKbps", networkCaps.getLinkUpstreamBandwidthKbps());
+                caps.put("linkDownBandwidthKbps", networkCaps.getLinkDownstreamBandwidthKbps());
+                caps.put("signalStrength",
+                        extractSafeJSONValue("mSignalStrength", networkCaps));
+                caps.put("networkSpecifier",
+                        extractSafeJSONValue("mNetworkSpecifier", networkCaps));
+                caps.put("SSID", extractSafeJSONValue("mSSID", networkCaps));
+            }
+            resultItem.put("capabilities", formatNull(networkCaps == null ? null : caps));
+
+            if (resultItem.length() > 0) {
+                result.put(resultItem);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -53,6 +107,7 @@ public class GetDeviceInfo extends SafeRequestHandler {
         response.put("carrierName", formatNull(deviceInfoHelper.getCarrierName()));
         response.put("realDisplaySize", deviceInfoHelper.getRealDisplaySize());
         response.put("displayDensity", deviceInfoHelper.getDisplayDensity());
+        response.put("networks", extractNetworkInfo(deviceInfoHelper));
 
         return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, response);
     }
