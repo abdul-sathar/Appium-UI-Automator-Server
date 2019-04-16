@@ -63,7 +63,8 @@ public class GetDeviceInfo extends SafeRequestHandler {
                 resultItem.put("subtype", networkInfo.getSubtype());
                 resultItem.put("subtypeName", networkInfo.getSubtypeName());
                 resultItem.put("isConnected", networkInfo.isConnected());
-                resultItem.put("connectionState", networkInfo.getDetailedState().ordinal());
+                resultItem.put("detailedState", networkInfo.getDetailedState().name());
+                resultItem.put("state", networkInfo.getState().name());
                 resultItem.put("extraInfo", formatNull(networkInfo.getExtraInfo()));
                 resultItem.put("isAvailable", networkInfo.isAvailable());
                 resultItem.put("isFailover", networkInfo.isFailover());
