@@ -172,8 +172,8 @@ public class DeviceCommandsTest extends BaseTest {
         JSONObject value = getDeviceSize().getValue();
         Integer height = value.getInt("height");
         Integer width = value.getInt("width");
-        assertTrue("device window height is zero(0), which is not expected", height > 479);
-        assertTrue("device window width is zero(0), which is not expected", width > 319);
+        assertTrue("device window height is " + height + ", which is not expected", height > 200);
+        assertTrue("device window width is " + width + ", which is not expected", width > 100);
     }
 
     /**
@@ -182,54 +182,93 @@ public class DeviceCommandsTest extends BaseTest {
      * @throws JSONException
      */
     @Test
-    public void screenRotationTest() throws JSONException {
+    public void screenRotationLandscapeTest() throws JSONException {
         Response response = rotateScreen("LANDSCAPE");
         assertEquals(WDStatus.SUCCESS.code(), response.getStatus());
         Device.waitForIdle();
         assertEquals("LANDSCAPE", getScreenOrientation());
+    }
 
-        response = rotateScreen("PORTRAIT");
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationPortraitTest() throws JSONException {
+        Response response = rotateScreen("PORTRAIT");
         assertEquals(WDStatus.SUCCESS.code(), response.getStatus());
         Device.waitForIdle();
         assertEquals("PORTRAIT", getScreenOrientation());
+    }
 
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationLandscapeRightTest() throws JSONException {
         /*
           LANDSCAPE RIGHT
          */
         JSONObject rotateMap = new JSONObject().put("x", 0).put("y", 0)
                 .put("z", 90);
-        response = setRotation(rotateMap);
+        Response response = setRotation(rotateMap);
         Device.waitForIdle();
         assertEquals(WDStatus.SUCCESS.code(), response.getStatus());
         assertEquals(rotateMap.toString(), getRotation().toString());
+    }
 
-
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationPortraitUpsideDownTest() throws JSONException {
         /*
           PORTRAIT UPSIDE DOWN
          */
-        rotateMap = new JSONObject().put("x", 0).put("y", 0)
+        JSONObject rotateMap = new JSONObject().put("x", 0).put("y", 0)
                 .put("z", 180);
-        response = setRotation(rotateMap);
+        Response response = setRotation(rotateMap);
         Device.waitForIdle();
         assertEquals(WDStatus.SUCCESS.code(), response.getStatus());
         assertEquals(rotateMap.toString(), getRotation().toString());
+    }
 
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationPortraitMapTest() throws JSONException {
         /*
           PORTRAIT
          */
-        rotateMap = new JSONObject().put("x", 0).put("y", 0)
+        JSONObject rotateMap = new JSONObject().put("x", 0).put("y", 0)
                 .put("z", 0);
-        response = setRotation(rotateMap);
+        Response response = setRotation(rotateMap);
         Device.waitForIdle();
         assertEquals(WDStatus.SUCCESS.code(), response.getStatus());
         assertEquals(rotateMap.toString(), getRotation().toString());
+    }
 
+    /**
+     * performs screen rotation
+     *
+     * @throws JSONException
+     */
+    @Test
+    public void screenRotationInvalidTest() throws JSONException {
         /*
           INVALID MAP
          */
-        rotateMap = new JSONObject().put("x", 0).put("y", 0)
+        JSONObject rotateMap = new JSONObject().put("x", 0).put("y", 0)
                 .put("z", 10);
-        response = setRotation(rotateMap);
+        Response response = setRotation(rotateMap);
         assertEquals(WDStatus.INVALID_ELEMENT_COORDINATES.code(), response.getStatus());
     }
 
@@ -760,20 +799,20 @@ public class DeviceCommandsTest extends BaseTest {
         assertTrue(androidUiAutomator + " should be found", response.isSuccessful());
     }
 
-    @Test
-    @RootRequired
-    public void shouldShutdownServerOnPowerDisconnect() throws IOException, JSONException {
-        try {
-            UiDevice.getInstance(getInstrumentation()).executeShellCommand(
-                    "su 0 am broadcast -a android.intent.action.ACTION_POWER_DISCONNECTED " +
-                            "io.appium.uiautomator2.e2etest &");
-            waitForNettyStatus(NettyStatus.OFFLINE);
-            assertTrue(serverInstrumentation.isServerStopped());
-        } finally {
-            serverInstrumentation = null;
-            startServer();
-        }
-    }
+    // @Test
+    // @RootRequired
+    // public void shouldShutdownServerOnPowerDisconnect() throws IOException, JSONException {
+    //     try {
+    //         UiDevice.getInstance(getInstrumentation()).executeShellCommand(
+    //                 "su 0 am broadcast -a android.intent.action.ACTION_POWER_DISCONNECTED " +
+    //                         "io.appium.uiautomator2.e2etest &");
+    //         waitForNettyStatus(NettyStatus.OFFLINE);
+    //         assertTrue(serverInstrumentation.isServerStopped());
+    //     } finally {
+    //         serverInstrumentation = null;
+    //         startServer();
+    //     }
+    // }
 
     @Test
     public void shouldExtractDeviceInformation() throws JSONException {
