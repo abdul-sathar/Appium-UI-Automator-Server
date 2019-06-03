@@ -16,6 +16,8 @@
 
 package io.appium.uiautomator2.unittest.test;
 
+import android.os.SystemClock;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Test;
@@ -30,9 +32,9 @@ import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceComma
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.scrollToText;
 import static io.appium.uiautomator2.unittest.test.internal.commands.ElementCommands.click;
 import static io.appium.uiautomator2.unittest.test.internal.commands.ElementCommands.getText;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ActionsCommandsTest extends BaseTest {
     private static final By DRAG_TEXT = By.id("io.appium.android.apis:id/drag_result_text");
@@ -41,10 +43,21 @@ public class ActionsCommandsTest extends BaseTest {
         return String.format("io.appium.android.apis:id/drag_dot_%d", idx);
     }
 
-    private void verifyDragResult(String expectedText) {
-        Response response = findElement(DRAG_TEXT);
-        response = getText(response.getElementId());
-        assertThat((String) response.getValue(), containsString(expectedText));
+    private void verifyDragResult() {
+        String dragLabel = "";
+        long msStarted = SystemClock.currentThreadTimeMillis();
+        do {
+            Response response = findElement(DRAG_TEXT);
+            try {
+                dragLabel = getText(response.getElementId()).getValue();
+                if (dragLabel.contains("Dropped")) {
+                    return;
+                }
+            } catch (Exception e) {
+                SystemClock.sleep(500);
+            }
+        } while (SystemClock.currentThreadTimeMillis() - msStarted <= 7000);
+        fail(String.format("The drag result has an unexpected label: %s", dragLabel));
     }
 
     private void setupDragDropView() throws JSONException {
@@ -83,7 +96,7 @@ public class ActionsCommandsTest extends BaseTest {
                 "} ]", dot1Response.getElementId(), dot2Response.getElementId()));
         Response actionsResponse = performActions(actionsJson);
         assertThat(actionsResponse.getStatus(), equalTo(WDStatus.SUCCESS.code()));
-        verifyDragResult("Dropped");
+        verifyDragResult();
     }
 
     @Test
