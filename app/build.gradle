@@ -21,12 +21,12 @@ android {
         applicationId 'io.appium.uiautomator2'
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 35
+        versionCode 36
         archivesBaseName = 'appium-uiautomator2'
         /**
          * versionName should be updated and inline with version in package.json for every npm release.
          */
-        versionName '3.8.1'
+        versionName '4.0.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
