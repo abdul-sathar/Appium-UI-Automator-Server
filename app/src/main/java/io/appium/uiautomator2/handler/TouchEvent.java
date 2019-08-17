@@ -18,10 +18,14 @@ package io.appium.uiautomator2.handler;
 
 import android.graphics.Rect;
 
+import io.appium.uiautomator2.utils.w3c.W3CElementUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.test.uiautomator.UiObjectNotFoundException;
+
+import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
+import io.appium.uiautomator2.common.exceptions.InvalidElementStateException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
@@ -29,7 +33,6 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.AppiumUIA2Driver;
 import io.appium.uiautomator2.model.Session;
-import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 public abstract class TouchEvent extends SafeRequestHandler {
@@ -44,16 +47,16 @@ public abstract class TouchEvent extends SafeRequestHandler {
     @Override
     protected AppiumResponse safeHandle(IHttpRequest request) throws JSONException,
             UiObjectNotFoundException {
-        params = new JSONObject(getPayload(request).getString("params"));
-        if (params.has(ELEMENT_ID_KEY_NAME) && !(params.has("x") && params.has("y"))) {
+        params = new JSONObject(toJSON(request).getString("params"));
+        final String elementId = W3CElementUtils.extractElementId(params);
+        if (elementId != null && !(params.has("x") && params.has("y"))) {
             /*
              * Finding centerX and centerY.
              */
-            String id = params.getString(ELEMENT_ID_KEY_NAME);
             Session session = AppiumUIA2Driver.getInstance().getSessionOrThrow();
-            element = session.getKnownElements().getElementFromCache(id);
+            element = session.getKnownElements().getElementFromCache(elementId);
             if (element == null) {
-                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+                throw new ElementNotFoundException();
             }
             final Rect bounds = element.getBounds();
             clickX = bounds.centerX();
@@ -64,9 +67,9 @@ public abstract class TouchEvent extends SafeRequestHandler {
         }
 
         if (executeTouchEvent()) {
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
+            return new AppiumResponse(getSessionId(request));
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, false);
+        throw new InvalidElementStateException("Cannot perform touch on the element");
     }
 
     protected abstract boolean executeTouchEvent() throws UiObjectNotFoundException, UiAutomator2Exception, JSONException;

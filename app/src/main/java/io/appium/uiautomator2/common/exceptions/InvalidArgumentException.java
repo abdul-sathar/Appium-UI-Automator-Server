@@ -18,18 +18,31 @@ package io.appium.uiautomator2.common.exceptions;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-public class NoSuchDriverException extends UiAutomator2Exception {
-    public NoSuchDriverException(String message) {
+public class InvalidArgumentException extends UiAutomator2Exception {
+    public InvalidArgumentException() {
+        super("The arguments passed to the command are either invalid or malformed");
+    }
+
+    public InvalidArgumentException(String message) {
         super(message);
     }
 
+    public InvalidArgumentException(Throwable cause) {
+        super(cause);
+    }
+
+    public InvalidArgumentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+
     @Override
     public String getError() {
-        return "invalid session id";
+        return "invalid argument";
     }
 
     @Override
     public HttpResponseStatus getHttpStatus() {
-        return HttpResponseStatus.NOT_FOUND;
+        return HttpResponseStatus.BAD_REQUEST;
     }
 }

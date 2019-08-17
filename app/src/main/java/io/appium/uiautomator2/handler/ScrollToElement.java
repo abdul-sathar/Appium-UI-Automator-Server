@@ -1,16 +1,18 @@
 package io.appium.uiautomator2.handler;
 
+import androidx.annotation.Nullable;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
+
+import io.appium.uiautomator2.common.exceptions.ElementNotFoundException;
+import io.appium.uiautomator2.common.exceptions.InvalidArgumentException;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.AppiumUIA2Driver;
 import io.appium.uiautomator2.model.Session;
-import io.appium.uiautomator2.server.AppiumServlet;
-import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 
 public class ScrollToElement extends SafeRequestHandler {
@@ -19,27 +21,22 @@ public class ScrollToElement extends SafeRequestHandler {
         super(mappedUri);
     }
 
-    private static String getElementNextId(IHttpRequest request) {
-        return (String) request.data().get(AppiumServlet.ELEMENT_ID_NEXT_KEY);
-    }
-
     @Override
     protected AppiumResponse safeHandle(IHttpRequest request) throws UiObjectNotFoundException {
         Logger.info("Scroll into view command");
-        String id = getElementId(request);
-        String scrollToId = getElementNextId(request);
+        String[] elementIds = getElementIds(request);
         StringBuilder errorMsg = new StringBuilder();
         UiObject elementUiObject = null;
         UiObject scrollElementUiObject = null;
         Session session = AppiumUIA2Driver.getInstance().getSessionOrThrow();
 
-        AndroidElement element = session.getKnownElements().getElementFromCache(id);
+        AndroidElement element = session.getKnownElements().getElementFromCache(elementIds[0]);
         if (element == null) {
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+            throw new ElementNotFoundException();
         }
-        AndroidElement scrollToElement = session.getKnownElements().getElementFromCache(scrollToId);
+        AndroidElement scrollToElement = session.getKnownElements().getElementFromCache(elementIds[1]);
         if (scrollToElement == null) {
-            return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+            throw new ElementNotFoundException();
         }
 
         // attempt to get UiObjects from the container and scroll to element
@@ -62,15 +59,18 @@ public class ScrollToElement extends SafeRequestHandler {
                     "Ensure you use the '-android uiautomator' locator strategy when " +
                     "finding elements for use with ScrollToElement");
             Logger.error(errorMsg.toString());
-            return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR, errorMsg);
+            throw new InvalidArgumentException(errorMsg.toString());
         }
 
-        UiScrollable uiScrollable = new UiScrollable(elementUiObject.getSelector());
-        boolean elementIsFound = uiScrollable.scrollIntoView(scrollElementUiObject);
-        return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, elementIsFound);
+        boolean elementIsFound = false;
+        if (elementUiObject != null) {
+            UiScrollable uiScrollable = new UiScrollable(elementUiObject.getSelector());
+            elementIsFound = uiScrollable.scrollIntoView(scrollElementUiObject);
+        }
+        return new AppiumResponse(getSessionId(request), elementIsFound);
     }
 
-    private class UiScrollable extends androidx.test.uiautomator.UiScrollable {
+    private static class UiScrollable extends androidx.test.uiautomator.UiScrollable {
 
         /**
          * Constructor.
@@ -84,7 +84,11 @@ public class ScrollToElement extends SafeRequestHandler {
         }
 
         @Override
-        public boolean scrollIntoView(UiObject obj) throws UiObjectNotFoundException {
+        public boolean scrollIntoView(@Nullable UiObject obj) throws UiObjectNotFoundException {
+            if (obj == null) {
+                return false;
+            }
+
             if (obj.exists()) {
                 return true;
             }

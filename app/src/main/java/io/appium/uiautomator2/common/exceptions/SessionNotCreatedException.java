@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package io.appium.uiautomator2.handler;
+package io.appium.uiautomator2.common.exceptions;
 
-import io.appium.uiautomator2.handler.request.SafeRequestHandler;
-import io.appium.uiautomator2.http.AppiumResponse;
-import io.appium.uiautomator2.http.IHttpRequest;
-import io.appium.uiautomator2.utils.AlertHelpers;
-import io.appium.uiautomator2.utils.Logger;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
-public class GetAlertText extends SafeRequestHandler {
-    public GetAlertText(String mappedUri) {
-        super(mappedUri);
+public class SessionNotCreatedException extends UiAutomator2Exception {
+    public SessionNotCreatedException(Throwable cause) {
+        super(cause);
     }
 
     @Override
-    protected AppiumResponse safeHandle(IHttpRequest request) {
-        Logger.info("Get alert text command");
-        return new AppiumResponse(getSessionId(request), AlertHelpers.getText());
+    public String getError() {
+        return "session not created";
+    }
+
+    @Override
+    public HttpResponseStatus getHttpStatus() {
+        return HttpResponseStatus.INTERNAL_SERVER_ERROR;
     }
 }

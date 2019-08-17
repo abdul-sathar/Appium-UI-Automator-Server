@@ -4,6 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.test.uiautomator.UiObjectNotFoundException;
+
+import io.appium.uiautomator2.common.exceptions.InvalidElementStateException;
 import io.appium.uiautomator2.core.EventRegister;
 import io.appium.uiautomator2.core.ReturningRunnable;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
@@ -12,7 +14,6 @@ import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.AppiumUIA2Driver;
 import io.appium.uiautomator2.model.Session;
-import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
 import io.appium.uiautomator2.utils.PositionHelper;
@@ -32,7 +33,7 @@ public class Swipe extends SafeRequestHandler {
         final Point absEndPos;
         final boolean isSwipePerformed;
         final SwipeArguments swipeArgs;
-        JSONObject payload = getPayload(request);
+        JSONObject payload = toJSON(request);
         Logger.info("JSON Payload : ", payload.toString());
         swipeArgs = new SwipeArguments(request);
 
@@ -59,20 +60,19 @@ public class Swipe extends SafeRequestHandler {
             }
         });
         if (isSwipePerformed) {
-            return new AppiumResponse(getSessionId(request), WDStatus.SUCCESS, true);
+            return new AppiumResponse(getSessionId(request));
         }
-        return new AppiumResponse(getSessionId(request), WDStatus.UNKNOWN_ERROR,
-                "Swipe did not complete successfully");
+        throw new InvalidElementStateException("Swipe did not complete successfully");
     }
 
-    public class SwipeArguments {
+    public static class SwipeArguments {
         public final Point start;
         public final Point end;
         public final Integer steps;
         public AndroidElement element;
 
         public SwipeArguments(final IHttpRequest request) throws JSONException {
-            JSONObject payload = getPayload(request);
+            JSONObject payload = toJSON(request);
             if (payload.has("elementId")) {
                 Logger.info("Payload has elementId" + payload);
                 String id = payload.getString("elementId");

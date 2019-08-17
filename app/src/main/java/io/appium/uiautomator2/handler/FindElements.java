@@ -20,6 +20,7 @@ import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 
+import io.appium.uiautomator2.common.exceptions.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +67,7 @@ public class FindElements extends SafeRequestHandler {
     @Override
     protected AppiumResponse safeHandle(IHttpRequest request) throws JSONException, UiObjectNotFoundException {
         JSONArray result = new JSONArray();
-        JSONObject payload = getPayload(request);
+        JSONObject payload = toJSON(request);
         String method = payload.getString("strategy");
         String selector = payload.getString("selector");
         final String contextId = payload.getString("context");
@@ -124,7 +125,7 @@ public class FindElements extends SafeRequestHandler {
         }
 
         String msg = String.format("By locator %s is curently not supported!", by.getClass().getSimpleName());
-        throw new UnsupportedOperationException(msg);
+        throw new NotImplementedException(msg);
     }
 
     private List<Object> findElements(By by, String contextId) throws ClassNotFoundException,

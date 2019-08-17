@@ -15,6 +15,7 @@
  */
 package io.appium.uiautomator2.unittest.test;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,8 +26,6 @@ import io.appium.uiautomator2.unittest.test.internal.BaseTest;
 import io.appium.uiautomator2.unittest.test.internal.Response;
 import io.appium.uiautomator2.utils.Device;
 
-import static io.appium.uiautomator2.server.WDStatus.NO_SUCH_ELEMENT;
-import static io.appium.uiautomator2.server.WDStatus.STALE_ELEMENT_REFERENCE;
 import static io.appium.uiautomator2.unittest.test.internal.TestUtils.waitForElementInvisibility;
 import static io.appium.uiautomator2.unittest.test.internal.TestUtils.waitForSeconds;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.findElement;
@@ -84,8 +83,7 @@ public class GestureCommandsTest extends BaseTest {
         dragBody.put("steps", 1000);
 
         response = drag(dragBody);
-        boolean result = response.getValue();
-        assertTrue("Drag status from src to dest should be true. ", result);
+        assertTrue(response.isSuccessful());
 
         response = findElement(By.id("io.appium.android.apis:id/drag_result_text"));
         response = getText(response.getElementId());
@@ -105,8 +103,7 @@ public class GestureCommandsTest extends BaseTest {
         assertTrue("element location y coordinate is zero(0), which is not expected", y > 0);
 
         response = tap(x + 5, y + 5);
-        Boolean tapStatus = response.getValue();
-        assertTrue("Unable to tap on location: " + x + " " + y, tapStatus);
+        assertTrue(response.isSuccessful());
         response = waitForElementInvisibility(elementId);
         assertFalse(by + " found, which not expected", response.isSuccessful());
     }
@@ -119,7 +116,7 @@ public class GestureCommandsTest extends BaseTest {
     @Test
     public void flickTest() throws JSONException {
         Response response = flickOnPosition();
-        assertTrue(Boolean.class.cast(response.getValue()));
+        assertTrue(response.isSuccessful());
     }
 
     /**
@@ -163,7 +160,7 @@ public class GestureCommandsTest extends BaseTest {
         actions.put(action1).put(action2);
 
         response = multiPointerGesture((new JSONObject().put("actions", actions)));
-        assertEquals("OK", response.getValue());
+        assertTrue(response.isSuccessful());
 
         response = findElement(By.id("io.appium.android.apis:id/chronometer"));
         response = getText(response.getElementId());
@@ -199,7 +196,7 @@ public class GestureCommandsTest extends BaseTest {
         response = findElement(By.accessibilityId("Auto Complete"));
 
         // swipe performed hence the 'Buttons' element was not found on the screen
-        assertEquals(NO_SUCH_ELEMENT.code(), response.getStatus());
+        assertEquals(response.code(), HttpResponseStatus.NOT_FOUND.code());
     }
 
     /**
@@ -215,10 +212,10 @@ public class GestureCommandsTest extends BaseTest {
 
         response = findElement(By.id("android:id/list"));
         response = flickOnElement(response.getElementId());
-        assertTrue(Boolean.class.cast(response.getValue()));
+        assertTrue(response.isSuccessful());
 
         response = findElement(By.accessibilityId("Animation"));
-        assertEquals(NO_SUCH_ELEMENT.code(), response.getStatus());
+        assertEquals(response.code(), HttpResponseStatus.NOT_FOUND.code());
     }
 
     /**
@@ -234,7 +231,7 @@ public class GestureCommandsTest extends BaseTest {
         longClick(response.getElementId());
 
         response = waitForElementInvisibility(response.getElementId());
-        assertEquals(STALE_ELEMENT_REFERENCE.code(), response.getStatus());
+        assertEquals(response.code(), HttpResponseStatus.NOT_FOUND.code());
     }
 
     @Test
@@ -251,6 +248,6 @@ public class GestureCommandsTest extends BaseTest {
         touchMove(upElement);
         touchUp(downElement);
         response = findElement(By.accessibilityId("Auto Complete"));
-        assertEquals(NO_SUCH_ELEMENT.code(), response.getStatus());
+        assertEquals(response.code(), HttpResponseStatus.NOT_FOUND.code());
     }
 }

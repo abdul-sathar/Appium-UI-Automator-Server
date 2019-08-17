@@ -1,16 +1,20 @@
 package io.appium.uiautomator2.handler;
 
+import io.appium.uiautomator2.utils.w3c.W3CElementUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.test.uiautomator.UiObjectNotFoundException;
+
+import java.util.NoSuchElementException;
+
+import io.appium.uiautomator2.common.exceptions.InvalidElementStateException;
 import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.AndroidElement;
 import io.appium.uiautomator2.model.AppiumUIA2Driver;
 import io.appium.uiautomator2.model.Session;
-import io.appium.uiautomator2.server.WDStatus;
 import io.appium.uiautomator2.utils.Device;
 import io.appium.uiautomator2.utils.Logger;
 import io.appium.uiautomator2.utils.Point;
@@ -25,16 +29,15 @@ public class Click extends SafeRequestHandler {
     }
 
     @Override
-    protected AppiumResponse safeHandle(IHttpRequest request) throws JSONException,
-            UiObjectNotFoundException {
-        JSONObject payload = getPayload(request);
-        if (payload.has(ELEMENT_ID_KEY_NAME)) {
+    protected AppiumResponse safeHandle(IHttpRequest request) throws JSONException, UiObjectNotFoundException {
+        JSONObject payload = toJSON(request);
+        final String elementId = W3CElementUtils.extractElementId(payload);
+        if (elementId != null) {
             Logger.info("Click element command");
-            String id = payload.getString(ELEMENT_ID_KEY_NAME);
             Session session = AppiumUIA2Driver.getInstance().getSessionOrThrow();
-            AndroidElement element = session.getKnownElements().getElementFromCache(id);
+            AndroidElement element = session.getKnownElements().getElementFromCache(elementId);
             if (element == null) {
-                return new AppiumResponse(getSessionId(request), WDStatus.NO_SUCH_ELEMENT);
+                throw new NoSuchElementException();
             }
             element.click();
         } else {
@@ -42,10 +45,13 @@ public class Click extends SafeRequestHandler {
             Point coords = new Point(Double.parseDouble(payload.get("x").toString()),
                     Double.parseDouble(payload.get("y").toString()));
             coords = PositionHelper.getDeviceAbsPos(coords);
-            final boolean res = getUiDevice().click(coords.x.intValue(), coords.y.intValue());
-            return new AppiumResponse(getSessionId(request), res);
+            if (!getUiDevice().click(coords.x.intValue(), coords.y.intValue())) {
+                throw new InvalidElementStateException(
+                        String.format("Click failed at (%s, %s) coordinates",
+                        coords.x.intValue(), coords.y.intValue()));
+            }
         }
         Device.waitForIdle();
-        return new AppiumResponse(getSessionId(request), true);
+        return new AppiumResponse(getSessionId(request));
     }
 }

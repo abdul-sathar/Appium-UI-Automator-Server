@@ -16,18 +16,32 @@
 
 package io.appium.uiautomator2.common.exceptions;
 
-public class UiAutomator2Exception extends RuntimeException {
-    private static final long serialVersionUID = -1592305571101012889L;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
-    public UiAutomator2Exception(String message) {
-        super(message);
+public class UiAutomator2Exception extends RuntimeException {
+    public static final HttpResponseStatus DEFAULT_ERROR_STATUS = HttpResponseStatus.INTERNAL_SERVER_ERROR;
+
+    public UiAutomator2Exception() {
+        super("An unknown server-side error occurred while processing the command");
     }
 
     public UiAutomator2Exception(Throwable t) {
         super(t);
     }
 
+    public UiAutomator2Exception(String message) {
+        super(message);
+    }
+
     public UiAutomator2Exception(String message, Throwable t) {
         super(message, t);
+    }
+
+    public String getError() {
+        return "unknown error";
+    }
+
+    public HttpResponseStatus getHttpStatus() {
+        return DEFAULT_ERROR_STATUS;
     }
 }

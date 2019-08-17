@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package io.appium.uiautomator2.handler;
+package io.appium.uiautomator2.common.exceptions;
 
-import io.appium.uiautomator2.handler.request.SafeRequestHandler;
-import io.appium.uiautomator2.http.AppiumResponse;
-import io.appium.uiautomator2.http.IHttpRequest;
-import io.appium.uiautomator2.utils.AlertHelpers;
-import io.appium.uiautomator2.utils.Logger;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
-public class GetAlertText extends SafeRequestHandler {
-    public GetAlertText(String mappedUri) {
-        super(mappedUri);
+public class UnknownCommandException extends UiAutomator2Exception {
+    public UnknownCommandException() {
+        super("The requested resource could not be found, or a request was received using an HTTP method that is not supported by the mapped resource");
+    }
+
+    public UnknownCommandException(String message) {
+        super(message);
     }
 
     @Override
-    protected AppiumResponse safeHandle(IHttpRequest request) {
-        Logger.info("Get alert text command");
-        return new AppiumResponse(getSessionId(request), AlertHelpers.getText());
+    public String getError() {
+        return "unknown command";
+    }
+
+    @Override
+    public HttpResponseStatus getHttpStatus() {
+        return HttpResponseStatus.NOT_FOUND;
     }
 }

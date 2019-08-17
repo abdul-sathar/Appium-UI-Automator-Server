@@ -16,15 +16,12 @@
 
 package io.appium.uiautomator2.server;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import androidx.annotation.Nullable;
 import io.appium.uiautomator2.handler.AcceptAlert;
 import io.appium.uiautomator2.handler.CaptureScreenshot;
 import io.appium.uiautomator2.handler.Clear;
@@ -81,18 +78,20 @@ import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.http.IHttpResponse;
 import io.appium.uiautomator2.http.IHttpServlet;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
 public class AppiumServlet implements IHttpServlet {
 
     public static final String SESSION_ID_KEY = "SESSION_ID_KEY";
 
     public static final String ELEMENT_ID_KEY = "id";
-    public static final String ELEMENT_ID_NEXT_KEY = "elementId";
-    public static final String COMMAND_NAME_KEY = "COMMAND_KEY";
+    private static final String COMMAND_NAME_KEY = "COMMAND_KEY";
     public static final String NAME_ID_KEY = "NAME_ID_KEY";
-    protected static ConcurrentMap<String, BaseRequestHandler> getHandler = new ConcurrentHashMap<>();
-    protected static ConcurrentMap<String, BaseRequestHandler> postHandler = new ConcurrentHashMap<>();
-    protected static ConcurrentMap<String, BaseRequestHandler> deleteHandler = new ConcurrentHashMap<>();
+    public static final int MAX_ELEMENTS = 3;
+    public static final int SECOND_ELEMENT_IDX = 2;
+    private static ConcurrentMap<String, BaseRequestHandler> getHandler = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, BaseRequestHandler> postHandler = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, BaseRequestHandler> deleteHandler = new ConcurrentHashMap<>();
     private ConcurrentMap<String, String[]> mapperUrlSectionsCache = new ConcurrentHashMap<>();
 
 
@@ -137,7 +136,7 @@ public class AppiumServlet implements IHttpServlet {
         register(postHandler, new TouchMove("/wd/hub/session/:sessionId/touch/move"));
         register(postHandler, new UpdateSettings("/wd/hub/session/:sessionId/appium/settings"));
         register(postHandler, new NetworkConnection("/wd/hub/session/:sessionId/network_connection"));
-        register(postHandler, new ScrollToElement("/wd/hub/session/:sessionId/appium/element/:id/scroll_to/:elementId"));
+        register(postHandler, new ScrollToElement("/wd/hub/session/:sessionId/appium/element/:id/scroll_to/:id2"));
         register(postHandler, new GetClipboard("/wd/hub/session/:sessionId/appium/device/get_clipboard"));
         register(postHandler, new SetClipboard("/wd/hub/session/:sessionId/appium/device/set_clipboard"));
         register(postHandler, new AcceptAlert("/wd/hub/session/:sessionId/alert/accept"));
@@ -172,11 +171,11 @@ public class AppiumServlet implements IHttpServlet {
         register(getHandler, new GetDeviceInfo("/wd/hub/session/:sessionId/appium/device/info"));
     }
 
-    protected void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
+    private void register(Map<String, BaseRequestHandler> registerOn, BaseRequestHandler handler) {
         registerOn.put(handler.getMappedUri(), handler);
     }
 
-    protected BaseRequestHandler findMatcher(IHttpRequest request, Map<String, BaseRequestHandler> handler) {
+    private BaseRequestHandler findMatcher(IHttpRequest request, Map<String, BaseRequestHandler> handler) {
         String[] urlToMatchSections = getRequestUrlSections(request.uri());
         for (Map.Entry<String, ? extends BaseRequestHandler> entry : handler.entrySet()) {
             String[] mapperUrlSections = getMapperUrlSectionsCached(entry.getKey());
@@ -215,7 +214,7 @@ public class AppiumServlet implements IHttpServlet {
         return sections;
     }
 
-    protected boolean isFor(String[] mapperUrlSections, String[] urlToMatchSections) {
+    private boolean isFor(String[] mapperUrlSections, String[] urlToMatchSections) {
         if (urlToMatchSections == null) {
             return mapperUrlSections.length == 0;
         }
@@ -243,31 +242,20 @@ public class AppiumServlet implements IHttpServlet {
         handleRequest(request, response, handler);
     }
 
-    public void handleRequest(IHttpRequest request, IHttpResponse response, BaseRequestHandler handler) {
+    private void handleRequest(IHttpRequest request, IHttpResponse response,
+                               @Nullable BaseRequestHandler handler) {
         if (handler == null) {
-            response.setStatus(HttpStatusCode.NOT_FOUND.getStatusCode()).end();
+            response.setStatus(HttpResponseStatus.NOT_FOUND.code()).end();
             return;
         }
         addHandlerAttributesToRequest(request, handler.getMappedUri());
         AppiumResponse result = handler.handle(request);
-        handleResponse(request, response, result);
+        handleResponse(response, result);
     }
 
-    protected void handleResponse(IHttpRequest request, IHttpResponse response, AppiumResponse result) {
+    private void handleResponse(IHttpResponse response, @Nullable AppiumResponse result) {
         if (result != null) {
-            String resultString = result.render();
-            response.setContentType("application/json");
-            response.setEncoding(Charset.forName("UTF-8"));
-            response.setContent(resultString);
-            try {
-                if (new JSONObject(resultString).getInt("status") == 0) {
-                    response.setStatus(HttpStatusCode.OK.getStatusCode());
-                } else {
-                    response.setStatus(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
-                }
-            } catch (JSONException e) {
-                response.setStatus(HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
-            }
+            result.renderTo(response);
         }
         response.end();
     }
@@ -283,28 +271,30 @@ public class AppiumServlet implements IHttpServlet {
             request.data().put(COMMAND_NAME_KEY, command);
         }
 
-        String id = getParameter(mappedUri, request.uri(), ":id");
-        if (id != null) {
-            request.data().put(ELEMENT_ID_KEY, URLDecoder.decode(id));
-        }
         String name = getParameter(mappedUri, request.uri(), ":name");
         if (name != null) {
             request.data().put(NAME_ID_KEY, name);
         }
-        String elementId = getParameter(mappedUri, request.uri(), ":elementId");
-        if (elementId != null) {
-            request.data().put(ELEMENT_ID_NEXT_KEY, elementId);
-        }
 
-        //request.data().put(DRIVER_KEY, driver);
+        String id = getParameter(mappedUri, request.uri(), ":id");
+        if (id != null) {
+            request.data().put(ELEMENT_ID_KEY, URLDecoder.decode(id));
+        }
+        for (int elementIdx = SECOND_ELEMENT_IDX; elementIdx < MAX_ELEMENTS + SECOND_ELEMENT_IDX; ++elementIdx) {
+            String elementId = getParameter(mappedUri, request.uri(), ":id" + elementIdx);
+            if (elementId != null) {
+                request.data().put(ELEMENT_ID_KEY + elementIdx, elementId);
+            }
+        }
     }
 
-
-    protected String getParameter(String configuredUri, String actualUri, String param) {
+    @Nullable
+    private String getParameter(String configuredUri, String actualUri, String param) {
         return getParameter(configuredUri, actualUri, param, true);
     }
 
-    protected String getParameter(String configuredUri, String actualUri, String param, boolean sectionLengthValidation) {
+    @Nullable
+    private String getParameter(String configuredUri, String actualUri, String param, boolean sectionLengthValidation) {
         String[] configuredSections = configuredUri.split("/");
         String[] currentSections = actualUri.split("/");
         if (sectionLengthValidation && configuredSections.length != currentSections.length) {
