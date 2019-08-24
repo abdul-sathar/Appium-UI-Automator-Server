@@ -21,8 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.os.RemoteException;
 
+import android.os.SystemClock;
 import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
 import io.appium.uiautomator2.model.settings.Settings;
@@ -46,9 +46,11 @@ public class ServerInstrumentation {
     private final int serverPort;
     private HttpdThread serverThread;
     private PowerManager.WakeLock wakeLock;
+    private long wakeLockAcquireTimestampMs = 0;
+    private long wakeLockTimeoutMs = 0;
     private boolean isServerStopped;
 
-    public ServerInstrumentation(Context context, int serverPort) {
+    private ServerInstrumentation(Context context, int serverPort) {
         if (!isValidPort(serverPort)) {
             throw new UiAutomator2Exception(String.format(
                     "The port is out of valid range [%s;%s]: %s", MIN_PORT, MAX_PORT, serverPort));
@@ -65,6 +67,10 @@ public class ServerInstrumentation {
     }
 
     private void releaseWakeLock() {
+        Logger.debug(String.format(
+                "Got request to release the wake lock (current value %s, timeout %s)",
+                wakeLock, wakeLockTimeoutMs));
+
         if (wakeLock == null) {
             return;
         }
@@ -73,21 +79,45 @@ public class ServerInstrumentation {
             wakeLock.release();
         } catch (Exception e) {/* ignore */}
         wakeLock = null;
+        wakeLockAcquireTimestampMs = 0;
+        wakeLockTimeoutMs = 0;
     }
 
-    private void acquireWakeLock() {
+    public long getWakeLockTimeout() {
+        return (wakeLock == null || !wakeLock.isHeld() || wakeLockAcquireTimestampMs <= 0 || wakeLockTimeoutMs <= 0)
+                ? 0
+                : wakeLockAcquireTimestampMs + wakeLockTimeoutMs - SystemClock.elapsedRealtime();
+    }
+
+    public void acquireWakeLock(long msTimeout) {
+        Logger.debug(String.format(
+                "Got request to acquire a new wake lock with %sms timeout", msTimeout));
+
         releaseWakeLock();
+
+        if (msTimeout <= 0) {
+            return;
+        }
 
         // Get a wake lock to stop the cpu going to sleep
         //noinspection deprecation
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, WAKE_LOCK_TAG);
         try {
-            wakeLock.acquire(MAX_TEST_DURATION);
+            wakeLock.acquire(msTimeout);
+            wakeLockAcquireTimestampMs = SystemClock.elapsedRealtime();
+            wakeLockTimeoutMs = msTimeout;
             getUiDevice().wakeUp();
-        } catch (SecurityException e) {
-            Logger.error("Security Exception", e);
-        } catch (RemoteException e) {
-            Logger.error("Remote Exception while waking up", e);
+            Logger.debug(String.format(
+                    "Successfully acquired the wake lock with %sms timeout", msTimeout));
+        } catch (Exception e) {
+            if (wakeLock.isHeld()) {
+                Logger.error("Error while waking up the device", e);
+            } else {
+                Logger.error("Cannot acquire the wake lock", e);
+                wakeLock = null;
+                wakeLockAcquireTimestampMs = 0;
+                wakeLockTimeoutMs = 0;
+            }
         }
     }
 
@@ -205,7 +235,7 @@ public class ServerInstrumentation {
         }
 
         private void startServer() {
-            acquireWakeLock();
+            acquireWakeLock(MAX_TEST_DURATION);
 
             server.start();
 
