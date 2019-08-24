@@ -20,7 +20,7 @@ import io.appium.uiautomator2.server.ServerInstrumentation;
 
 public class WakeLockTimeout extends AbstractSetting<Long> {
 
-    private static final String SETTING_NAME = "WakeLockTimeout";
+    private static final String SETTING_NAME = "wakeLockTimeout";
 
     public WakeLockTimeout() {
         super(Long.class, SETTING_NAME);
